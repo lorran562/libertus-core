@@ -1,0 +1,377 @@
+# REVERSE ENGINEERING - CONHECIMENTO AVANÇADO
+
+## FUNDAMENTOS
+
+### Assembly Basics
+**x86-64 Registers:**
+- RAX, RBX, RCX, RDX (general purpose)
+- RSI, RDI (source/destination index)
+- RSP (stack pointer)
+- RBP (base pointer)
+- RIP (instruction pointer)
+
+**Common Instructions:**
+```asm
+mov rax, rbx     ; Move
+add rax, 5       ; Addition
+sub rax, rbx     ; Subtraction
+xor rax, rax     ; XOR (common zero)
+push rax         ; Push to stack
+pop rbx          ; Pop from stack
+call func        ; Function call
+ret              ; Return
+```
+
+**Calling Conventions:**
+- Linux x64: RDI, RSI, RDX, RCX, R8, R9
+- Windows x64: RCX, RDX, R8, R9
+- Return: RAX
+
+### Binary Formats
+**ELF (Linux):**
+- Header, Program Headers, Sections
+- .text (code), .data (initialized), .bss (uninitialized)
+- Dynamic linking, PLT/GOT
+
+**PE (Windows):**
+- DOS header, NT headers, sections
+- .text, .data, .rdata, .idata (imports)
+- IAT (Import Address Table)
+
+## FERRAMENTAS
+
+### Disassemblers
+**IDA Pro:**
+```
+F5 - Decompile
+G - Jump to address
+X - Cross-references
+N - Rename
+```
+
+**Ghidra:**
+- Free, open-source
+- Decompiler integrado
+- Scripting (Python, Java)
+
+**Binary Ninja:**
+- Modern UI
+- BNIL (Binary Ninja IL)
+- Plugin API
+
+### Debuggers
+**GDB (Linux):**
+```bash
+gdb ./program
+break main
+run
+step / next
+print $rax
+x/10gx $rsp  # Examine stack
+```
+
+**x64dbg (Windows):**
+- Graph view
+- Plugin system
+- Script engine
+
+**WinDbg:**
+- Kernel debugging
+- Time-travel debugging
+- SOS extension (.NET)
+
+### Hex Editors
+- 010 Editor (templates)
+- HxD
+- ImHex
+
+## ANÁLISE ESTÁTICA
+
+### String Analysis
+```bash
+strings binary | grep -i "password"
+rabin2 -z binary  # Radare2
+```
+
+### Import/Export Analysis
+```bash
+objdump -T binary  # Dynamic symbols
+nm binary          # All symbols
+ldd binary         # Dependencies
+```
+
+### Control Flow Analysis
+- Identify functions
+- Map call graph
+- Detect recursion
+- Find loops
+
+### Data Flow Analysis
+- Track variable usage
+- Identify data structures
+- Detect buffer operations
+
+## ANÁLISE DINÂMICA
+
+### Debugging Techniques
+**Breakpoints:**
+```gdb
+break *0x401000        # Address
+break function_name
+break file.c:42        # Source line
+```
+
+**Watchpoints:**
+```gdb
+watch *(int*)0x6000    # Break on write
+rwatch *(int*)0x6000   # Break on read
+awatch *(int*)0x6000   # Break on access
+```
+
+**Tracing:**
+```bash
+strace ./program       # System calls
+ltrace ./program       # Library calls
+```
+
+### Memory Dump Analysis
+```python
+import struct
+
+def parse_memory(dump):
+    offset = 0
+    while offset < len(dump):
+        value = struct.unpack('<Q', dump[offset:offset+8])[0]
+        print(f"0x{offset:04x}: 0x{value:016x}")
+        offset += 8
+```
+
+## ANTI-DEBUGGING
+
+### Detection Techniques
+**IsDebuggerPresent:**
+```asm
+mov eax, fs:[30h]    ; PEB
+movzx eax, byte [eax+2] ; BeingDebugged
+test eax, eax
+jnz debugger_detected
+```
+
+**Timing Checks:**
+```c
+uint64_t start = rdtsc();
+// Code here
+uint64_t end = rdtsc();
+if (end - start > threshold)
+    exit(1);  // Debugger detected
+```
+
+**Exception-based:**
+```c
+__try {
+    RaiseException(0xC0000000, 0, 0, NULL);
+} __except(EXCEPTION_EXECUTE_HANDLER) {
+    // Debugger would catch this
+}
+```
+
+### Bypasses
+**Patch BeingDebugged:**
+```python
+import frida
+
+script = """
+Interceptor.attach(ptr("0x76543210"), {
+    onEnter: function(args) {
+        args[0] = ptr(0);  // Spoof return
+    }
+});
+"""
+```
+
+## OBFUSCAÇÃO
+
+### Control Flow Flattening
+```c
+int state = 0;
+while (true) {
+    switch (state) {
+        case 0: /* code1 */; state = 2; break;
+        case 1: /* code2 */; state = 0; break;
+        case 2: /* code3 */; state = 1; break;
+    }
+}
+```
+
+### String Obfuscation
+```c
+char key[] = {0x48, 0x65, 0x6c ^ 0xFF, 0x6c ^ 0xFF, 0x6f ^ 0xFF};
+for (int i = 0; i < 5; i++) key[i] ^= 0xFF;
+```
+
+### Opaque Predicates
+```c
+// Always true but hard to analyze
+if ((x*x) >= 0) {
+    // Real code
+}
+```
+
+## UNPACKING
+
+### Common Packers
+- UPX (Ultimate Packer for eXecutables)
+- Themida / VMProtect
+- ASPack, PECompact
+
+### Manual Unpacking
+1. Find OEP (Original Entry Point)
+2. Set breakpoint on OEP
+3. Run until OEP
+4. Dump memory
+5. Fix IAT (Import Address Table)
+
+**OEP Detection:**
+- Look for PUSHAD/POPAD pattern
+- Search for compiler signatures
+- Entropy analysis
+
+### Automated Unpacking
+```python
+import pefile
+import yara
+
+def detect_packer(pe_path):
+    pe = pefile.PE(pe_path)
+    rules = yara.compile('/path/to/packer_rules.yar')
+    matches = rules.match(pe_path)
+    return [m.rule for m in matches]
+```
+
+## MALWARE ANALYSIS
+
+### Behavioral Analysis
+**Sandbox:**
+- Cuckoo Sandbox
+- Any.Run
+- Joe Sandbox
+
+**Indicators:**
+- File operations
+- Registry modifications
+- Network connections
+- Process injection
+
+### Static Indicators
+```bash
+# Compute hashes
+md5sum malware.exe
+sha256sum malware.exe
+
+# PE analysis
+pefile-dump malware.exe
+```
+
+### Dynamic Indicators
+```bash
+# Network activity
+tcpdump -i any -w capture.pcap
+
+# File activity
+inotifywait -m -r /home/user
+
+# Process monitoring
+ps aux | grep malware
+```
+
+## CODE INJECTION
+
+### DLL Injection
+```c
+HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+LPVOID addr = VirtualAllocEx(hProcess, NULL, len, MEM_COMMIT, PAGE_READWRITE);
+WriteProcessMemory(hProcess, addr, dllPath, len, NULL);
+HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, 
+    (LPTHREAD_START_ROUTINE)LoadLibraryA, addr, 0, NULL);
+```
+
+### Process Hollowing
+1. Create suspended process
+2. Unmap original image
+3. Allocate new memory
+4. Write malicious code
+5. Set entry point
+6. Resume thread
+
+### Reflective DLL Injection
+- DLL loads itself
+- No LoadLibrary call
+- Harder to detect
+
+## SHELLCODE
+
+### Basic Shellcode
+```asm
+; Linux x86-64 execve("/bin/sh", NULL, NULL)
+xor rax, rax
+push rax
+mov rbx, '/bin//sh'
+push rbx
+mov rdi, rsp
+xor rsi, rsi
+xor rdx, rdx
+mov al, 59
+syscall
+```
+
+### Shellcode Encoding
+**XOR Encoder:**
+```python
+def xor_encode(shellcode, key):
+    return bytes([b ^ key for b in shellcode])
+```
+
+**Alphanumeric Shellcode:**
+- Only printable characters
+- Bypasses filters
+
+## FIRMWARE ANALYSIS
+
+### Extraction
+```bash
+binwalk firmware.bin
+binwalk -e firmware.bin  # Extract
+```
+
+### Emulation
+```bash
+# QEMU
+qemu-system-arm -M versatilepb -kernel zImage -initrd rootfs.img
+
+# Unicorn Engine
+from unicorn import *
+mu = Uc(UC_ARCH_ARM, UC_MODE_ARM)
+```
+
+## RECURSOS
+
+### Scripts úteis
+**Radare2:**
+```bash
+r2 binary
+aa              # Analyze all
+afl             # List functions
+pdf @ main      # Disassemble main
+VV              # Visual mode (graph)
+```
+
+**Frida:**
+```javascript
+Java.perform(function() {
+    var Activity = Java.use("android.app.Activity");
+    Activity.onCreate.implementation = function(savedInstanceState) {
+        console.log("Activity.onCreate() called");
+        this.onCreate(savedInstanceState);
+    };
+});
+```

@@ -1,0 +1,13 @@
+{
+  "id": "Applied_Cryptography_Expert_1_2026-05-07T14:35:24.362262",
+  "titulo": "Applied Cryptography Expert - Parte 2/4",
+  "conteudo": "ss\n1. ClientHello\n2. ServerHello + Certificate\n3. Key Exchange (ECDHE)\n4. ChangeCipherSpec\n5. Finished\n\n### TLS 1.3 Improvements\n- 0-RTT resumption\n- Removed weak ciphers (RC4, 3DES)\n- Forward secrecy obrigatório\n- Encrypted handshake\n\n**Cipher Suites (Recomendadas):**\n```\nTLS_AES_256_GCM_SHA384\nTLS_CHACHA20_POLY1305_SHA256\nTLS_AES_128_GCM_SHA256\n```\n\n### Certificate Pinning\n```python\nimport requests\n\nresponse = requests.get(\n    'https://example.com',\n    verify='/path/to/pinned_cert.pem'\n)\n```\n\n## ATAQUES E DEFESAS\n\n### Timing Attacks\n**Vulnerável:**\n```python\ndef compare(a, b):\n    if len(a) != len(b):\n        return False\n    for x, y in zip(a, b):\n        if x != y:\n            return False  # Sai cedo!\n    return True\n```\n\n**Seguro (Constant-time):**\n```python\nimport hmac\n\ndef compare_safe(a, b):\n    return hmac.compare_digest(a, b)\n```\n\n### Padding Oracle Attack\n- CVE-2014-0160 (Heartbleed)\n- CVE-2016-2107 (Lucky13)\n- Mitigação: Authenticated encryption (GCM, CCM)\n\n### Side-Channel Attacks\n**Cache timing:**\n- Spectre, Meltdown\n- Mitigação: Constant-time algorithms\n\n**Power analysis:**\n- DPA (Differential Power Analysis)\n- Mitigação: Masking, shuffling\n\n## BLOCKCHAIN & CRYPTO\n\n### Bitcoin\n**Address Generation:**\n```python\nfrom bitcoin import *\n\npriv = random_key()\npub = privtopub(priv)\naddr = pubtoaddr(pub)\n```\n\n**Transaction Signing:**\n```python\ntx = mktx(inputs, outputs)\nsigned_tx = sign(tx, 0, priv)\n```\n\n### Ethereum\n**Smart Contract Security:**\n- Reentrancy (The DAO hack)\n- Integer overflow/underflow\n- Front-running\n- Access control\n\n**Secure patterns:**\n```solidity\n// Checks-Effects-Interactions\nfunction withdraw() public {\n    uint amount = balances[msg.sender];\n    require(amount > 0);\n    \n    balances[msg.sender] = 0;  // Effect ANTES de interação\n    msg.sender.transfer(amount);\n}\n```\n\n## CRYPTANALYSIS\n\n### Frequency Analysis\n```python\nfrom collections import Counter\n\ndef frequency_analysis(ciphertext):\n    return Counter(ciphertext).most_common(10)\n",
+  "tags": [
+    "crypto",
+    "AES",
+    "RSA"
+  ],
+  "fonte": "Applied Cryptography Expert",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.362264"
+}

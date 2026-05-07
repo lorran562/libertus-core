@@ -1,0 +1,13 @@
+{
+  "id": "Reverse_Engineering_Mastery_1_2026-05-07T14:35:24.363414",
+  "titulo": "Reverse Engineering Mastery - Parte 2/4",
+  "conteudo": "LISE DINÂMICA\n\n### Debugging Techniques\n**Breakpoints:**\n```gdb\nbreak *0x401000        # Address\nbreak function_name\nbreak file.c:42        # Source line\n```\n\n**Watchpoints:**\n```gdb\nwatch *(int*)0x6000    # Break on write\nrwatch *(int*)0x6000   # Break on read\nawatch *(int*)0x6000   # Break on access\n```\n\n**Tracing:**\n```bash\nstrace ./program       # System calls\nltrace ./program       # Library calls\n```\n\n### Memory Dump Analysis\n```python\nimport struct\n\ndef parse_memory(dump):\n    offset = 0\n    while offset < len(dump):\n        value = struct.unpack('<Q', dump[offset:offset+8])[0]\n        print(f\"0x{offset:04x}: 0x{value:016x}\")\n        offset += 8\n```\n\n## ANTI-DEBUGGING\n\n### Detection Techniques\n**IsDebuggerPresent:**\n```asm\nmov eax, fs:[30h]    ; PEB\nmovzx eax, byte [eax+2] ; BeingDebugged\ntest eax, eax\njnz debugger_detected\n```\n\n**Timing Checks:**\n```c\nuint64_t start = rdtsc();\n// Code here\nuint64_t end = rdtsc();\nif (end - start > threshold)\n    exit(1);  // Debugger detected\n```\n\n**Exception-based:**\n```c\n__try {\n    RaiseException(0xC0000000, 0, 0, NULL);\n} __except(EXCEPTION_EXECUTE_HANDLER) {\n    // Debugger would catch this\n}\n```\n\n### Bypasses\n**Patch BeingDebugged:**\n```python\nimport frida\n\nscript = \"\"\"\nInterceptor.attach(ptr(\"0x76543210\"), {\n    onEnter: function(args) {\n        args[0] = ptr(0);  // Spoof return\n    }\n});\n\"\"\"\n```\n\n## OBFUSCAÇÃO\n\n### Control Flow Flattening\n```c\nint state = 0;\nwhile (true) {\n    switch (state) {\n        case 0: /* code1 */; state = 2; break;\n        case 1: /* code2 */; state = 0; break;\n        case 2: /* code3 */; state = 1; break;\n    }\n}\n```\n\n### String Obfuscation\n```c\nchar key[] = {0x48, 0x65, 0x6c ^ 0xFF, 0x6c ^ 0xFF, 0x6f ^ 0xFF};\nfor (int i = 0; i < 5; i++) key[i] ^= 0xFF;\n```\n\n### Opaque Predicates\n```c\n// Always true but hard to analyze\nif ((x*x) >= 0) {\n    // Real code\n}\n```\n\n## UNPACKING\n\n### Common Packers\n- UPX (Ultimate Packer for eXecutables)\n- Themida / VMProtect\n- ASPack, PECompact\n\n### Manual Unpa",
+  "tags": [
+    "RE",
+    "malware",
+    "IDA"
+  ],
+  "fonte": "Reverse Engineering Mastery",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.363417"
+}

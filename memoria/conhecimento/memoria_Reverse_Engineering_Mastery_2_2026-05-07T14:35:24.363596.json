@@ -1,0 +1,13 @@
+{
+  "id": "Reverse_Engineering_Mastery_2_2026-05-07T14:35:24.363596",
+  "titulo": "Reverse Engineering Mastery - Parte 3/4",
+  "conteudo": "cking\n1. Find OEP (Original Entry Point)\n2. Set breakpoint on OEP\n3. Run until OEP\n4. Dump memory\n5. Fix IAT (Import Address Table)\n\n**OEP Detection:**\n- Look for PUSHAD/POPAD pattern\n- Search for compiler signatures\n- Entropy analysis\n\n### Automated Unpacking\n```python\nimport pefile\nimport yara\n\ndef detect_packer(pe_path):\n    pe = pefile.PE(pe_path)\n    rules = yara.compile('/path/to/packer_rules.yar')\n    matches = rules.match(pe_path)\n    return [m.rule for m in matches]\n```\n\n## MALWARE ANALYSIS\n\n### Behavioral Analysis\n**Sandbox:**\n- Cuckoo Sandbox\n- Any.Run\n- Joe Sandbox\n\n**Indicators:**\n- File operations\n- Registry modifications\n- Network connections\n- Process injection\n\n### Static Indicators\n```bash\n# Compute hashes\nmd5sum malware.exe\nsha256sum malware.exe\n\n# PE analysis\npefile-dump malware.exe\n```\n\n### Dynamic Indicators\n```bash\n# Network activity\ntcpdump -i any -w capture.pcap\n\n# File activity\ninotifywait -m -r /home/user\n\n# Process monitoring\nps aux | grep malware\n```\n\n## CODE INJECTION\n\n### DLL Injection\n```c\nHANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);\nLPVOID addr = VirtualAllocEx(hProcess, NULL, len, MEM_COMMIT, PAGE_READWRITE);\nWriteProcessMemory(hProcess, addr, dllPath, len, NULL);\nHANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, \n    (LPTHREAD_START_ROUTINE)LoadLibraryA, addr, 0, NULL);\n```\n\n### Process Hollowing\n1. Create suspended process\n2. Unmap original image\n3. Allocate new memory\n4. Write malicious code\n5. Set entry point\n6. Resume thread\n\n### Reflective DLL Injection\n- DLL loads itself\n- No LoadLibrary call\n- Harder to detect\n\n## SHELLCODE\n\n### Basic Shellcode\n```asm\n; Linux x86-64 execve(\"/bin/sh\", NULL, NULL)\nxor rax, rax\npush rax\nmov rbx, '/bin//sh'\npush rbx\nmov rdi, rsp\nxor rsi, rsi\nxor rdx, rdx\nmov al, 59\nsyscall\n```\n\n### Shellcode Encoding\n**XOR Encoder:**\n```python\ndef xor_encode(shellcode, key):\n    return bytes([b ^ key for b in shellcode])\n```\n\n**Alphanumeric Shellcode:**\n- Only printable characters\n- Bypass",
+  "tags": [
+    "RE",
+    "malware",
+    "IDA"
+  ],
+  "fonte": "Reverse Engineering Mastery",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.363600"
+}

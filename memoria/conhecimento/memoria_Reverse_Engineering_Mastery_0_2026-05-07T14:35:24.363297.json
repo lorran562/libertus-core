@@ -1,0 +1,13 @@
+{
+  "id": "Reverse_Engineering_Mastery_0_2026-05-07T14:35:24.363297",
+  "titulo": "Reverse Engineering Mastery - Parte 1/4",
+  "conteudo": "# REVERSE ENGINEERING - CONHECIMENTO AVANÇADO\n\n## FUNDAMENTOS\n\n### Assembly Basics\n**x86-64 Registers:**\n- RAX, RBX, RCX, RDX (general purpose)\n- RSI, RDI (source/destination index)\n- RSP (stack pointer)\n- RBP (base pointer)\n- RIP (instruction pointer)\n\n**Common Instructions:**\n```asm\nmov rax, rbx     ; Move\nadd rax, 5       ; Addition\nsub rax, rbx     ; Subtraction\nxor rax, rax     ; XOR (common zero)\npush rax         ; Push to stack\npop rbx          ; Pop from stack\ncall func        ; Function call\nret              ; Return\n```\n\n**Calling Conventions:**\n- Linux x64: RDI, RSI, RDX, RCX, R8, R9\n- Windows x64: RCX, RDX, R8, R9\n- Return: RAX\n\n### Binary Formats\n**ELF (Linux):**\n- Header, Program Headers, Sections\n- .text (code), .data (initialized), .bss (uninitialized)\n- Dynamic linking, PLT/GOT\n\n**PE (Windows):**\n- DOS header, NT headers, sections\n- .text, .data, .rdata, .idata (imports)\n- IAT (Import Address Table)\n\n## FERRAMENTAS\n\n### Disassemblers\n**IDA Pro:**\n```\nF5 - Decompile\nG - Jump to address\nX - Cross-references\nN - Rename\n```\n\n**Ghidra:**\n- Free, open-source\n- Decompiler integrado\n- Scripting (Python, Java)\n\n**Binary Ninja:**\n- Modern UI\n- BNIL (Binary Ninja IL)\n- Plugin API\n\n### Debuggers\n**GDB (Linux):**\n```bash\ngdb ./program\nbreak main\nrun\nstep / next\nprint $rax\nx/10gx $rsp  # Examine stack\n```\n\n**x64dbg (Windows):**\n- Graph view\n- Plugin system\n- Script engine\n\n**WinDbg:**\n- Kernel debugging\n- Time-travel debugging\n- SOS extension (.NET)\n\n### Hex Editors\n- 010 Editor (templates)\n- HxD\n- ImHex\n\n## ANÁLISE ESTÁTICA\n\n### String Analysis\n```bash\nstrings binary | grep -i \"password\"\nrabin2 -z binary  # Radare2\n```\n\n### Import/Export Analysis\n```bash\nobjdump -T binary  # Dynamic symbols\nnm binary          # All symbols\nldd binary         # Dependencies\n```\n\n### Control Flow Analysis\n- Identify functions\n- Map call graph\n- Detect recursion\n- Find loops\n\n### Data Flow Analysis\n- Track variable usage\n- Identify data structures\n- Detect buffer operations\n\n## ANÁ",
+  "tags": [
+    "RE",
+    "malware",
+    "IDA"
+  ],
+  "fonte": "Reverse Engineering Mastery",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.363299"
+}

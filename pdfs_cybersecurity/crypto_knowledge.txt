@@ -1,0 +1,334 @@
+# CRIPTOGRAFIA APLICADA - CONHECIMENTO AVANÇADO
+
+## FUNDAMENTOS
+
+### Criptografia Simétrica
+**AES (Advanced Encryption Standard):**
+- Block cipher (128-bit blocks)
+- Key sizes: 128, 192, 256 bits
+- Modos: ECB, CBC, CTR, GCM, CCM
+
+**Implementação Python:**
+```python
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad, unpad
+
+key = get_random_bytes(32)  # 256-bit
+cipher = AES.new(key, AES.MODE_CBC)
+ct = cipher.encrypt(pad(plaintext, AES.block_size))
+```
+
+**ChaCha20:**
+- Stream cipher
+- Faster que AES em software
+- Mobile-friendly (ARM otimizado)
+
+### Criptografia Assimétrica
+**RSA:**
+- Key sizes: 2048, 3072, 4096 bits
+- Padding: OAEP, PSS
+- Uso: Key exchange, digital signatures
+
+**Geração de chaves:**
+```python
+from Crypto.PublicKey import RSA
+
+key = RSA.generate(4096)
+private_key = key.export_key()
+public_key = key.publickey().export_key()
+```
+
+**ECC (Elliptic Curve Cryptography):**
+- Menor tamanho de chave (256-bit ≈ 3072-bit RSA)
+- Mais rápido
+- Curvas: secp256k1, Curve25519, P-384
+
+**ECDSA (Assinatura Digital):**
+```python
+from ecdsa import SigningKey, SECP256k1
+
+sk = SigningKey.generate(curve=SECP256k1)
+signature = sk.sign(message)
+vk = sk.verifying_key
+vk.verify(signature, message)
+```
+
+## HASHING & DERIVAÇÃO
+
+### Hash Functions
+**SHA-256:**
+```python
+import hashlib
+
+hash_obj = hashlib.sha256()
+hash_obj.update(data)
+digest = hash_obj.hexdigest()
+```
+
+**bcrypt (Password Hashing):**
+```python
+import bcrypt
+
+hashed = bcrypt.hashpw(password, bcrypt.gensalt(rounds=12))
+if bcrypt.checkpw(password, hashed):
+    print("Match!")
+```
+
+**PBKDF2:**
+```python
+from hashlib import pbkdf2_hmac
+
+key = pbkdf2_hmac('sha256', password, salt, 100000)
+```
+
+### Key Derivation Functions
+**Argon2 (Winner of PHC):**
+- Memory-hard
+- Resistance contra GPU/ASIC
+- Tipos: Argon2i, Argon2d, Argon2id
+
+**scrypt:**
+```python
+from hashlib import scrypt
+
+key = scrypt(password, salt=salt, n=2**14, r=8, p=1)
+```
+
+## SSL/TLS
+
+### Handshake Process
+1. ClientHello
+2. ServerHello + Certificate
+3. Key Exchange (ECDHE)
+4. ChangeCipherSpec
+5. Finished
+
+### TLS 1.3 Improvements
+- 0-RTT resumption
+- Removed weak ciphers (RC4, 3DES)
+- Forward secrecy obrigatório
+- Encrypted handshake
+
+**Cipher Suites (Recomendadas):**
+```
+TLS_AES_256_GCM_SHA384
+TLS_CHACHA20_POLY1305_SHA256
+TLS_AES_128_GCM_SHA256
+```
+
+### Certificate Pinning
+```python
+import requests
+
+response = requests.get(
+    'https://example.com',
+    verify='/path/to/pinned_cert.pem'
+)
+```
+
+## ATAQUES E DEFESAS
+
+### Timing Attacks
+**Vulnerável:**
+```python
+def compare(a, b):
+    if len(a) != len(b):
+        return False
+    for x, y in zip(a, b):
+        if x != y:
+            return False  # Sai cedo!
+    return True
+```
+
+**Seguro (Constant-time):**
+```python
+import hmac
+
+def compare_safe(a, b):
+    return hmac.compare_digest(a, b)
+```
+
+### Padding Oracle Attack
+- CVE-2014-0160 (Heartbleed)
+- CVE-2016-2107 (Lucky13)
+- Mitigação: Authenticated encryption (GCM, CCM)
+
+### Side-Channel Attacks
+**Cache timing:**
+- Spectre, Meltdown
+- Mitigação: Constant-time algorithms
+
+**Power analysis:**
+- DPA (Differential Power Analysis)
+- Mitigação: Masking, shuffling
+
+## BLOCKCHAIN & CRYPTO
+
+### Bitcoin
+**Address Generation:**
+```python
+from bitcoin import *
+
+priv = random_key()
+pub = privtopub(priv)
+addr = pubtoaddr(pub)
+```
+
+**Transaction Signing:**
+```python
+tx = mktx(inputs, outputs)
+signed_tx = sign(tx, 0, priv)
+```
+
+### Ethereum
+**Smart Contract Security:**
+- Reentrancy (The DAO hack)
+- Integer overflow/underflow
+- Front-running
+- Access control
+
+**Secure patterns:**
+```solidity
+// Checks-Effects-Interactions
+function withdraw() public {
+    uint amount = balances[msg.sender];
+    require(amount > 0);
+    
+    balances[msg.sender] = 0;  // Effect ANTES de interação
+    msg.sender.transfer(amount);
+}
+```
+
+## CRYPTANALYSIS
+
+### Frequency Analysis
+```python
+from collections import Counter
+
+def frequency_analysis(ciphertext):
+    return Counter(ciphertext).most_common(10)
+```
+
+### Known-Plaintext Attack
+- WEP crack (Aircrack-ng)
+- Enigma decryption
+
+### Chosen-Plaintext Attack
+- RSA attacks (Bleichenbacher)
+- AES fault attacks
+
+### Brute Force
+**Hashcat:**
+```bash
+hashcat -m 0 -a 3 hash.txt ?a?a?a?a?a?a
+hashcat -m 1000 -a 0 hash.txt rockyou.txt
+```
+
+## IMPLEMENTAÇÃO SEGURA
+
+### Random Number Generation
+**INSEGURO:**
+```python
+import random
+key = random.randint(0, 2**256)  # Previsível!
+```
+
+**SEGURO:**
+```python
+from secrets import token_bytes
+key = token_bytes(32)  # Cryptographically secure
+```
+
+### Key Storage
+**Nunca hardcode:**
+```python
+# MAL!
+api_key = "sk-abc123..."
+```
+
+**Melhor:**
+```python
+import os
+api_key = os.environ.get('API_KEY')
+```
+
+**Best:**
+- Hardware Security Modules (HSM)
+- AWS KMS, Azure Key Vault
+- HashiCorp Vault
+
+### Salt & IV
+**Salt (Password hashing):**
+```python
+import os
+salt = os.urandom(16)  # Único por senha
+```
+
+**IV (Initialization Vector):**
+```python
+from Crypto.Random import get_random_bytes
+iv = get_random_bytes(16)  # Único por mensagem
+```
+
+## COMPLIANCE
+
+### FIPS 140-2
+- Level 1-4 de segurança
+- Módulos criptográficos certificados
+- Algoritmos aprovados
+
+### PCI-DSS
+- TLS 1.2+ obrigatório
+- Strong cryptography (AES-256, RSA-2048+)
+- Key rotation policies
+
+### GDPR
+- Encryption at rest
+- Encryption in transit
+- Right to erasure (crypto shredding)
+
+## FERRAMENTAS
+
+### OpenSSL
+```bash
+# Gerar chave RSA
+openssl genrsa -out private.key 4096
+
+# Criar CSR
+openssl req -new -key private.key -out cert.csr
+
+# Self-signed certificate
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
+```
+
+### GnuPG
+```bash
+gpg --gen-key
+gpg --encrypt --recipient user@example.com file.txt
+gpg --decrypt file.txt.gpg
+```
+
+### Let's Encrypt
+```bash
+certbot certonly --standalone -d example.com
+```
+
+## RECURSOS AVANÇADOS
+
+### Zero-Knowledge Proofs
+- zk-SNARKs (Zcash)
+- zk-STARKs (StarkWare)
+- Uso: Privacy, scaling
+
+### Homomorphic Encryption
+- Operações em dados cifrados
+- FHE (Fully Homomorphic)
+- Aplicações: Cloud computing seguro
+
+### Quantum Cryptography
+- QKD (Quantum Key Distribution)
+- Post-quantum algorithms:
+  - Lattice-based (NTRU)
+  - Code-based (McEliece)
+  - Hash-based (SPHINCS+)

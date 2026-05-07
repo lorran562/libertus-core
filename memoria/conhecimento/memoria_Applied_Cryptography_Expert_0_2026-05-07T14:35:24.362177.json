@@ -1,0 +1,13 @@
+{
+  "id": "Applied_Cryptography_Expert_0_2026-05-07T14:35:24.362177",
+  "titulo": "Applied Cryptography Expert - Parte 1/4",
+  "conteudo": "# CRIPTOGRAFIA APLICADA - CONHECIMENTO AVANÇADO\n\n## FUNDAMENTOS\n\n### Criptografia Simétrica\n**AES (Advanced Encryption Standard):**\n- Block cipher (128-bit blocks)\n- Key sizes: 128, 192, 256 bits\n- Modos: ECB, CBC, CTR, GCM, CCM\n\n**Implementação Python:**\n```python\nfrom Crypto.Cipher import AES\nfrom Crypto.Random import get_random_bytes\nfrom Crypto.Util.Padding import pad, unpad\n\nkey = get_random_bytes(32)  # 256-bit\ncipher = AES.new(key, AES.MODE_CBC)\nct = cipher.encrypt(pad(plaintext, AES.block_size))\n```\n\n**ChaCha20:**\n- Stream cipher\n- Faster que AES em software\n- Mobile-friendly (ARM otimizado)\n\n### Criptografia Assimétrica\n**RSA:**\n- Key sizes: 2048, 3072, 4096 bits\n- Padding: OAEP, PSS\n- Uso: Key exchange, digital signatures\n\n**Geração de chaves:**\n```python\nfrom Crypto.PublicKey import RSA\n\nkey = RSA.generate(4096)\nprivate_key = key.export_key()\npublic_key = key.publickey().export_key()\n```\n\n**ECC (Elliptic Curve Cryptography):**\n- Menor tamanho de chave (256-bit ≈ 3072-bit RSA)\n- Mais rápido\n- Curvas: secp256k1, Curve25519, P-384\n\n**ECDSA (Assinatura Digital):**\n```python\nfrom ecdsa import SigningKey, SECP256k1\n\nsk = SigningKey.generate(curve=SECP256k1)\nsignature = sk.sign(message)\nvk = sk.verifying_key\nvk.verify(signature, message)\n```\n\n## HASHING & DERIVAÇÃO\n\n### Hash Functions\n**SHA-256:**\n```python\nimport hashlib\n\nhash_obj = hashlib.sha256()\nhash_obj.update(data)\ndigest = hash_obj.hexdigest()\n```\n\n**bcrypt (Password Hashing):**\n```python\nimport bcrypt\n\nhashed = bcrypt.hashpw(password, bcrypt.gensalt(rounds=12))\nif bcrypt.checkpw(password, hashed):\n    print(\"Match!\")\n```\n\n**PBKDF2:**\n```python\nfrom hashlib import pbkdf2_hmac\n\nkey = pbkdf2_hmac('sha256', password, salt, 100000)\n```\n\n### Key Derivation Functions\n**Argon2 (Winner of PHC):**\n- Memory-hard\n- Resistance contra GPU/ASIC\n- Tipos: Argon2i, Argon2d, Argon2id\n\n**scrypt:**\n```python\nfrom hashlib import scrypt\n\nkey = scrypt(password, salt=salt, n=2**14, r=8, p=1)\n```\n\n## SSL/TLS\n\n### Handshake Proce",
+  "tags": [
+    "crypto",
+    "AES",
+    "RSA"
+  ],
+  "fonte": "Applied Cryptography Expert",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.362180"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "Reverse_Engineering_Mastery_3_2026-05-07T14:35:24.363709",
+  "titulo": "Reverse Engineering Mastery - Parte 4/4",
+  "conteudo": "es filters\n\n## FIRMWARE ANALYSIS\n\n### Extraction\n```bash\nbinwalk firmware.bin\nbinwalk -e firmware.bin  # Extract\n```\n\n### Emulation\n```bash\n# QEMU\nqemu-system-arm -M versatilepb -kernel zImage -initrd rootfs.img\n\n# Unicorn Engine\nfrom unicorn import *\nmu = Uc(UC_ARCH_ARM, UC_MODE_ARM)\n```\n\n## RECURSOS\n\n### Scripts úteis\n**Radare2:**\n```bash\nr2 binary\naa              # Analyze all\nafl             # List functions\npdf @ main      # Disassemble main\nVV              # Visual mode (graph)\n```\n\n**Frida:**\n```javascript\nJava.perform(function() {\n    var Activity = Java.use(\"android.app.Activity\");\n    Activity.onCreate.implementation = function(savedInstanceState) {\n        console.log(\"Activity.onCreate() called\");\n        this.onCreate(savedInstanceState);\n    };\n});\n```\n",
+  "tags": [
+    "RE",
+    "malware",
+    "IDA"
+  ],
+  "fonte": "Reverse Engineering Mastery",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.363712"
+}

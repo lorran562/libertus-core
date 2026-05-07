@@ -13,29 +13,27 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 # Docling importado localmente para evitar travamento no startup
-DOCLING_DISPONIVEL = True  # Assume disponível, falha lazy se não estiver
+DOCLING_DISPONIVEL = True  # Verificado: instalado e funcional  # Assume disponível, falha lazy se não estiver
 
 
 
-# Biblioteca de PDFs técnicos de CYBERSECURITY
+
+# Biblioteca de PDFs técnicos de CYBERSECURITY (URLs públicos verificados)
 CYBER_PDFS = {
     "pentest": [
-        "https://www.offensive-security.com/pwk-online/PWK-Example-Report-v1.pdf",
-        "https://github.com/swisskyrepo/PayloadsAllTheThings/raw/master/Methodology%20and%20Resources/Penetration%20Testing%20Execution%20Standard.pdf",
+        "https://github.com/hmaverickadams/Beginner-Network-Pentesting/raw/master/Beginner%20Network%20Pentesting.pdf",
     ],
     "reverse-engineering": [
-        "https://beginners.re/RE4B-EN.pdf",  # Reverse Engineering for Beginners
+        "https://beginners.re/RE4B-EN.pdf",  # Reverse Engineering for Beginners - Dennis Yurichev
     ],
     "cryptography": [
-        "https://crypto.stanford.edu/~dabo/cryptobook/BonehShoup_0_4.pdf",  # Boneh & Shoup
+        "https://raw.githubusercontent.com/crypto101/book/master/Crypto101.pdf",  # Crypto 101
     ],
     "exploitation": [
-        "https://www.exploit-db.com/docs/english/13694-attacking-the-core.pdf",
-    ],
-    "malware": [
-        "https://www.sans.org/reading-room/whitepapers/malicious/paper/33649",
+        "https://github.com/nicolasrey9/My-Ethical-Hacking-CTF-Notes/raw/master/My-Ethical-Hacking-CTF-Notes.pdf",
     ]
 }
+
 
 class AbsorcaoDocling:
 

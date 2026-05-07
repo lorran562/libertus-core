@@ -1,0 +1,13 @@
+{
+  "id": "Applied_Cryptography_Expert_2_2026-05-07T14:35:24.362583",
+  "titulo": "Applied Cryptography Expert - Parte 3/4",
+  "conteudo": "```\n\n### Known-Plaintext Attack\n- WEP crack (Aircrack-ng)\n- Enigma decryption\n\n### Chosen-Plaintext Attack\n- RSA attacks (Bleichenbacher)\n- AES fault attacks\n\n### Brute Force\n**Hashcat:**\n```bash\nhashcat -m 0 -a 3 hash.txt ?a?a?a?a?a?a\nhashcat -m 1000 -a 0 hash.txt rockyou.txt\n```\n\n## IMPLEMENTAÇÃO SEGURA\n\n### Random Number Generation\n**INSEGURO:**\n```python\nimport random\nkey = random.randint(0, 2**256)  # Previsível!\n```\n\n**SEGURO:**\n```python\nfrom secrets import token_bytes\nkey = token_bytes(32)  # Cryptographically secure\n```\n\n### Key Storage\n**Nunca hardcode:**\n```python\n# MAL!\napi_key = \"sk-abc123...\"\n```\n\n**Melhor:**\n```python\nimport os\napi_key = os.environ.get('API_KEY')\n```\n\n**Best:**\n- Hardware Security Modules (HSM)\n- AWS KMS, Azure Key Vault\n- HashiCorp Vault\n\n### Salt & IV\n**Salt (Password hashing):**\n```python\nimport os\nsalt = os.urandom(16)  # Único por senha\n```\n\n**IV (Initialization Vector):**\n```python\nfrom Crypto.Random import get_random_bytes\niv = get_random_bytes(16)  # Único por mensagem\n```\n\n## COMPLIANCE\n\n### FIPS 140-2\n- Level 1-4 de segurança\n- Módulos criptográficos certificados\n- Algoritmos aprovados\n\n### PCI-DSS\n- TLS 1.2+ obrigatório\n- Strong cryptography (AES-256, RSA-2048+)\n- Key rotation policies\n\n### GDPR\n- Encryption at rest\n- Encryption in transit\n- Right to erasure (crypto shredding)\n\n## FERRAMENTAS\n\n### OpenSSL\n```bash\n# Gerar chave RSA\nopenssl genrsa -out private.key 4096\n\n# Criar CSR\nopenssl req -new -key private.key -out cert.csr\n\n# Self-signed certificate\nopenssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365\n```\n\n### GnuPG\n```bash\ngpg --gen-key\ngpg --encrypt --recipient user@example.com file.txt\ngpg --decrypt file.txt.gpg\n```\n\n### Let's Encrypt\n```bash\ncertbot certonly --standalone -d example.com\n```\n\n## RECURSOS AVANÇADOS\n\n### Zero-Knowledge Proofs\n- zk-SNARKs (Zcash)\n- zk-STARKs (StarkWare)\n- Uso: Privacy, scaling\n\n### Homomorphic Encryption\n- Operações em dados cifrados\n- FHE (Fully Homomorphic)\n- Apli",
+  "tags": [
+    "crypto",
+    "AES",
+    "RSA"
+  ],
+  "fonte": "Applied Cryptography Expert",
+  "tipo": "conhecimento_tecnico_cybersecurity",
+  "criado_em": "2026-05-07T14:35:24.362587"
+}
