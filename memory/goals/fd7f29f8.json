@@ -1,0 +1,17 @@
+{
+  "id": "fd7f29f8",
+  "titulo": "Atingir 100 skills autônomas no Supabase",
+  "descricao": "Crescer o Skill Engine para cobertura total das tarefas de Lorran",
+  "prazo": "longo",
+  "prioridade": 9,
+  "tags": [
+    "inicial",
+    "sistema"
+  ],
+  "status": "ativo",
+  "criado_em": "2026-05-07T02:34:00.283231",
+  "atualizado_em": "2026-05-07T02:34:00.283243",
+  "progresso": 0,
+  "subobjetivos": [],
+  "resultado": null
+}

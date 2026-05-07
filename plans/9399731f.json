@@ -1,0 +1,56 @@
+{
+  "id": "9399731f",
+  "timestamp": "2026-05-07T04:54:58.647460",
+  "estado": {
+    "timestamp": "2026-05-07T04:54:58.647470",
+    "arquivos_core": 23,
+    "logs_evolucao": 4,
+    "planos_pendentes": 4,
+    "skills_total": 0,
+    "skills_autonomas": 0,
+    "taxa_autonomia": 0.0,
+    "memorias_total": 0,
+    "arquivos_memoria": 0,
+    "arquivos_evolucao": 4,
+    "arquivos_skills": 0,
+    "arquivos_projetos": 0
+  },
+  "oportunidades": [
+    {
+      "tipo": "autonomia_baixa",
+      "descricao": "Taxa de autonomia em 0.0% — meta: 80%+",
+      "prioridade": 8,
+      "acao_sugerida": "converter_skills_para_libertus"
+    },
+    {
+      "tipo": "skills_insuficientes",
+      "descricao": "Apenas 0 skills — meta: 100+",
+      "prioridade": 7,
+      "acao_sugerida": "criar_novas_skills"
+    },
+    {
+      "tipo": "memoria_escassa",
+      "descricao": "Menos de 100 memórias — sistema ainda aprendendo",
+      "prioridade": 6,
+      "acao_sugerida": "absorver_mais_conhecimento"
+    }
+  ],
+  "acoes": [
+    {
+      "tipo": "migrar_skills",
+      "descricao": "Identificar skills 'claude' com 3+ usos e migrar para 'libertus'",
+      "prioridade": 8
+    },
+    {
+      "tipo": "gerar_skills",
+      "descricao": "Analisar tarefas frequentes e gerar skills reutilizáveis",
+      "prioridade": 7
+    },
+    {
+      "tipo": "absorver_conhecimento",
+      "descricao": "Absorver documentos pendentes na pasta de conhecimento",
+      "prioridade": 6
+    }
+  ],
+  "status": "pendente"
+}

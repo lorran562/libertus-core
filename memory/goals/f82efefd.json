@@ -1,0 +1,17 @@
+{
+  "id": "f82efefd",
+  "titulo": "Configurar sincronização com GitHub",
+  "descricao": "Commits automáticos com contexto semântico a cada evolução",
+  "prazo": "medio",
+  "prioridade": 7,
+  "tags": [
+    "inicial",
+    "sistema"
+  ],
+  "status": "ativo",
+  "criado_em": "2026-05-07T02:34:00.285166",
+  "atualizado_em": "2026-05-07T02:34:00.285169",
+  "progresso": 0,
+  "subobjetivos": [],
+  "resultado": null
+}

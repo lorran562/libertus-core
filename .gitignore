@@ -1,0 +1,19 @@
+# Ignorar arquivo .env com API keys
+.env
+*.env
+.env.*
+
+# Ignorar PIDs e logs temporários
+/tmp/
+*.pid
+*.log
+
+# Ignorar cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar memória local
+memory/heartbeat.json
+memory/tentativas_fix.json
+memory/bugs_persistentes.json

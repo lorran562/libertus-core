@@ -1,0 +1,29 @@
+[Unit]
+Description=LIBERTUS Cognitive Daemon
+Documentation=https://github.com/lorran562/libertus-core
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/home/%i/LIBERTUS/core
+Environment="PYTHONUNBUFFERED=1"
+EnvironmentFile=-/home/%i/LIBERTUS/.env
+ExecStart=/usr/bin/python3 /home/%i/LIBERTUS/core/libertus_daemon.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/%i/LIBERTUS/evolution_logs/daemon_stdout.log
+StandardError=append:/home/%i/LIBERTUS/evolution_logs/daemon_stderr.log
+
+# Segurança
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/%i/LIBERTUS
+
+[Install]
+WantedBy=multi-user.target

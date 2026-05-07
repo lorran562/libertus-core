@@ -1,0 +1,17 @@
+{
+  "id": "e2f993b4",
+  "titulo": "Configurar Groq API para conversa inteligente gratuita",
+  "descricao": "Ativar llama3-70b como motor de conversa sem custo",
+  "prazo": "curto",
+  "prioridade": 10,
+  "tags": [
+    "inicial",
+    "sistema"
+  ],
+  "status": "ativo",
+  "criado_em": "2026-05-07T02:34:00.283426",
+  "atualizado_em": "2026-05-07T02:34:00.283429",
+  "progresso": 0,
+  "subobjetivos": [],
+  "resultado": null
+}

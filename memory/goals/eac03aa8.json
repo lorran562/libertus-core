@@ -1,0 +1,17 @@
+{
+  "id": "eac03aa8",
+  "titulo": "Implementar ciclo de autoevolução contínuo",
+  "descricao": "Sistema que detecta, planeja e aplica melhorias automaticamente",
+  "prazo": "longo",
+  "prioridade": 10,
+  "tags": [
+    "inicial",
+    "sistema"
+  ],
+  "status": "ativo",
+  "criado_em": "2026-05-07T02:34:00.285042",
+  "atualizado_em": "2026-05-07T02:34:00.285049",
+  "progresso": 0,
+  "subobjetivos": [],
+  "resultado": null
+}
