@@ -32,6 +32,12 @@ from git_sync          import GitSync
 from auto_refatoracao  import AutoRefatoracao
 from absorcao_docling  import AbsorcaoDocling
 
+# LIBERTUS SCANNER v10
+import sys
+sys.path.insert(0, str(LIBERTUS_ROOT))
+from libertus_scanner import LibertusScanner
+import asyncio
+
 
 # ── Configuração de ticks ────────────────────────────────────────────────
 CICLO_OBSERVACAO   = 60       # 1 minuto — registra heartbeat
@@ -42,6 +48,7 @@ CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
 
 CICLO_AUTO_REFATORACAO = 43200   # 12 horas — auto-correção de bugs
 CICLO_ABSORCAO_DOCLING = 21600   # 6 horas — aprendizado via Docling
+CICLO_SECURITY_SCAN    = 86400   # 24 horas — security scanning
 
 HEARTBEAT = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 DAEMON_LOG = LIBERTUS_ROOT / "evolution_logs" / "daemon.log"
@@ -71,6 +78,9 @@ class NucleoCognitivo:
         # v10: Auto-refatoração + Docling
         self.refactor = AutoRefatoracao(self.root)
         self.docling = AbsorcaoDocling(self.root)
+        
+        # Targets para security scanning (carrega do Supabase)
+        self.scan_targets = self._carregar_targets_scan()
 
         # Timestamps dos últimos ciclos
         self.last = {
@@ -81,6 +91,7 @@ class NucleoCognitivo:
             "git_sync":     0,
             "auto_refatoracao": 0,
             "absorcao_docling": 0,
+            "security_scan":    0,
         }
 
         # Estatísticas da sessão do daemon
@@ -92,6 +103,8 @@ class NucleoCognitivo:
             "commits_feitos":        0,
             "bugs_corrigidos":       0,
             "documentos_absorvidos": 0,
+            "scans_realizados":      0,
+            "vulnerabilidades_encontradas": 0,
             "erros":                 0,
         }
 
@@ -145,6 +158,10 @@ class NucleoCognitivo:
                 if agora - self.last["absorcao_docling"] >= CICLO_ABSORCAO_DOCLING:
                     self._tick_absorcao_docling()
                     self.last["absorcao_docling"] = agora
+                
+                if agora - self.last["security_scan"] >= CICLO_SECURITY_SCAN:
+                    self._tick_security_scan()
+                    self.last["security_scan"] = agora
 
                 # Dorme pelo menor intervalo
                 time.sleep(30)
@@ -402,6 +419,65 @@ class NucleoCognitivo:
             encoding="utf-8"
         )
         sys.exit(0)
+
+
+    def _carregar_targets_scan(self) -> list:
+        """
+        Carrega targets de scan do Supabase.
+        """
+        try:
+            from supabase import create_client
+            import os
+            
+            supabase_url = os.getenv("SUPABASE_URL")
+            supabase_key = os.getenv("SUPABASE_KEY")
+            
+            if not supabase_url or not supabase_key:
+                return []
+            
+            client = create_client(supabase_url, supabase_key)
+            response = client.table("libertus_scan_targets").select("url").eq("ativo", True).execute()
+            
+            targets = [row["url"] for row in response.data]
+            self._log("INIT", f"Carregados {len(targets)} targets de scan")
+            return targets
+            
+        except Exception as e:
+            self._log("ERRO", f"Falha ao carregar targets: {e}")
+            return []
+    
+    def _tick_security_scan(self):
+        """
+        Executa security scanning nos targets configurados.
+        """
+        self._log("SECURITY_SCAN", "Iniciando ciclo de scanning")
+        
+        if not self.scan_targets:
+            self._log("SECURITY_SCAN", "Nenhum target configurado - pulando")
+            return
+        
+        try:
+            for target_url in self.scan_targets:
+                self._log("SECURITY_SCAN", f"Scanning: {target_url}")
+                
+                # Executa scanner de forma assíncrona
+                scanner = LibertusScanner(target_url)
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                results = loop.run_until_complete(scanner.run_full_scan())
+                loop.close()
+                
+                # Atualiza estatísticas
+                self.stats["scans_realizados"] += 1
+                self.stats["vulnerabilidades_encontradas"] += len(results.get("vulnerabilities", []))
+                
+                self._log("SECURITY_SCAN", 
+                          f"Scan completo: {len(results.get('vulnerabilities', []))} vulnerabilidades")
+                
+        except Exception as e:
+            self._log("ERRO_SECURITY_SCAN", f"{e}")
+            self.stats["erros"] += 1
+
 
     def _tick_auto_refatoracao(self):
         """

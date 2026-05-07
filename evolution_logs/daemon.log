@@ -100,3 +100,9 @@ LIBERTUS Daemon — iniciando em /root/LIBERTUS
 [2026-05-07 12:52:45] AUTO_REFATORACAO: Iniciando ciclo de auto-correção
 [2026-05-07 12:52:45] AUTO_REFATORACAO: Bugs: 0, Patches: 0/0
 [2026-05-07 12:52:45] ABSORCAO_DOCLING: Iniciando absorção de conhecimento
+[2026-05-07 16:01:57] ERRO: Falha ao carregar targets: No module named 'postgrest'
+[2026-05-07 16:01:57] INICIO: Núcleo cognitivo iniciado
+[2026-05-07 16:01:57] LOOP: Entrando em loop cognitivo contínuo
+[2026-05-07 16:01:57] CONSOLIDACAO: Iniciando consolidação de memória
+[2026-05-07 16:01:57] EVOLUCAO: Iniciando ciclo autônomo
+[2026-05-07 16:01:58] EVOLUCAO: Ciclo: 4 oportunidades detectadas

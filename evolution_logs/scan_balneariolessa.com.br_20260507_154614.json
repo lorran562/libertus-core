@@ -1,0 +1,166 @@
+{
+  "target": "https://balneariolessa.com.br/",
+  "scan_time": "2026-05-07T15:46:10.425665",
+  "vulnerabilities": [
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /config",
+      "url": "https://balneariolessa.com.br/config",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.git",
+      "url": "https://balneariolessa.com.br/.git",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.env",
+      "url": "https://balneariolessa.com.br/.env",
+      "recommendation": "Block access to sensitive files"
+    }
+  ],
+  "info": [],
+  "ports": [
+    {
+      "port": 80,
+      "status": "open"
+    },
+    {
+      "port": 443,
+      "status": "open"
+    }
+  ],
+  "technologies": [],
+  "subdomains": [
+    "www.balneariolessa.com.br",
+    "ftp.balneariolessa.com.br",
+    "app.balneariolessa.com.br"
+  ],
+  "directories": [
+    {
+      "path": "admin",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/admin"
+    },
+    {
+      "path": "administrator",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/administrator"
+    },
+    {
+      "path": "login",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/login"
+    },
+    {
+      "path": "wp-admin",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/wp-admin"
+    },
+    {
+      "path": "phpmyadmin",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/phpmyadmin"
+    },
+    {
+      "path": "dashboard",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/dashboard"
+    },
+    {
+      "path": "panel",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/panel"
+    },
+    {
+      "path": "cpanel",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/cpanel"
+    },
+    {
+      "path": "backup",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/backup"
+    },
+    {
+      "path": "old",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/old"
+    },
+    {
+      "path": "test",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/test"
+    },
+    {
+      "path": "dev",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/dev"
+    },
+    {
+      "path": "api",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/api"
+    },
+    {
+      "path": "v1",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/v1"
+    },
+    {
+      "path": "v2",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/v2"
+    },
+    {
+      "path": "swagger",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/swagger"
+    },
+    {
+      "path": "docs",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/docs"
+    },
+    {
+      "path": "config",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/config"
+    },
+    {
+      "path": "uploads",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/uploads"
+    },
+    {
+      "path": ".git",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/.git"
+    },
+    {
+      "path": ".env",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/.env"
+    },
+    {
+      "path": ".htaccess",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/.htaccess"
+    },
+    {
+      "path": "robots.txt",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/robots.txt"
+    },
+    {
+      "path": "sitemap.xml",
+      "status": 403,
+      "url": "https://balneariolessa.com.br/sitemap.xml"
+    }
+  ]
+}
