@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorran Security - Pentest Profissional</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .feature {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .feature h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .packages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .package {
+            background: rgba(255,255,255,0.2);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .package:hover {
+            transform: translateY(-10px);
+        }
+        
+        .package h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        
+        .price {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00ff88;
+            margin: 20px 0;
+        }
+        
+        .cta {
+            background: #00ff88;
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 30px;
+            transition: all 0.3s;
+        }
+        
+        .cta:hover {
+            background: #00dd77;
+            transform: scale(1.05);
+        }
+        
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .tech {
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .contact {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 LORRAN SECURITY</h1>
+        <p class="subtitle">Pentest Profissional com Inteligência Artificial</p>
+        
+        <div class="feature">
+            <h3>✅ O QUE EU FAÇO</h3>
+            <p>Análise completa de segurança do seu site/aplicação, detectando e validando vulnerabilidades REAIS que podem comprometer seus dados e dos seus clientes.</p>
+        </div>
+        
+        <div class="feature">
+            <h3>🎯 VULNERABILIDADES DETECTADAS</h3>
+            <p>• SQL Injection (roubo de banco de dados)<br>
+               • XSS - Cross-Site Scripting (roubo de sessões)<br>
+               • LFI - Local File Inclusion (acesso a arquivos)<br>
+               • SSRF - Server-Side Request Forgery<br>
+               • Arquivos sensíveis expostos (.env, .git)<br>
+               • Falhas de autenticação e controle de acesso</p>
+        </div>
+        
+        <div class="feature">
+            <h3>⚡ DIFERENCIAIS</h3>
+            <p>• Scanner automatizado com IA (próprio)<br>
+               • Validação MANUAL de cada vulnerabilidade<br>
+               • Entrega em 24-48 horas<br>
+               • Relatório técnico completo (JSON + PDF)<br>
+               • Suporte para implementação das correções</p>
+        </div>
+        
+        <h2 style="text-align: center; margin: 40px 0;">💰 PACOTES</h2>
+        
+        <div class="packages">
+            <div class="package">
+                <h3>🔵 BÁSICO</h3>
+                <div class="price">R$400</div>
+                <p>• Scan automatizado<br>
+                   • Relatório completo<br>
+                   • Lista de vulnerabilidades<br>
+                   • Recomendações básicas</p>
+            </div>
+            
+            <div class="package">
+                <h3>🟢 COMPLETO</h3>
+                <div class="price">R$800</div>
+                <p>• Scan + Validação manual<br>
+                   • Proof of Concept<br>
+                   • Relatório detalhado<br>
+                   • Suporte 7 dias</p>
+            </div>
+            
+            <div class="package">
+                <h3>🔴 PREMIUM</h3>
+                <div class="price">R$1.500</div>
+                <p>• Pentest completo<br>
+                   • Correção assistida<br>
+                   • Re-scan pós-correção<br>
+                   • Certificado de segurança</p>
+            </div>
+        </div>
+        
+        <h3 style="text-align: center; margin: 30px 0;">🛠️ TECNOLOGIAS</h3>
+        <div class="tech-stack">
+            <div class="tech">Python</div>
+            <div class="tech">Nmap</div>
+            <div class="tech">SQLMap</div>
+            <div class="tech">Burp Suite</div>
+            <div class="tech">OWASP ZAP</div>
+            <div class="tech">AI Scanner</div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="https://wa.me/5569SEUNUMERO" class="cta">SOLICITAR ORÇAMENTO</a>
+        </div>
+        
+        <div class="contact">
+            <p>📧 Email: seuemail@exemplo.com</p>
+            <p>📱 WhatsApp: (69) XXXXX-XXXX</p>
+            <p>💼 LinkedIn: /in/lorran562</p>
+        </div>
+    </div>
+</body>
+</html>

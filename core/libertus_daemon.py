@@ -32,11 +32,7 @@ from git_sync          import GitSync
 from auto_refatoracao  import AutoRefatoracao
 from absorcao_docling  import AbsorcaoDocling
 
-# LIBERTUS SCANNER v10
-import sys
-sys.path.insert(0, str(LIBERTUS_ROOT))
-from libertus_scanner import LibertusScanner
-import asyncio
+
 
 
 # ── Configuração de ticks ────────────────────────────────────────────────
@@ -48,7 +44,6 @@ CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
 
 CICLO_AUTO_REFATORACAO = 43200   # 12 horas — auto-correção de bugs
 CICLO_ABSORCAO_DOCLING = 21600   # 6 horas — aprendizado via Docling
-CICLO_SECURITY_SCAN    = 86400   # 24 horas — security scanning
 
 HEARTBEAT = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 DAEMON_LOG = LIBERTUS_ROOT / "evolution_logs" / "daemon.log"
@@ -78,9 +73,6 @@ class NucleoCognitivo:
         # v10: Auto-refatoração + Docling
         self.refactor = AutoRefatoracao(self.root)
         self.docling = AbsorcaoDocling(self.root)
-        
-        # Targets para security scanning (carrega do Supabase)
-        self.scan_targets = self._carregar_targets_scan()
 
         # Timestamps dos últimos ciclos
         self.last = {
@@ -91,7 +83,6 @@ class NucleoCognitivo:
             "git_sync":     0,
             "auto_refatoracao": 0,
             "absorcao_docling": 0,
-            "security_scan":    0,
         }
 
         # Estatísticas da sessão do daemon
@@ -103,8 +94,6 @@ class NucleoCognitivo:
             "commits_feitos":        0,
             "bugs_corrigidos":       0,
             "documentos_absorvidos": 0,
-            "scans_realizados":      0,
-            "vulnerabilidades_encontradas": 0,
             "erros":                 0,
         }
 
@@ -158,10 +147,6 @@ class NucleoCognitivo:
                 if agora - self.last["absorcao_docling"] >= CICLO_ABSORCAO_DOCLING:
                     self._tick_absorcao_docling()
                     self.last["absorcao_docling"] = agora
-                
-                if agora - self.last["security_scan"] >= CICLO_SECURITY_SCAN:
-                    self._tick_security_scan()
-                    self.last["security_scan"] = agora
 
                 # Dorme pelo menor intervalo
                 time.sleep(30)

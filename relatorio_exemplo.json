@@ -1,0 +1,105 @@
+{
+  "relatorio_pentest": {
+    "cliente": "Empresa Exemplo Ltda",
+    "data_scan": "2026-05-07",
+    "executado_por": "Lorran - Especialista em Segurança Web",
+    "target": "https://exemplo.com.br",
+    "resumo_executivo": {
+      "total_vulnerabilidades": 8,
+      "criticas": 2,
+      "altas": 3,
+      "medias": 2,
+      "baixas": 1,
+      "status_geral": "ATENÇÃO NECESSÁRIA"
+    },
+    "vulnerabilidades": [
+      {
+        "id": 1,
+        "severidade": "CRÍTICA",
+        "tipo": "SQL Injection (Time-Based)",
+        "url": "https://exemplo.com.br/login",
+        "parametro": "username",
+        "payload": "admin' AND SLEEP(5)--",
+        "validacao": "Delay de 5.2 segundos confirmado",
+        "impacto": "Atacante pode extrair todo banco de dados, incluindo senhas de usuários",
+        "cvss_score": 9.8,
+        "recomendacao": "Implementar prepared statements e validação de input"
+      },
+      {
+        "id": 2,
+        "severidade": "CRÍTICA",
+        "tipo": "Arquivo Sensível Exposto",
+        "url": "https://exemplo.com.br/.env",
+        "descoberta": "Arquivo .env acessível publicamente",
+        "conteudo_exposto": "DB_PASSWORD, API_KEYS, JWT_SECRET",
+        "impacto": "Credenciais completas do sistema expostas",
+        "cvss_score": 9.1,
+        "recomendacao": "Bloquear acesso via .htaccess ou nginx config"
+      },
+      {
+        "id": 3,
+        "severidade": "ALTA",
+        "tipo": "XSS Reflected",
+        "url": "https://exemplo.com.br/search",
+        "parametro": "q",
+        "payload": "<script>alert(document.cookie)</script>",
+        "validacao": "Payload refletido sem sanitização",
+        "impacto": "Roubo de cookies de sessão, phishing",
+        "cvss_score": 7.4,
+        "recomendacao": "Implementar encoding de output e CSP headers"
+      },
+      {
+        "id": 4,
+        "severidade": "ALTA",
+        "tipo": "Diretório .git Exposto",
+        "url": "https://exemplo.com.br/.git/",
+        "descoberta": "Repositório Git acessível",
+        "impacto": "Código-fonte completo pode ser baixado",
+        "cvss_score": 7.5,
+        "recomendacao": "Remover .git da produção imediatamente"
+      },
+      {
+        "id": 5,
+        "severidade": "ALTA",
+        "tipo": "CORS Misconfiguration",
+        "descoberta": "Access-Control-Allow-Origin: *",
+        "impacto": "APIs podem ser acessadas de qualquer origem",
+        "cvss_score": 6.8,
+        "recomendacao": "Configurar whitelist de domínios permitidos"
+      },
+      {
+        "id": 6,
+        "severidade": "MÉDIA",
+        "tipo": "Headers de Segurança Ausentes",
+        "headers_faltando": [
+          "Strict-Transport-Security",
+          "X-Frame-Options",
+          "Content-Security-Policy"
+        ],
+        "impacto": "Clickjacking, downgrade attacks possíveis",
+        "cvss_score": 5.3,
+        "recomendacao": "Adicionar todos headers de segurança"
+      }
+    ],
+    "tecnologias_detectadas": [
+      "PHP 7.4",
+      "MySQL 5.7",
+      "Apache 2.4",
+      "WordPress 5.8"
+    ],
+    "portas_abertas": [80, 443, 3306, 8080],
+    "subdomains_encontrados": [
+      "www.exemplo.com.br",
+      "api.exemplo.com.br",
+      "admin.exemplo.com.br"
+    ],
+    "plano_acao": [
+      "1. URGENTE: Bloquear acesso ao .env e .git (hoje)",
+      "2. URGENTE: Corrigir SQL Injection no login (24h)",
+      "3. Implementar sanitização XSS (48h)",
+      "4. Configurar CORS corretamente (48h)",
+      "5. Adicionar security headers (72h)",
+      "6. Realizar novo scan de validação (1 semana)"
+    ]
+  }
+}
