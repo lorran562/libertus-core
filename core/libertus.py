@@ -58,6 +58,8 @@ from eng_reversa     import EngenheiriaReversa
 from intent_classifier import IntentClassifier
 from libertus_daemon import NucleoCognitivo
 from avaliador       import Avaliador
+from libertus_crypto import LibertusoCrypto
+from libertus_reverse import LibertusReverse
 
 _s = _imp("scanner");  _r = _imp("reconhecimento")
 _m = _imp("metodologia"); _w = _imp("wordlist_engine")
@@ -130,6 +132,8 @@ class Orquestrador:
         self.executor = Executor(LIBERTUS_ROOT, self.seg)
         self.git      = GitSync(LIBERTUS_ROOT)
         self.er       = EngenheiriaReversa(LIBERTUS_ROOT)
+        self.crypto   = LibertusoCrypto()
+        self.reverse  = LibertusReverse()
         self.scanner  = Scanner(LIBERTUS_ROOT)   if Scanner   else None
         self.recon    = Reconhecimento(LIBERTUS_ROOT) if Reconhecimento else None
         self.metodo   = Metodologia(LIBERTUS_ROOT)   if Metodologia   else None
