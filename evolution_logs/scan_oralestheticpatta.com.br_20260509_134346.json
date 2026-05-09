@@ -1,0 +1,167 @@
+{
+  "target": "https://oralestheticpatta.com.br",
+  "scan_time": "2026-05-09T13:43:41.270084",
+  "vulnerabilities": [
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /config",
+      "url": "https://oralestheticpatta.com.br/config",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.git",
+      "url": "https://oralestheticpatta.com.br/.git",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.env",
+      "url": "https://oralestheticpatta.com.br/.env",
+      "recommendation": "Block access to sensitive files"
+    }
+  ],
+  "info": [],
+  "ports": [
+    {
+      "port": 80,
+      "status": "open"
+    },
+    {
+      "port": 443,
+      "status": "open"
+    }
+  ],
+  "technologies": [],
+  "subdomains": [
+    "www.oralestheticpatta.com.br",
+    "mail.oralestheticpatta.com.br",
+    "ftp.oralestheticpatta.com.br",
+    "mobile.oralestheticpatta.com.br"
+  ],
+  "directories": [
+    {
+      "path": "admin",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/admin"
+    },
+    {
+      "path": "administrator",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/administrator"
+    },
+    {
+      "path": "login",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/login"
+    },
+    {
+      "path": "wp-admin",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/wp-admin"
+    },
+    {
+      "path": "phpmyadmin",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/phpmyadmin"
+    },
+    {
+      "path": "dashboard",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/dashboard"
+    },
+    {
+      "path": "panel",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/panel"
+    },
+    {
+      "path": "cpanel",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/cpanel"
+    },
+    {
+      "path": "backup",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/backup"
+    },
+    {
+      "path": "old",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/old"
+    },
+    {
+      "path": "test",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/test"
+    },
+    {
+      "path": "dev",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/dev"
+    },
+    {
+      "path": "api",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/api"
+    },
+    {
+      "path": "v1",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/v1"
+    },
+    {
+      "path": "v2",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/v2"
+    },
+    {
+      "path": "swagger",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/swagger"
+    },
+    {
+      "path": "docs",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/docs"
+    },
+    {
+      "path": "config",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/config"
+    },
+    {
+      "path": "uploads",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/uploads"
+    },
+    {
+      "path": ".git",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/.git"
+    },
+    {
+      "path": ".env",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/.env"
+    },
+    {
+      "path": ".htaccess",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/.htaccess"
+    },
+    {
+      "path": "robots.txt",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/robots.txt"
+    },
+    {
+      "path": "sitemap.xml",
+      "status": 403,
+      "url": "https://oralestheticpatta.com.br/sitemap.xml"
+    }
+  ]
+}

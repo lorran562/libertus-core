@@ -1,0 +1,78 @@
+[
+  {
+    "url": "https://clinicadrpaulofreitas.com.br",
+    "nome": "Clínica Dr Paulo Freitas",
+    "tipo": "clinica",
+    "scan": {
+      "target": "https://clinicadrpaulofreitas.com.br",
+      "scan_time": "2026-05-09T13:42:21.878971",
+      "vulnerabilities": [],
+      "info": [],
+      "ports": [],
+      "technologies": [],
+      "subdomains": [],
+      "directories": []
+    },
+    "vulns_total": 0,
+    "vulns_criticas": 0,
+    "vulns_altas": 0,
+    "scaneado_em": "2026-05-09T13:42:45.456259"
+  },
+  {
+    "url": "https://escritorioadvocaciasilva.com.br",
+    "nome": "Silva Advocacia",
+    "tipo": "advocacia",
+    "scan": {
+      "target": "https://escritorioadvocaciasilva.com.br",
+      "scan_time": "2026-05-09T13:42:45.456439",
+      "vulnerabilities": [],
+      "info": [],
+      "ports": [],
+      "technologies": [],
+      "subdomains": [],
+      "directories": []
+    },
+    "vulns_total": 0,
+    "vulns_criticas": 0,
+    "vulns_altas": 0,
+    "scaneado_em": "2026-05-09T13:42:50.937671"
+  },
+  {
+    "url": "https://contabilidadeariquemes.com.br",
+    "nome": "Contabilidade Total",
+    "tipo": "contabilidade",
+    "scan": {
+      "target": "https://contabilidadeariquemes.com.br",
+      "scan_time": "2026-05-09T13:42:50.937720",
+      "vulnerabilities": [],
+      "info": [],
+      "ports": [],
+      "technologies": [],
+      "subdomains": [],
+      "directories": []
+    },
+    "vulns_total": 0,
+    "vulns_criticas": 0,
+    "vulns_altas": 0,
+    "scaneado_em": "2026-05-09T13:42:57.800760"
+  },
+  {
+    "url": "https://imobiliariacasanova.com.br",
+    "nome": "Imobiliária Casanova",
+    "tipo": "imobiliaria",
+    "scan": {
+      "target": "https://imobiliariacasanova.com.br",
+      "scan_time": "2026-05-09T13:42:57.800854",
+      "vulnerabilities": [],
+      "info": [],
+      "ports": [],
+      "technologies": [],
+      "subdomains": [],
+      "directories": []
+    },
+    "vulns_total": 0,
+    "vulns_criticas": 0,
+    "vulns_altas": 0,
+    "scaneado_em": "2026-05-09T13:42:59.169988"
+  }
+]

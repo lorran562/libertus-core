@@ -1,0 +1,165 @@
+{
+  "target": "https://domingosadvocaciabr.com.br",
+  "scan_time": "2026-05-08T20:05:07.419082",
+  "vulnerabilities": [
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /config",
+      "url": "https://domingosadvocaciabr.com.br/config",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.git",
+      "url": "https://domingosadvocaciabr.com.br/.git",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.env",
+      "url": "https://domingosadvocaciabr.com.br/.env",
+      "recommendation": "Block access to sensitive files"
+    }
+  ],
+  "info": [],
+  "ports": [
+    {
+      "port": 80,
+      "status": "open"
+    },
+    {
+      "port": 443,
+      "status": "open"
+    }
+  ],
+  "technologies": [],
+  "subdomains": [
+    "www.domingosadvocaciabr.com.br",
+    "ftp.domingosadvocaciabr.com.br"
+  ],
+  "directories": [
+    {
+      "path": "admin",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/admin"
+    },
+    {
+      "path": "administrator",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/administrator"
+    },
+    {
+      "path": "login",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/login"
+    },
+    {
+      "path": "wp-admin",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/wp-admin"
+    },
+    {
+      "path": "phpmyadmin",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/phpmyadmin"
+    },
+    {
+      "path": "dashboard",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/dashboard"
+    },
+    {
+      "path": "panel",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/panel"
+    },
+    {
+      "path": "cpanel",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/cpanel"
+    },
+    {
+      "path": "backup",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/backup"
+    },
+    {
+      "path": "old",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/old"
+    },
+    {
+      "path": "test",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/test"
+    },
+    {
+      "path": "dev",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/dev"
+    },
+    {
+      "path": "api",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/api"
+    },
+    {
+      "path": "v1",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/v1"
+    },
+    {
+      "path": "v2",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/v2"
+    },
+    {
+      "path": "swagger",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/swagger"
+    },
+    {
+      "path": "docs",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/docs"
+    },
+    {
+      "path": "config",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/config"
+    },
+    {
+      "path": "uploads",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/uploads"
+    },
+    {
+      "path": ".git",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/.git"
+    },
+    {
+      "path": ".env",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/.env"
+    },
+    {
+      "path": ".htaccess",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/.htaccess"
+    },
+    {
+      "path": "robots.txt",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/robots.txt"
+    },
+    {
+      "path": "sitemap.xml",
+      "status": 403,
+      "url": "https://domingosadvocaciabr.com.br/sitemap.xml"
+    }
+  ]
+}

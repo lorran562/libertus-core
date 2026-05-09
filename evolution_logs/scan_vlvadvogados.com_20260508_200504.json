@@ -1,0 +1,164 @@
+{
+  "target": "https://vlvadvogados.com",
+  "scan_time": "2026-05-08T20:05:01.693312",
+  "vulnerabilities": [
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /config",
+      "url": "https://vlvadvogados.com/config",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.git",
+      "url": "https://vlvadvogados.com/.git",
+      "recommendation": "Block access to sensitive files"
+    },
+    {
+      "severity": "ALTA",
+      "type": "Sensitive File Exposure",
+      "description": "Sensitive directory/file accessible: /.env",
+      "url": "https://vlvadvogados.com/.env",
+      "recommendation": "Block access to sensitive files"
+    }
+  ],
+  "info": [],
+  "ports": [
+    {
+      "port": 80,
+      "status": "open"
+    },
+    {
+      "port": 443,
+      "status": "open"
+    }
+  ],
+  "technologies": [],
+  "subdomains": [
+    "www.vlvadvogados.com"
+  ],
+  "directories": [
+    {
+      "path": "admin",
+      "status": 403,
+      "url": "https://vlvadvogados.com/admin"
+    },
+    {
+      "path": "administrator",
+      "status": 403,
+      "url": "https://vlvadvogados.com/administrator"
+    },
+    {
+      "path": "login",
+      "status": 403,
+      "url": "https://vlvadvogados.com/login"
+    },
+    {
+      "path": "wp-admin",
+      "status": 403,
+      "url": "https://vlvadvogados.com/wp-admin"
+    },
+    {
+      "path": "phpmyadmin",
+      "status": 403,
+      "url": "https://vlvadvogados.com/phpmyadmin"
+    },
+    {
+      "path": "dashboard",
+      "status": 403,
+      "url": "https://vlvadvogados.com/dashboard"
+    },
+    {
+      "path": "panel",
+      "status": 403,
+      "url": "https://vlvadvogados.com/panel"
+    },
+    {
+      "path": "cpanel",
+      "status": 403,
+      "url": "https://vlvadvogados.com/cpanel"
+    },
+    {
+      "path": "backup",
+      "status": 403,
+      "url": "https://vlvadvogados.com/backup"
+    },
+    {
+      "path": "old",
+      "status": 403,
+      "url": "https://vlvadvogados.com/old"
+    },
+    {
+      "path": "test",
+      "status": 403,
+      "url": "https://vlvadvogados.com/test"
+    },
+    {
+      "path": "dev",
+      "status": 403,
+      "url": "https://vlvadvogados.com/dev"
+    },
+    {
+      "path": "api",
+      "status": 403,
+      "url": "https://vlvadvogados.com/api"
+    },
+    {
+      "path": "v1",
+      "status": 403,
+      "url": "https://vlvadvogados.com/v1"
+    },
+    {
+      "path": "v2",
+      "status": 403,
+      "url": "https://vlvadvogados.com/v2"
+    },
+    {
+      "path": "swagger",
+      "status": 403,
+      "url": "https://vlvadvogados.com/swagger"
+    },
+    {
+      "path": "docs",
+      "status": 403,
+      "url": "https://vlvadvogados.com/docs"
+    },
+    {
+      "path": "config",
+      "status": 403,
+      "url": "https://vlvadvogados.com/config"
+    },
+    {
+      "path": "uploads",
+      "status": 403,
+      "url": "https://vlvadvogados.com/uploads"
+    },
+    {
+      "path": ".git",
+      "status": 403,
+      "url": "https://vlvadvogados.com/.git"
+    },
+    {
+      "path": ".env",
+      "status": 403,
+      "url": "https://vlvadvogados.com/.env"
+    },
+    {
+      "path": ".htaccess",
+      "status": 403,
+      "url": "https://vlvadvogados.com/.htaccess"
+    },
+    {
+      "path": "robots.txt",
+      "status": 403,
+      "url": "https://vlvadvogados.com/robots.txt"
+    },
+    {
+      "path": "sitemap.xml",
+      "status": 403,
+      "url": "https://vlvadvogados.com/sitemap.xml"
+    }
+  ]
+}
