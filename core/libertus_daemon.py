@@ -74,6 +74,9 @@ class NucleoCognitivo:
         # v10: Auto-refatoração + Docling
         self.refactor = AutoRefatoracao(self.root)
         self.docling = AbsorcaoDocling(self.root)
+        
+        # v5.0: Security Scanning 24/7
+        self.scan_targets = self._carregar_targets_scan()
 
         # Timestamps dos últimos ciclos
         self.last = {
@@ -84,6 +87,7 @@ class NucleoCognitivo:
             "git_sync":     0,
             "auto_refatoracao": 0,
             "absorcao_docling": 0,
+            "security_scan": 0,
         }
 
         # Estatísticas da sessão do daemon
@@ -95,6 +99,8 @@ class NucleoCognitivo:
             "commits_feitos":        0,
             "bugs_corrigidos":       0,
             "documentos_absorvidos": 0,
+            "scans_realizados":      0,
+            "vulnerabilidades_encontradas": 0,
             "erros":                 0,
         }
 
@@ -148,6 +154,10 @@ class NucleoCognitivo:
                 if agora - self.last["absorcao_docling"] >= CICLO_ABSORCAO_DOCLING:
                     self._tick_absorcao_docling()
                     self.last["absorcao_docling"] = agora
+                
+                if agora - self.last["security_scan"] >= CICLO_SECURITY_SCAN:
+                    self._tick_security_scan()
+                    self.last["security_scan"] = agora
 
                 # Dorme pelo menor intervalo
                 time.sleep(30)
@@ -434,31 +444,56 @@ class NucleoCognitivo:
     
     def _tick_security_scan(self):
         """
-        Executa security scanning nos targets configurados.
+        Executa security scanning profissional nos targets configurados.
+        Usa Libertus Professional Scanner v5.0 com Brain + Crypto + Reverse.
         """
-        self._log("SECURITY_SCAN", "Iniciando ciclo de scanning")
+        self._log("SECURITY_SCAN", "Iniciando ciclo de scanning profissional")
         
         if not self.scan_targets:
             self._log("SECURITY_SCAN", "Nenhum target configurado - pulando")
             return
         
         try:
+            from libertus_professional_scanner import LibertusProfessionalScanner
+            import asyncio
+            from datetime import datetime
+            
             for target_url in self.scan_targets:
                 self._log("SECURITY_SCAN", f"Scanning: {target_url}")
                 
-                # Executa scanner de forma assíncrona
-                scanner = LibertusScanner(target_url)
+                # Executa scanner profissional v5.0
+                scanner = LibertusProfessionalScanner(target_url)
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-                results = loop.run_until_complete(scanner.run_full_scan())
+                report = loop.run_until_complete(scanner.full_scan())
                 loop.close()
+                
+                # Salva relatório
+                report_path = self.root / "reports" / f"scan_{datetime.now():%Y%m%d_%H%M%S}.json"
+                report_path.parent.mkdir(exist_ok=True)
+                report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False))
                 
                 # Atualiza estatísticas
                 self.stats["scans_realizados"] += 1
-                self.stats["vulnerabilidades_encontradas"] += len(results.get("vulnerabilities", []))
+                self.stats["vulnerabilidades_encontradas"] += report["summary"]["total_vulnerabilities"]
+                
+                # Atualiza Supabase
+                try:
+                    self.sb.patch(
+                        "libertus_scan_targets",
+                        f"url=eq.{target_url}",
+                        {
+                            "ultima_scan": datetime.now().isoformat(),
+                            "vulnerabilidades_encontradas": report["summary"]["total_vulnerabilities"],
+                            "severidade_maxima": report["summary"]["risk_level"]
+                        }
+                    )
+                except Exception as e:
+                    self._log("ERRO", f"Falha ao atualizar Supabase: {e}")
                 
                 self._log("SECURITY_SCAN", 
-                          f"Scan completo: {len(results.get('vulnerabilities', []))} vulnerabilidades")
+                          f"✅ Scan completo: {report['summary']['total_vulnerabilities']} vulns, "
+                          f"risk score {report['summary']['risk_score']}/100")
                 
         except Exception as e:
             self._log("ERRO_SECURITY_SCAN", f"{e}")
