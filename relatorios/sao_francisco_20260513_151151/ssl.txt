@@ -1,0 +1,3 @@
+subject=CN = *.saofranciscorondonia.com.br
+issuer=O = Anthropic, CN = sandbox-egress-production TLS Inspection CA
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384

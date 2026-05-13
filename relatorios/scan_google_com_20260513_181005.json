@@ -1,0 +1,33 @@
+{
+  "scanner_version": "LIBERTUS INTEGRATED v7.0",
+  "scan_date": "2026-05-13T18:10:05.616625",
+  "target": "google.com",
+  "reconnaissance": {
+    "subdomains": [],
+    "open_ports": [],
+    "apis": []
+  },
+  "vulnerabilities": [],
+  "analysis": {
+    "crypto": {
+      "module": "ULTRA v2.0",
+      "capabilities": [
+        "8 tipos de hash",
+        "Password strength",
+        "JWT analysis",
+        "Weak cipher detection"
+      ]
+    },
+    "reverse": {
+      "module": "ULTRA v2.0",
+      "capabilities": [
+        "30+ tipos de secrets",
+        "JS deobfuscation",
+        "API extraction",
+        "Vulnerability detection"
+      ]
+    }
+  },
+  "risk_score": 0,
+  "severity": "LOW"
+}

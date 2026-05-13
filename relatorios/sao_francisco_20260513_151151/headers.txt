@@ -1,0 +1,9 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0    21    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/2 403 
+x-deny-reason: host_not_allowed
+content-length: 21
+content-type: text/plain
+date: Wed, 13 May 2026 15:11:51 GMT
+

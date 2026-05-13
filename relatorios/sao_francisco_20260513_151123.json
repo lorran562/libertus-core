@@ -1,0 +1,29 @@
+{
+  "target": "www.saofranciscorondonia.com.br",
+  "scan_date": "2026-05-13T15:11:23.487949",
+  "scanner_version": "LIBERTUS ULTRA v6.0",
+  "modules_used": [
+    "Subdomain Enum",
+    "Port Scanner",
+    "Advanced SQLi",
+    "XSS Hunter",
+    "API Discovery",
+    "SSRF Detector",
+    "Auth Bypass",
+    "GitHub Scanner",
+    "CRYPTO ULTRA v2.0",
+    "REVERSE ULTRA v2.0",
+    "Brain AI"
+  ],
+  "results": {
+    "reconnaissance": {
+      "subdomains": [],
+      "open_ports": [],
+      "apis": []
+    },
+    "vulnerabilities": [],
+    "secrets": [],
+    "risk_score": 0,
+    "severity": "LOW"
+  }
+}
