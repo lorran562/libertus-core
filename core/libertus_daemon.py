@@ -44,6 +44,7 @@ CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
 
 CICLO_AUTO_REFATORACAO = 43200   # 12 horas — auto-correção de bugs
 CICLO_ABSORCAO_DOCLING = 21600   # 6 horas — aprendizado via Docling
+CICLO_SECURITY_SCAN    = 10800   # 3 horas — security scanning automático
 
 HEARTBEAT = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 DAEMON_LOG = LIBERTUS_ROOT / "evolution_logs" / "daemon.log"
