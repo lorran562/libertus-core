@@ -1,0 +1,60 @@
+{
+  "scanner_version": "LIBERTUS v9.0 REAL",
+  "scan_date": "2026-05-13T20:19:28.755998",
+  "target": "example.com",
+  "reconnaissance": {
+    "subdomains": [],
+    "open_ports": [
+      {
+        "port": 80,
+        "state": "open"
+      },
+      {
+        "port": 443,
+        "state": "open"
+      }
+    ],
+    "apis": [],
+    "technologies": []
+  },
+  "vulnerabilities": [
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "X-Frame-Options",
+      "description": "Clickjacking protection",
+      "validation": "CONFIRMED"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "X-Content-Type-Options",
+      "description": "MIME-sniffing protection",
+      "validation": "CONFIRMED"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "Strict-Transport-Security",
+      "description": "HTTPS enforcement",
+      "validation": "CONFIRMED"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "Content-Security-Policy",
+      "description": "XSS/injection protection",
+      "validation": "CONFIRMED"
+    }
+  ],
+  "crypto_analysis": {
+    "hashes_found": {},
+    "module": "ULTRA v2.0 REAL"
+  },
+  "reverse_analysis": {
+    "secrets_found": 0,
+    "module": "ULTRA v2.0 REAL"
+  },
+  "risk_score": 8,
+  "severity": "MEDIUM"
+}
