@@ -115,3 +115,9 @@ LIBERTUS Daemon — iniciando em /root/LIBERTUS
 [2026-05-07 16:02:00] ABSORCAO_DOCLING: Iniciando absorção de conhecimento
 [2026-05-07 16:02:00] SECURITY_SCAN: Iniciando ciclo de scanning
 [2026-05-07 16:02:00] SECURITY_SCAN: Nenhum target configurado - pulando
+[2026-05-13 14:12:49] ERRO: Falha ao carregar targets: No module named 'realtime'
+[2026-05-13 14:12:49] INICIO: Núcleo cognitivo iniciado
+[2026-05-13 14:12:49] LOOP: Entrando em loop cognitivo contínuo
+[2026-05-13 14:12:49] CONSOLIDACAO: Iniciando consolidação de memória
+[2026-05-13 14:12:50] EVOLUCAO: Iniciando ciclo autônomo
+[2026-05-13 14:12:50] EVOLUCAO: Ciclo: 4 oportunidades detectadas
