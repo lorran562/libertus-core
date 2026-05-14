@@ -1,0 +1,17 @@
+[Unit]
+Description=LIBERTUS v10.0 - Agente Autônomo de Cybersecurity
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/home/%i/LIBERTUS
+Environment="GROQ_API_KEY=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"
+ExecStart=/usr/bin/python3 /home/%i/LIBERTUS/core/libertus_daemon_v2_real.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/%i/LIBERTUS/logs/daemon.log
+StandardError=append:/home/%i/LIBERTUS/logs/daemon.log
+
+[Install]
+WantedBy=default.target

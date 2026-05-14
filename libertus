@@ -1,0 +1,64 @@
+#!/bin/bash
+# LIBERTUS Control Script
+
+case "$1" in
+    start)
+        echo "🚀 Iniciando LIBERTUS daemon..."
+        systemctl --user start libertus.service
+        echo "✅ LIBERTUS iniciado!"
+        ;;
+    stop)
+        echo "🛑 Parando LIBERTUS daemon..."
+        systemctl --user stop libertus.service
+        echo "✅ LIBERTUS parado!"
+        ;;
+    restart)
+        echo "🔄 Reiniciando LIBERTUS daemon..."
+        systemctl --user restart libertus.service
+        echo "✅ LIBERTUS reiniciado!"
+        ;;
+    status)
+        systemctl --user status libertus.service
+        ;;
+    enable)
+        echo "⚙️ Habilitando LIBERTUS no boot..."
+        systemctl --user enable libertus.service
+        echo "✅ LIBERTUS habilitado!"
+        ;;
+    disable)
+        echo "⚙️ Desabilitando LIBERTUS no boot..."
+        systemctl --user disable libertus.service
+        echo "✅ LIBERTUS desabilitado!"
+        ;;
+    logs)
+        tail -f ~/LIBERTUS/logs/daemon.log
+        ;;
+    scan)
+        if [ -z "$2" ]; then
+            echo "❌ Uso: libertus scan <target>"
+            exit 1
+        fi
+        cd ~/LIBERTUS
+        python3 core/libertus_scanner_v10_complete.py "$2"
+        ;;
+    agent)
+        cd ~/LIBERTUS
+        python3 core/libertus_agent_v10.py
+        ;;
+    *)
+        echo "LIBERTUS v10.0 - Control Script"
+        echo ""
+        echo "Uso: libertus <comando>"
+        echo ""
+        echo "Comandos:"
+        echo "  start    - Iniciar daemon"
+        echo "  stop     - Parar daemon"
+        echo "  restart  - Reiniciar daemon"
+        echo "  status   - Ver status"
+        echo "  enable   - Habilitar no boot"
+        echo "  disable  - Desabilitar no boot"
+        echo "  logs     - Ver logs em tempo real"
+        echo "  scan     - Escanear alvo"
+        echo "  agent    - Iniciar agente conversacional"
+        ;;
+esac

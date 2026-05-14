@@ -24,6 +24,12 @@ try:
 except ImportError:
     HAS_CLAUDE = False
 
+try:
+    from learning_engine import LearningEngine
+    HAS_LEARNING = True
+except ImportError:
+    HAS_LEARNING = False
+
 
 @dataclass
 class Message:
@@ -52,6 +58,12 @@ class LIBERTUSAgent:
         
         # Inicializar LLM
         self.llm_client = self._init_llm()
+        
+        # Inicializar Learning Engine
+        if HAS_LEARNING and self.llm_client:
+            self.learning_engine = LearningEngine(groq_client=self.llm_client)
+        else:
+            self.learning_engine = None
         
         # System prompt
         self.system_prompt = """Você é o LIBERTUS, um agente de cybersecurity especializado.
@@ -231,26 +243,64 @@ Seja direto e técnico."""
         return summary
     
     async def _handle_learn(self, message: str) -> str:
-        """Aprende sobre um tópico usando Groq LLM"""
+        """Aprende sobre um tópico usando Learning Engine (Docling + ArXiv + LLM)"""
         
         # Extrair tópico (limpar comandos do sistema)
         topic = message.lower()
         topic = topic.replace("aprender", "").replace("learn", "").strip()
         topic = topic.replace("python3", "").replace("core/libertus_agent_v10.py", "").strip()
-        topic = topic.replace("sobre", "", 1).strip()  # Remove apenas o primeiro "sobre"
+        topic = topic.replace("sobre", "", 1).strip()
         
         if not topic or len(topic) < 3:
             return "❌ Especifique o que quer que eu aprenda. Exemplo: aprender sobre SQLi em APIs GraphQL"
         
-        print(f"\n🧠 Aprendendo sobre: {topic}")
-        print("📚 Buscando conhecimento via LLM...")
+        print(f"\n🧠 Iniciando aprendizado sobre: {topic}")
         
-        # Verificar se LLM está configurado
-        if not self.llm_client:
-            return "⚠️ LLM não configurado. Configure GROQ_API_KEY"
+        # Usar Learning Engine se disponível
+        if self.learning_engine:
+            try:
+                # Buscar papers no ArXiv
+                result = await self.learning_engine.learn_from_arxiv(topic, max_papers=3)
+                
+                if result.get("success"):
+                    papers_count = result.get("papers_count", 0)
+                    summary = result.get("summary", "")
+                    filepath = result.get("filepath", "")
+                    
+                    # Salvar também na knowledge base local do agente
+                    self.knowledge_base[topic] = {
+                        "timestamp": datetime.now().isoformat(),
+                        "content": summary,
+                        "source": "learning_engine_arxiv",
+                        "papers_count": papers_count
+                    }
+                    
+                    return f"""✅ Conhecimento adquirido sobre: {topic}
+
+📚 Papers analisados: {papers_count}
+💾 Resumo salvo em: {filepath}
+
+📖 RESUMO TÉCNICO:
+{summary[:800]}...
+
+💡 Esse conhecimento será aplicado nos próximos scans!"""
+                
+                else:
+                    error = result.get("error", "Erro desconhecido")
+                    return f"⚠️ Erro no Learning Engine: {error}"
+            
+            except Exception as e:
+                import traceback
+                error_detail = traceback.format_exc()
+                return f"""❌ Erro ao aprender: {str(e)}
+
+Debug: {error_detail[:300]}"""
         
-        # Usar Groq para aprender
-        prompt = f"""Pesquise e resuma conhecimento técnico sobre: {topic}
+        # Fallback: LLM direto (se Learning Engine não disponível)
+        elif self.llm_client:
+            print("⚠️ Learning Engine não disponível, usando LLM direto...")
+            
+            prompt = f"""Pesquise e resuma conhecimento técnico sobre: {topic}
 
 Foco em cybersecurity:
 1. Vulnerabilidades e vetores de ataque
@@ -258,57 +308,45 @@ Foco em cybersecurity:
 3. Payloads específicos
 4. Contramedidas
 
-Formate como JSON:
-{{
-  "summary": "...",
-  "vulnerabilities": [...],
-  "payloads": [...],
-  "mitigations": [...]
-}}"""
+Formate como resumo técnico."""
+            
+            try:
+                response = await self.llm_client.chat.completions.create(
+                    model=self.config["model"],
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.3,
+                    max_tokens=1500
+                )
+                
+                knowledge = response.choices[0].message.content
+                
+                # Salvar localmente
+                home_dir = os.path.expanduser("~/LIBERTUS")
+                kb_dir = os.path.join(home_dir, "knowledge_base")
+                os.makedirs(kb_dir, exist_ok=True)
+                
+                filename = topic.replace(" ", "_").replace("/", "_").lower()[:50] + "_llm.json"
+                filepath = os.path.join(kb_dir, filename)
+                
+                with open(filepath, "w") as f:
+                    json.dump({
+                        "topic": topic,
+                        "timestamp": datetime.now().isoformat(),
+                        "content": knowledge,
+                        "source": "groq_llm_direct"
+                    }, f, indent=2)
+                
+                return f"""✅ Conhecimento adquirido sobre: {topic}
+
+💾 Salvo em: ~/LIBERTUS/knowledge_base/{filename}
+
+{knowledge[:600]}..."""
+            
+            except Exception as e:
+                return f"❌ Erro ao aprender: {str(e)}"
         
-        try:
-            response = await self.llm_client.chat.completions.create(
-                model=self.config["model"],
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.3,
-                max_tokens=2000
-            )
-            
-            knowledge = response.choices[0].message.content
-            
-            # Salvar na knowledge base
-            self.knowledge_base[topic] = {
-                "timestamp": datetime.now().isoformat(),
-                "content": knowledge,
-                "source": "groq_llm"
-            }
-            
-            # Criar diretório knowledge_base no home do LIBERTUS
-            home_dir = os.path.expanduser("~/LIBERTUS")
-            kb_dir = os.path.join(home_dir, "knowledge_base")
-            os.makedirs(kb_dir, exist_ok=True)
-            
-            # Limpar filename
-            filename = topic.replace(" ", "_").replace("/", "_").lower()[:50] + ".json"
-            filepath = os.path.join(kb_dir, filename)
-            
-            with open(filepath, "w") as f:
-                json.dump(self.knowledge_base[topic], f, indent=2)
-            
-            return f"""✅ Conhecimento adquirido sobre: {topic}
-
-📚 Resumo salvo em: ~/LIBERTUS/knowledge_base/{filename}
-
-💡 Vou aplicar isso nos próximos scans!
-
-{knowledge[:500]}..."""
-        
-        except Exception as e:
-            import traceback
-            error_detail = traceback.format_exc()
-            return f"""❌ Erro ao aprender: {str(e)}
-
-Debug: {error_detail[:200]}"""
+        else:
+            return "⚠️ LLM não configurado. Configure GROQ_API_KEY"
     
     async def _handle_search_cve(self, message: str) -> str:
         """Busca CVEs"""

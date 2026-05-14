@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-LIBERTUS SCANNER v9.0 - 100% FUNCIONAL REAL
-Sem placeholders, sem promessas. Apenas execução.
+LIBERTUS SCANNER v10.0 - VALIDAÇÃO COMPLETA INTEGRADA
+Validation Engine + Crypto + Reverse + Learning
 """
 
 import asyncio
@@ -13,19 +13,35 @@ from typing import Dict, List, Optional
 from urllib.parse import urlparse, urljoin
 
 # Imports de módulos ULTRA (sync)
-from libertus_crypto_ultra import LibertusCryptoUltra
-from libertus_reverse_ultra import LibertusReverseUltra
+try:
+    from libertus_crypto_ultra import LibertusCryptoUltra
+    HAS_CRYPTO = True
+except:
+    HAS_CRYPTO = False
+
+try:
+    from libertus_reverse_ultra import LibertusReverseUltra
+    HAS_REVERSE = True
+except:
+    HAS_REVERSE = False
+
+# Validation Engine
+try:
+    from validation_engine_v1 import SQLiEngine, XSSEngine
+    HAS_VALIDATION = True
+except:
+    HAS_VALIDATION = False
 
 
-class LibertusScannerV9:
-    """Scanner 100% funcional com validação real"""
+class LibertusScannerV10:
+    """Scanner 100% funcional com validação profissional"""
     
     def __init__(self, target: str, timeout: int = 30):
         self.target = target.replace('https://', '').replace('http://', '').replace('www.', '')
         self.base_url = f"https://{self.target}"
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.results = {
-            'scanner_version': 'LIBERTUS v9.0 REAL',
+            'scanner_version': 'LIBERTUS v10.0 COMPLETE',
             'scan_date': datetime.now().isoformat(),
             'target': self.target,
             'reconnaissance': {
@@ -41,9 +57,11 @@ class LibertusScannerV9:
             'severity': 'INFO'
         }
         
-        # Módulos ULTRA
-        self.crypto_ultra = LibertusCryptoUltra()
-        self.reverse_ultra = LibertusReverseUltra()
+        # Módulos profissionais
+        self.crypto_ultra = LibertusCryptoUltra() if HAS_CRYPTO else None
+        self.reverse_ultra = LibertusReverseUltra() if HAS_REVERSE else None
+        self.sqli_engine = SQLiEngine() if HAS_VALIDATION else None
+        self.xss_engine = XSSEngine() if HAS_VALIDATION else None
     
     async def scan_complete(self) -> Dict:
         """Scan completo integrado"""
