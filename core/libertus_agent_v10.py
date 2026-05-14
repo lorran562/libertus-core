@@ -30,6 +30,12 @@ try:
 except ImportError:
     HAS_LEARNING = False
 
+try:
+    from objetivo_system import ObjetivoSystem
+    HAS_OBJETIVOS = True
+except ImportError:
+    HAS_OBJETIVOS = False
+
 
 @dataclass
 class Message:
@@ -64,6 +70,12 @@ class LIBERTUSAgent:
             self.learning_engine = LearningEngine(groq_client=self.llm_client)
         else:
             self.learning_engine = None
+        
+        # Inicializar Sistema de Objetivos
+        if HAS_OBJETIVOS:
+            self.objetivo_system = ObjetivoSystem()
+        else:
+            self.objetivo_system = None
         
         # System prompt
         self.system_prompt = """Você é o LIBERTUS, um agente de cybersecurity especializado.
@@ -164,6 +176,12 @@ Seja direto e técnico."""
         elif intent == "status":
             response = self._handle_status()
         
+        elif intent == "objetivo":
+            response = self._handle_objetivo(user_message)
+        
+        elif intent == "progresso":
+            response = self._handle_progresso()
+        
         else:
             # Conversação geral com LLM
             response = await self._llm_response(user_message)
@@ -202,6 +220,13 @@ Seja direto e técnico."""
         
         if "status" in message_lower:
             return "status"
+        
+        # Comandos de objetivo
+        if any(word in message_lower for word in ["objetivo", "goal", "meta"]):
+            return "objetivo"
+        
+        if "progresso" in message_lower:
+            return "progresso"
         
         return "general"
     
@@ -458,3 +483,78 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+    
+    def _handle_objetivo(self, message: str) -> str:
+        """Define ou exibe objetivo"""
+        
+        if not self.objetivo_system:
+            return "⚠️ Sistema de objetivos não disponível"
+        
+        message_lower = message.lower()
+        
+        # Listar objetivos predefinidos
+        if "listar" in message_lower or "list" in message_lower:
+            from objetivo_system import OBJETIVOS_PREDEFINIDOS
+            
+            resultado = "🎯 OBJETIVOS DISPONÍVEIS:\n\n"
+            
+            for key, obj in OBJETIVOS_PREDEFINIDOS.items():
+                resultado += f"📌 {key}\n"
+                resultado += f"   {obj['titulo']}\n"
+                resultado += f"   {obj['descricao']}\n\n"
+            
+            resultado += "Para definir: objetivo <nome_objetivo>"
+            
+            return resultado
+        
+        # Definir objetivo predefinido
+        from objetivo_system import OBJETIVOS_PREDEFINIDOS
+        
+        for key in OBJETIVOS_PREDEFINIDOS.keys():
+            if key in message_lower:
+                obj = OBJETIVOS_PREDEFINIDOS[key]
+                
+                self.objetivo_system.definir_objetivo(
+                    titulo=obj["titulo"],
+                    descricao=obj["descricao"],
+                    metricas=obj["metricas"],
+                    topicos_aprendizado=obj["topicos_aprendizado"]
+                )
+                
+                proximo = self.objetivo_system.get_proximo_topico_aprendizado()
+                
+                return f"""✅ OBJETIVO DEFINIDO!
+
+🎯 {obj['titulo']}
+
+📝 {obj['descricao']}
+
+📊 MÉTRICAS:
+{self._format_metricas(obj['metricas'])}
+
+🎓 PRÓXIMO TÓPICO DE APRENDIZADO:
+{proximo}
+
+💡 LIBERTUS começará a aprender e evoluir automaticamente no rumo deste objetivo!
+
+Digite 'progresso' para ver o andamento."""
+        
+        return "ℹ️ Use 'objetivo listar' para ver os objetivos disponíveis"
+    
+    def _handle_progresso(self) -> str:
+        """Exibe progresso do objetivo"""
+        
+        if not self.objetivo_system:
+            return "⚠️ Sistema de objetivos não disponível"
+        
+        return self.objetivo_system.gerar_relatorio()
+    
+    def _format_metricas(self, metricas: list) -> str:
+        """Formata métricas para exibição"""
+        
+        resultado = ""
+        for m in metricas:
+            resultado += f"• {m['nome']}: Meta {m['meta']}\n"
+        
+        return resultado
