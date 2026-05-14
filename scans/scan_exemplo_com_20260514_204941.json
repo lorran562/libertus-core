@@ -1,0 +1,41 @@
+{
+  "target": "exemplo.com",
+  "scan_date": "2026-05-14T20:49:29.289290",
+  "vulnerabilities": [
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "Strict-Transport-Security",
+      "description": "HSTS n\u00e3o configurado",
+      "validation": "CONFIRMED"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "X-Frame-Options",
+      "description": "Clickjacking poss\u00edvel",
+      "validation": "CONFIRMED"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "X-Content-Type-Options",
+      "description": "MIME sniffing poss\u00edvel",
+      "validation": "CONFIRMED"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "MEDIUM",
+      "header": "Content-Security-Policy",
+      "description": "CSP n\u00e3o configurado",
+      "validation": "CONFIRMED"
+    }
+  ],
+  "risk_score": 8,
+  "severity": "LOW",
+  "open_ports": [
+    80,
+    443
+  ],
+  "technologies": []
+}
