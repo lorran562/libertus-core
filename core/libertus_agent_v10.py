@@ -84,7 +84,7 @@ Seja direto e técnico."""
             "llm_provider": "groq",  # ou "claude"
             "groq_api_key": os.getenv("GROQ_API_KEY", ""),
             "claude_api_key": os.getenv("ANTHROPIC_API_KEY", ""),
-            "model": "llama-3.1-70b-versatile",  # ou "claude-sonnet-4"
+            "model": "llama-3.3-70b-versatile",  # ou "claude-sonnet-4"
             "knowledge_base_path": "./knowledge_base",
             "max_history": 50
         }
@@ -231,7 +231,7 @@ Seja direto e técnico."""
         return summary
     
     async def _handle_learn(self, message: str) -> str:
-        """Aprende sobre um tópico"""
+        """Aprende sobre um tópico usando Docling + LLM"""
         
         # Extrair tópico
         topic = message.replace("aprender", "").replace("learn", "").strip()
@@ -239,26 +239,72 @@ Seja direto e técnico."""
         if not topic:
             return "❌ Especifique o que quer que eu aprenda. Exemplo: aprender sobre SQLi em APIs GraphQL"
         
-        # Simular busca e aprendizado
-        # TODO: Integrar com Docling para processar PDFs/papers
+        print(f"\n🧠 Aprendendo sobre: {topic}")
+        print("📚 Buscando documentos relevantes...")
         
-        learning_summary = f"""🧠 Aprendendo sobre: {topic}
+        # TODO: Integrar com ArXiv API para buscar papers
+        # TODO: Integrar com Docling para processar PDFs
+        
+        # Por enquanto, usar LLM para resumir conhecimento
+        if self.llm_client and self.config["orchestrator_api_key"]:
+            prompt = f"""Pesquise e resuma conhecimento técnico sobre: {topic}
 
-📚 Fontes consultadas:
-• OWASP Top 10
-• CVE Database
-• Papers acadêmicos
+Foco em:
+1. Vulnerabilidades e vetores de ataque
+2. Técnicas de exploração
+3. Payloads específicos
+4. Contramedidas
 
-✅ Conhecimento adicionado à base.
-Vou aplicar isso nos próximos scans!"""
+Formate como JSON:
+{{
+  "summary": "...",
+  "vulnerabilities": [...],
+  "payloads": [...],
+  "mitigations": [...]
+}}"""
+            
+            try:
+                response = await self.llm_client.chat.completions.create(
+                    model=self.config["model"],
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.3,
+                    max_tokens=2000
+                )
+                
+                knowledge = response.choices[0].message.content
+                
+                # Salvar na knowledge base
+                self.knowledge_base[topic] = {
+                    "timestamp": datetime.now().isoformat(),
+                    "content": knowledge,
+                    "source": "groq_llm"
+                }
+                
+                # Salvar em arquivo
+                kb_dir = os.path.join(os.path.dirname(__file__), "..", "knowledge_base")
+                os.makedirs(kb_dir, exist_ok=True)
+                
+                filename = topic.replace(" ", "_").lower()[:50] + ".json"
+                filepath = os.path.join(kb_dir, filename)
+                
+                with open(filepath, "w") as f:
+                    json.dump(self.knowledge_base[topic], f, indent=2)
+                
+                return f"""✅ Conhecimento adquirido sobre: {topic}
+
+📚 Resumo salvo em: knowledge_base/{filename}
+
+💡 Vou aplicar isso nos próximos scans!
+
+{knowledge[:300]}..."""
+            
+            except Exception as e:
+                return f"⚠️ Erro ao aprender: {str(e)}"
         
-        # Salvar na knowledge base
-        self.knowledge_base[topic] = {
-            "timestamp": datetime.now().isoformat(),
-            "content": learning_summary
-        }
-        
-        return learning_summary
+        else:
+            return """⚠️ LLM não configurado para aprendizado autônomo.
+
+Configure GROQ_API_KEY para habilitar."""
     
     async def _handle_search_cve(self, message: str) -> str:
         """Busca CVEs"""
