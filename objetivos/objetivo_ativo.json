@@ -1,0 +1,107 @@
+{
+  "id": "20260514_155359",
+  "titulo": "Pentester Elite - Acima do Profissional",
+  "descricao": "Dom\u00ednio absoluto em Pentest, Engenharia Reversa, Criptografia e Cybersecurity. Expertise em n\u00edvel mundial.",
+  "data_inicio": "2026-05-14T15:53:59.004018",
+  "metricas": [
+    {
+      "nome": "papers_lidos",
+      "meta": 200
+    },
+    {
+      "nome": "vulnerabilidades_descobertas",
+      "meta": 500
+    },
+    {
+      "nome": "scans_realizados",
+      "meta": 1000
+    },
+    {
+      "nome": "exploits_desenvolvidos",
+      "meta": 50
+    },
+    {
+      "nome": "binarios_reversados",
+      "meta": 100
+    },
+    {
+      "nome": "crypto_quebrados",
+      "meta": 30
+    }
+  ],
+  "topicos_aprendizado": [
+    "Advanced SQL Injection techniques",
+    "XSS bypass WAF modern techniques",
+    "Binary exploitation and buffer overflows",
+    "Return-oriented programming (ROP)",
+    "Heap exploitation techniques",
+    "Format string vulnerabilities",
+    "Race conditions and TOCTOU",
+    "Server-Side Template Injection (SSTI)",
+    "Server-Side Request Forgery (SSRF) advanced",
+    "XML External Entity (XXE) exploitation",
+    "Insecure deserialization attacks",
+    "Authentication and authorization bypass",
+    "JWT vulnerabilities and exploitation",
+    "OAuth 2.0 security flaws",
+    "SAML attacks and manipulation",
+    "GraphQL security vulnerabilities",
+    "WebSocket security testing",
+    "API security testing methodologies",
+    "Mobile application penetration testing",
+    "iOS security assessment",
+    "Android reverse engineering",
+    "Windows internals and exploitation",
+    "Linux privilege escalation techniques",
+    "Active Directory security assessment",
+    "Kerberos attacks (Golden/Silver tickets)",
+    "NTLM relay attacks",
+    "PowerShell obfuscation and evasion",
+    "Antivirus and EDR bypass techniques",
+    "Red team infrastructure setup",
+    "Command and Control (C2) frameworks",
+    "Exploit development fundamentals",
+    "Shellcode development",
+    "Assembly language (x86/x64)",
+    "Reverse engineering malware",
+    "IDA Pro advanced techniques",
+    "Ghidra scripting and automation",
+    "Frida dynamic instrumentation",
+    "PIN and DynamoRIO frameworks",
+    "Symbolic execution with angr",
+    "Fuzzing techniques and tools",
+    "AFL and libFuzzer usage",
+    "Cryptographic vulnerabilities",
+    "RSA attacks (small exponents, common modulus)",
+    "AES implementation flaws",
+    "Hash collision attacks",
+    "Side-channel attacks (timing, power)",
+    "Padding oracle attacks",
+    "CBC bit-flipping attacks",
+    "TLS/SSL vulnerabilities",
+    "Certificate pinning bypass",
+    "Network protocol analysis",
+    "802.11 wireless security",
+    "Bluetooth security assessment",
+    "IoT device penetration testing",
+    "SCADA and ICS security",
+    "Cloud security assessment (AWS/Azure/GCP)",
+    "Container security (Docker/Kubernetes)",
+    "Zero-knowledge proofs understanding",
+    "Blockchain smart contract auditing",
+    "Solidity vulnerability patterns",
+    "Machine learning model security",
+    "Adversarial machine learning",
+    "Deep learning model extraction",
+    "OSINT advanced techniques",
+    "Social engineering methodologies",
+    "Physical security assessment"
+  ],
+  "progresso": {
+    "papers_lidos": 0,
+    "vulnerabilidades_descobertas": 0,
+    "scans_realizados": 0,
+    "conhecimento_adquirido": []
+  },
+  "status": "ativo"
+}

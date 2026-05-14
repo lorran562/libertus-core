@@ -305,3 +305,14 @@ if __name__ == "__main__":
     # Próximo tópico
     proximo = sistema.get_proximo_topico_aprendizado()
     print(f"\n🎓 Próximo tópico: {proximo}")
+
+
+# Carregar objetivo Elite Pentester
+def carregar_objetivo_elite():
+    """Carrega objetivo Elite Pentester"""
+    import json
+    
+    with open(os.path.join(os.path.dirname(__file__), "objetivo_elite_pentester.json"), "r") as f:
+        return json.load(f)
+
+OBJETIVO_ELITE_PENTESTER = carregar_objetivo_elite()
