@@ -233,10 +233,13 @@ Seja direto e técnico."""
     async def _handle_learn(self, message: str) -> str:
         """Aprende sobre um tópico usando Groq LLM"""
         
-        # Extrair tópico
-        topic = message.replace("aprender", "").replace("learn", "").strip()
+        # Extrair tópico (limpar comandos do sistema)
+        topic = message.lower()
+        topic = topic.replace("aprender", "").replace("learn", "").strip()
+        topic = topic.replace("python3", "").replace("core/libertus_agent_v10.py", "").strip()
+        topic = topic.replace("sobre", "", 1).strip()  # Remove apenas o primeiro "sobre"
         
-        if not topic:
+        if not topic or len(topic) < 3:
             return "❌ Especifique o que quer que eu aprenda. Exemplo: aprender sobre SQLi em APIs GraphQL"
         
         print(f"\n🧠 Aprendendo sobre: {topic}")
@@ -280,11 +283,13 @@ Formate como JSON:
                 "source": "groq_llm"
             }
             
-            # Salvar em arquivo
-            kb_dir = os.path.join(os.path.dirname(__file__), "..", "knowledge_base")
+            # Criar diretório knowledge_base no home do LIBERTUS
+            home_dir = os.path.expanduser("~/LIBERTUS")
+            kb_dir = os.path.join(home_dir, "knowledge_base")
             os.makedirs(kb_dir, exist_ok=True)
             
-            filename = topic.replace(" ", "_").lower()[:50] + ".json"
+            # Limpar filename
+            filename = topic.replace(" ", "_").replace("/", "_").lower()[:50] + ".json"
             filepath = os.path.join(kb_dir, filename)
             
             with open(filepath, "w") as f:
@@ -292,14 +297,18 @@ Formate como JSON:
             
             return f"""✅ Conhecimento adquirido sobre: {topic}
 
-📚 Resumo salvo em: knowledge_base/{filename}
+📚 Resumo salvo em: ~/LIBERTUS/knowledge_base/{filename}
 
 💡 Vou aplicar isso nos próximos scans!
 
 {knowledge[:500]}..."""
         
         except Exception as e:
-            return f"❌ Erro ao aprender: {str(e)}"
+            import traceback
+            error_detail = traceback.format_exc()
+            return f"""❌ Erro ao aprender: {str(e)}
+
+Debug: {error_detail[:200]}"""
     
     async def _handle_search_cve(self, message: str) -> str:
         """Busca CVEs"""
