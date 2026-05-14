@@ -487,3 +487,18 @@ Qual você prefere?"
 **FIM DO CORE DE MEMÓRIA**
 
 *Atualizado: 13/05/2026 23:35 UTC*
+
+---
+
+## 🔑 **GROQ API KEY ATUALIZADA**
+
+**Data:** 14/05/2026 01:47 UTC  
+**Key:** `gsk_BjVZprLNSvNgBIBdntODWGdyb3FY...` (ativa)
+
+**Configuração:**
+```bash
+export GROQ_API_KEY="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"
+```
+
+**Status:** ✅ Funcionando
+
