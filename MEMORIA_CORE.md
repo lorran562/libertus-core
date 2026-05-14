@@ -502,3 +502,41 @@ export GROQ_API_KEY="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"
 
 **Status:** ✅ Funcionando
 
+
+---
+
+## 🔑 **CONFIGURAÇÃO FINAL - 14/05/2026**
+
+**GitHub Token:** Configurado ✅  
+**Repo:** Privado ✅  
+**Groq API Key:** `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`
+
+### **Comandos para Ubuntu:**
+
+```bash
+# 1. Exportar Groq API
+export GROQ_API_KEY="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"
+
+# 2. Adicionar ao bashrc (permanente)
+echo 'export GROQ_API_KEY="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"' >> ~/.bashrc
+
+# 3. Criar .env local
+cd ~/LIBERTUS
+echo 'GROQ_API_KEY=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' > .env
+
+# 4. Testar agente v10.0
+cd ~/LIBERTUS
+source .env
+python3 core/libertus_agent_v10.py
+```
+
+### **Status Final:**
+- ✅ LIBERTUS v10.0 instalado
+- ✅ Repo privado configurado
+- ✅ Groq API key ativa
+- ✅ Multi-Agent Orchestra pronto
+- ✅ Rede funcionando
+
+**Sistema:** ~88% funcional  
+**Pronto para:** Evolução autônoma
+
