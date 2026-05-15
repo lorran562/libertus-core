@@ -12,7 +12,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path.home() / "LIBERTUS" / "core"))
 
 from target_manager import TargetManager
-from ai_router import AIRouter
+from ai_router_simple import AIRouter
 from logic_engine import TaskType
 
 # Importar daemon original (mantém funcionando)
