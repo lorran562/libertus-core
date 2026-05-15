@@ -17,6 +17,8 @@ class LogicEngine:
             return self.calculate_risk(context)
         elif task_type == TaskType.DECISION_MAKING:
             return self.make_decision(context)
+        elif task_type == TaskType.VULNERABILITY_ANALYSIS:
+            return self.analyze_vulnerabilities_logic(context)
         else:
             raise ValueError(f"Task {task_type} não suportada")
     
@@ -56,6 +58,51 @@ class LogicEngine:
                 for sev in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
             }
         }
+    
+    def analyze_vulnerabilities_logic(self, context: Dict) -> str:
+        """
+        Análise de vulnerabilidades usando LÓGICA PURA (fallback final).
+        Usado quando RAG e APIs falham.
+        """
+        vulns = context.get('vulnerabilities', [])
+        
+        if not vulns:
+            return "Nenhuma vulnerabilidade detectada no scan."
+        
+        # Análise baseada em regras
+        analysis = []
+        analysis.append(f"ANÁLISE DE VULNERABILIDADES (Modo Logic)")
+        analysis.append(f"\nTotal: {len(vulns)} vulnerabilidade(s)\n")
+        
+        # Agrupar por severidade
+        by_severity = {}
+        for v in vulns:
+            sev = v.get('severity', 'LOW')
+            by_severity.setdefault(sev, []).append(v)
+        
+        # Relatório por severidade
+        for sev in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']:
+            if sev in by_severity:
+                analysis.append(f"\n{sev} ({len(by_severity[sev])}x):")
+                for v in by_severity[sev]:
+                    vuln_type = v.get('type', 'Unknown')
+                    desc = v.get('description', 'Sem descrição')
+                    analysis.append(f"  • {vuln_type}: {desc}")
+        
+        # Recomendações genéricas baseadas em tipo
+        analysis.append("\nRECOMENDAÇÕES:")
+        vuln_types = set(v.get('type', '').lower() for v in vulns)
+        
+        if 'sql' in str(vuln_types):
+            analysis.append("  • SQL Injection: Use prepared statements e parametrização")
+        if 'xss' in str(vuln_types):
+            analysis.append("  • XSS: Sanitize input e escape output")
+        if 'header' in str(vuln_types) or 'hsts' in str(vuln_types):
+            analysis.append("  • Security Headers: Configure headers HTTP de segurança")
+        
+        analysis.append("\n⚠️ Esta é uma análise básica. Para análise detalhada, configure RAG ou API.")
+        
+        return "\n".join(analysis)
     
     def make_decision(self, context: Dict) -> str:
         """Decisão baseada em regras - qual target next?"""
