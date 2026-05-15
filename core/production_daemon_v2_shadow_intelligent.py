@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path.home() / "LIBERTUS" / "core"))
 
 from production_daemon_v2_shadow import ProductionDaemonV2Shadow
-from shadow_analyzer import ShadowAnalyzer
+from shadow_analyzer_simple import ShadowAnalyzer
 
 class ProductionDaemonV2Intelligent(ProductionDaemonV2Shadow):
     """
