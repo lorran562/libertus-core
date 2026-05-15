@@ -29,8 +29,9 @@ class ProductionDaemonV2Intelligent(ProductionDaemonV2Shadow):
         self._log_shadow(f"=== SCAN INTELIGENTE: {target_url} ===")
         
         # Scan normal (produção)
-        from libertus_scanner_final import scan_complete
-        scan_result = await scan_complete(target_url)
+        from libertus_scanner_final import LibertusScannerFinal
+        scanner = LibertusScannerFinal(target_url)
+        scan_result = await scanner.scan_complete()
         
         prod_risk = scan_result.get('risk_score', 0)
         vulnerabilities = scan_result.get('vulnerabilities', [])
