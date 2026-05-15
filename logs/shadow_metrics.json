@@ -1,0 +1,162 @@
+{
+  "total_comparisons": 10,
+  "router_better": 5,
+  "prod_better": 0,
+  "divergence_high": 4,
+  "divergence_critical": 1,
+  "router_consistent": true,
+  "router_avg_risk": 41.5,
+  "prod_avg_risk": 23.3,
+  "comparisons": [
+    {
+      "timestamp": "2026-05-15T04:32:13.871799",
+      "target": "test1.com",
+      "prod_risk": 8,
+      "router_risk": 40,
+      "diff": 32,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 0,
+        "medium": 4,
+        "low": 0,
+        "total": 4
+      },
+      "decision": "router"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.872111",
+      "target": "test2.com",
+      "prod_risk": 10,
+      "router_risk": 35,
+      "diff": 25,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 0,
+        "medium": 3,
+        "low": 1,
+        "total": 4
+      },
+      "decision": "router"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.872286",
+      "target": "test3.com",
+      "prod_risk": 15,
+      "router_risk": 20,
+      "diff": 5,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 0,
+        "medium": 2,
+        "low": 0,
+        "total": 2
+      },
+      "decision": "router"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.872764",
+      "target": "test4.com",
+      "prod_risk": 50,
+      "router_risk": 45,
+      "diff": 5,
+      "vulnerabilities": {
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "total": 1
+      },
+      "decision": "tie"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.872984",
+      "target": "test5.com",
+      "prod_risk": 20,
+      "router_risk": 75,
+      "diff": 55,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 2,
+        "medium": 0,
+        "low": 0,
+        "total": 2
+      },
+      "decision": "router"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.873243",
+      "target": "test6.com",
+      "prod_risk": 5,
+      "router_risk": 10,
+      "diff": 5,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 2,
+        "total": 2
+      },
+      "decision": "tie"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.873677",
+      "target": "test7.com",
+      "prod_risk": 60,
+      "router_risk": 80,
+      "diff": 20,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 3,
+        "medium": 1,
+        "low": 0,
+        "total": 4
+      },
+      "decision": "tie"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.873934",
+      "target": "test8.com",
+      "prod_risk": 12,
+      "router_risk": 25,
+      "diff": 13,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 0,
+        "medium": 3,
+        "low": 0,
+        "total": 3
+      },
+      "decision": "router"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.874217",
+      "target": "test9.com",
+      "prod_risk": 8,
+      "router_risk": 15,
+      "diff": 7,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 1,
+        "total": 2
+      },
+      "decision": "tie"
+    },
+    {
+      "timestamp": "2026-05-15T04:32:13.874608",
+      "target": "test10.com",
+      "prod_risk": 45,
+      "router_risk": 70,
+      "diff": 25,
+      "vulnerabilities": {
+        "critical": 0,
+        "high": 1,
+        "medium": 2,
+        "low": 0,
+        "total": 3
+      },
+      "decision": "tie"
+    }
+  ]
+}
