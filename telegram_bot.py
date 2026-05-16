@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 # Configuração
-TOKEN = "SEU_BOT_TOKEN_AQUI"  # @BotFather
+TOKEN = "8619239720:AAGxEQx1rLtdPV8vmVj4HYFMerctFIOoFY"  # @BotFather
 LIBERTUS_PATH = Path.home() / "LIBERTUS" / "core"
 
 # Logging
