@@ -44,7 +44,7 @@ class ProductionDaemonV2Intelligent(ProductionDaemonV2Shadow):
         
         try:
             # Risk Calculation com Router
-            from ai_router import AIRouter
+            from ai_router_simple import AIRouter
             from logic_engine import TaskType
             
             router = AIRouter()
