@@ -49,18 +49,24 @@ class ProductionDaemonV2Intelligent(ProductionDaemonV2Shadow):
             
             router = AIRouter()
             
-            router_risk_data = await router.execute(
+            router_result = await router.execute(
                 TaskType.RISK_CALCULATION,
                 {'vulnerabilities': vulnerabilities}
             )
             
-            router_risk = router_risk_data['risk_score']
+            # Router retorna dict com risk_score
+            router_risk = router_result.get('risk_score', 0) if isinstance(router_result, dict) else 0
             
             self._log_shadow(f"✅ ROUTER: Risk={router_risk}/100")
             
             # ========================================
             # ANÁLISE COMPARATIVA (O IMPORTANTE!)
             # ========================================
+            
+            # Análise comparativa
+            # Garantir que vulnerabilities é uma lista
+            if not isinstance(vulnerabilities, list):
+                vulnerabilities = []
             
             comparison = self.analyzer.analyze_comparison(
                 prod_risk=prod_risk,
