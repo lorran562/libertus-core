@@ -1,0 +1,209 @@
+2026-05-17 05:26:47,306 - [LIBERTUS] - ✅ Scanner carregado
+2026-05-17 05:26:47,308 - [LIBERTUS] - ⚠️ Motor de Decisão não disponível: MotorDecisao.__init__() missing 1 required positional argument: 'root'
+2026-05-17 05:26:47,331 - [LIBERTUS] - ✅ Shadow Analyzer carregado
+2026-05-17 05:26:47,383 - [LIBERTUS] - ✅ Inteligência Comercial carregada
+2026-05-17 05:26:47,385 - [LIBERTUS] - ✅ Logic Engine carregado
+2026-05-17 05:26:47,385 - [LIBERTUS] - ======================================================================
+2026-05-17 05:26:47,385 - [LIBERTUS] - LIBERTUS MAIN LOOP - VALOR REAL
+2026-05-17 05:26:47,385 - [LIBERTUS] - Sistema com noção de valor composto
+2026-05-17 05:26:47,386 - [LIBERTUS] - ======================================================================
+2026-05-17 05:26:47,386 - [LIBERTUS] - OBJETIVOS ATIVOS:
+2026-05-17 05:26:47,386 - [LIBERTUS] -   [10] encontrar_vulnerabilidades_criticas (resultado: 0)
+2026-05-17 05:26:47,386 - [LIBERTUS] -   [8] identificar_oportunidades_comerciais (resultado: 0)
+2026-05-17 05:26:47,386 - [LIBERTUS] -   [7] mapear_padroes (resultado: 0)
+2026-05-17 05:26:47,386 - [LIBERTUS] -   [6] otimizar_eficiencia (resultado: 0)
+2026-05-17 05:26:47,386 - [LIBERTUS] - PESOS DINÂMICOS:
+2026-05-17 05:26:47,386 - [LIBERTUS] -   wordpress: 1.00
+2026-05-17 05:26:47,386 - [LIBERTUS] -   shopify: 1.00
+2026-05-17 05:26:47,386 - [LIBERTUS] -   laravel: 1.00
+2026-05-17 05:26:47,386 - [LIBERTUS] -   generico: 1.00
+2026-05-17 05:26:47,387 - [LIBERTUS] - [LOOP] Sistema ativo
+2026-05-17 05:26:47,387 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:26:47,387 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:26:47,387 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:26:47,387 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:26:47,387 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:26:47,387 - [LIBERTUS] - [LOOP] Erro: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+Traceback (most recent call last):
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 481, in run
+    decisao = await self.decidir_proxima_acao()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 169, in decidir_proxima_acao
+    targets_priorizados = self._priorizar_targets(contexto)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 277, in _priorizar_targets
+    targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+2026-05-17 05:27:47,406 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:27:47,407 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:27:47,407 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:27:47,407 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:27:47,407 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:27:47,407 - [LIBERTUS] - [LOOP] Erro: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+Traceback (most recent call last):
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 481, in run
+    decisao = await self.decidir_proxima_acao()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 169, in decidir_proxima_acao
+    targets_priorizados = self._priorizar_targets(contexto)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 277, in _priorizar_targets
+    targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+2026-05-17 05:28:47,420 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:28:47,420 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:28:47,420 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:28:47,420 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:28:47,420 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:28:47,423 - [LIBERTUS] - [LOOP] Erro: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+Traceback (most recent call last):
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 481, in run
+    decisao = await self.decidir_proxima_acao()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 169, in decidir_proxima_acao
+    targets_priorizados = self._priorizar_targets(contexto)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 277, in _priorizar_targets
+    targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+2026-05-17 05:29:47,436 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:29:47,436 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:29:47,436 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:29:47,436 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:29:47,436 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:29:47,436 - [LIBERTUS] - [LOOP] Erro: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+Traceback (most recent call last):
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 481, in run
+    decisao = await self.decidir_proxima_acao()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 169, in decidir_proxima_acao
+    targets_priorizados = self._priorizar_targets(contexto)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 277, in _priorizar_targets
+    targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+2026-05-17 05:30:47,445 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:30:47,445 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:30:47,445 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:30:47,445 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:30:47,445 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:30:47,445 - [LIBERTUS] - [LOOP] Erro: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+Traceback (most recent call last):
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 481, in run
+    decisao = await self.decidir_proxima_acao()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 169, in decidir_proxima_acao
+    targets_priorizados = self._priorizar_targets(contexto)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 277, in _priorizar_targets
+    targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+2026-05-17 05:31:51,800 - [LIBERTUS] - ✅ Scanner carregado
+2026-05-17 05:31:51,802 - [LIBERTUS] - ⚠️ Motor de Decisão não disponível: MotorDecisao.__init__() missing 1 required positional argument: 'root'
+2026-05-17 05:31:51,805 - [LIBERTUS] - ✅ Shadow Analyzer carregado
+2026-05-17 05:31:51,805 - [LIBERTUS] - ✅ Inteligência Comercial carregada
+2026-05-17 05:31:51,806 - [LIBERTUS] - ✅ Logic Engine carregado
+2026-05-17 05:31:51,806 - [LIBERTUS] - ======================================================================
+2026-05-17 05:31:51,806 - [LIBERTUS] - LIBERTUS MAIN LOOP - VALOR REAL
+2026-05-17 05:31:51,806 - [LIBERTUS] - Sistema com noção de valor composto
+2026-05-17 05:31:51,806 - [LIBERTUS] - ======================================================================
+2026-05-17 05:31:51,806 - [LIBERTUS] - OBJETIVOS ATIVOS:
+2026-05-17 05:31:51,806 - [LIBERTUS] -   [10] encontrar_vulnerabilidades_criticas (resultado: 0)
+2026-05-17 05:31:51,806 - [LIBERTUS] -   [8] identificar_oportunidades_comerciais (resultado: 0)
+2026-05-17 05:31:51,806 - [LIBERTUS] -   [7] mapear_padroes (resultado: 0)
+2026-05-17 05:31:51,806 - [LIBERTUS] -   [6] otimizar_eficiencia (resultado: 0)
+2026-05-17 05:31:51,806 - [LIBERTUS] - PESOS DINÂMICOS:
+2026-05-17 05:31:51,806 - [LIBERTUS] -   wordpress: 1.00
+2026-05-17 05:31:51,806 - [LIBERTUS] -   shopify: 1.00
+2026-05-17 05:31:51,806 - [LIBERTUS] -   laravel: 1.00
+2026-05-17 05:31:51,806 - [LIBERTUS] -   generico: 1.00
+2026-05-17 05:31:51,807 - [LIBERTUS] - [LOOP] Sistema ativo
+2026-05-17 05:31:51,807 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:31:51,807 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:31:51,807 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:31:51,807 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:31:51,807 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:31:51,807 - [LIBERTUS] - [LOOP] Erro: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+Traceback (most recent call last):
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 481, in run
+    decisao = await self.decidir_proxima_acao()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 169, in decidir_proxima_acao
+    targets_priorizados = self._priorizar_targets(contexto)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 277, in _priorizar_targets
+    targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+2026-05-17 05:34:14,166 - [LIBERTUS] - ✅ Scanner carregado
+2026-05-17 05:34:14,167 - [LIBERTUS] - ⚠️ Motor de Decisão não disponível: MotorDecisao.__init__() missing 1 required positional argument: 'root'
+2026-05-17 05:34:14,173 - [LIBERTUS] - ✅ Shadow Analyzer carregado
+2026-05-17 05:34:14,173 - [LIBERTUS] - ✅ Inteligência Comercial carregada
+2026-05-17 05:34:14,174 - [LIBERTUS] - ✅ Logic Engine carregado
+2026-05-17 05:34:14,174 - [LIBERTUS] - ======================================================================
+2026-05-17 05:34:14,174 - [LIBERTUS] - LIBERTUS MAIN LOOP - VALOR REAL
+2026-05-17 05:34:14,174 - [LIBERTUS] - Sistema com noção de valor composto
+2026-05-17 05:34:14,174 - [LIBERTUS] - ======================================================================
+2026-05-17 05:34:14,174 - [LIBERTUS] - OBJETIVOS ATIVOS:
+2026-05-17 05:34:14,174 - [LIBERTUS] -   [10] encontrar_vulnerabilidades_criticas (resultado: 0)
+2026-05-17 05:34:14,174 - [LIBERTUS] -   [8] identificar_oportunidades_comerciais (resultado: 0)
+2026-05-17 05:34:14,175 - [LIBERTUS] -   [7] mapear_padroes (resultado: 0)
+2026-05-17 05:34:14,175 - [LIBERTUS] -   [6] otimizar_eficiencia (resultado: 0)
+2026-05-17 05:34:14,175 - [LIBERTUS] - PESOS DINÂMICOS:
+2026-05-17 05:34:14,175 - [LIBERTUS] -   wordpress: 1.00
+2026-05-17 05:34:14,175 - [LIBERTUS] -   shopify: 1.00
+2026-05-17 05:34:14,175 - [LIBERTUS] -   laravel: 1.00
+2026-05-17 05:34:14,175 - [LIBERTUS] -   generico: 1.00
+2026-05-17 05:34:14,175 - [LIBERTUS] - [LOOP] Sistema ativo
+2026-05-17 05:34:14,176 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:34:14,176 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:34:14,176 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:34:14,176 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:34:14,176 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:34:14,176 - [LIBERTUS] - [LOOP] Erro: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+Traceback (most recent call last):
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 481, in run
+    decisao = await self.decidir_proxima_acao()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 169, in decidir_proxima_acao
+    targets_priorizados = self._priorizar_targets(contexto)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/libertus/LIBERTUS/libertus_main_loop.py", line 277, in _priorizar_targets
+    targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'LibertusMainLoop' object has no attribute '_evitar_targets_faceis'
+2026-05-17 05:34:55,050 - [LIBERTUS] - ✅ Scanner carregado
+2026-05-17 05:34:55,051 - [LIBERTUS] - ⚠️ Motor de Decisão não disponível: MotorDecisao.__init__() missing 1 required positional argument: 'root'
+2026-05-17 05:34:55,054 - [LIBERTUS] - ✅ Shadow Analyzer carregado
+2026-05-17 05:34:55,054 - [LIBERTUS] - ✅ Inteligência Comercial carregada
+2026-05-17 05:34:55,055 - [LIBERTUS] - ✅ Logic Engine carregado
+2026-05-17 05:34:55,055 - [LIBERTUS] - ======================================================================
+2026-05-17 05:34:55,055 - [LIBERTUS] - LIBERTUS MAIN LOOP - VALOR REAL
+2026-05-17 05:34:55,055 - [LIBERTUS] - Sistema com noção de valor composto
+2026-05-17 05:34:55,055 - [LIBERTUS] - ======================================================================
+2026-05-17 05:34:55,055 - [LIBERTUS] - OBJETIVOS ATIVOS:
+2026-05-17 05:34:55,055 - [LIBERTUS] -   [10] encontrar_vulnerabilidades_criticas (resultado: 0)
+2026-05-17 05:34:55,056 - [LIBERTUS] -   [8] identificar_oportunidades_comerciais (resultado: 0)
+2026-05-17 05:34:55,056 - [LIBERTUS] -   [7] mapear_padroes (resultado: 0)
+2026-05-17 05:34:55,056 - [LIBERTUS] -   [6] otimizar_eficiencia (resultado: 0)
+2026-05-17 05:34:55,056 - [LIBERTUS] - PESOS DINÂMICOS:
+2026-05-17 05:34:55,056 - [LIBERTUS] -   wordpress: 1.00
+2026-05-17 05:34:55,056 - [LIBERTUS] -   shopify: 1.00
+2026-05-17 05:34:55,056 - [LIBERTUS] -   laravel: 1.00
+2026-05-17 05:34:55,056 - [LIBERTUS] -   generico: 1.00
+2026-05-17 05:34:55,056 - [LIBERTUS] - [LOOP] Sistema ativo
+2026-05-17 05:34:55,057 - [LIBERTUS] - [DECISÃO] Analisando contexto adaptativo...
+2026-05-17 05:34:55,057 - [LIBERTUS] -   Hora: 5h
+2026-05-17 05:34:55,057 - [LIBERTUS] -   Targets: 2
+2026-05-17 05:34:55,057 - [LIBERTUS] -   Scans hoje: 0
+2026-05-17 05:34:55,057 - [LIBERTUS] -   Padrões conhecidos: 0
+2026-05-17 05:34:55,057 - [LIBERTUS] -   [ANTI-FARM] Ignorado (fácil + baixo valor): https://google.com
+2026-05-17 05:34:55,057 - [LIBERTUS] -   [ANTI-FARM] Ignorado (fácil + baixo valor): https://github.com
+2026-05-17 05:34:55,057 - [LIBERTUS] - [AÇÃO] DORMIR
+2026-05-17 05:34:55,057 - [LIBERTUS] -   Motivo: Nada prioritário no momento
+2026-05-17 05:34:55,057 - [LIBERTUS] -   Aguardando 300s...

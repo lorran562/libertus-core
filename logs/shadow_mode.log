@@ -1,0 +1,43 @@
+[2026-05-15 04:27:20] === INICIANDO SCAN: saojoselaboratorio.com.br ===
+[2026-05-15 04:27:33] ✅ PRODUÇÃO: Scan completo
+[2026-05-15 04:27:33] 🧪 SHADOW: Testando Risk Calculation...
+[2026-05-15 04:27:33] ✅ ROUTER Risk: 40/100 (HIGH)
+[2026-05-15 04:27:33] 📊 COMPARAÇÃO: Prod=8, Router=40, Diff=32
+[2026-05-15 04:27:33] 🧪 SHADOW: Testando Vulnerability Analysis...
+[2026-05-15 04:27:38] ✅ ROUTER Analysis: 437 chars
+[2026-05-15 04:27:38] PREVIEW: ANÁLISE DE VULNERABILIDADES (Modo Logic)
+
+Total: 4 vulnerabilidade(s)
+
+
+MEDIUM (4x):
+  • Missing Security Header: HSTS não configurado
+  • Missing Security Header: Clickjacking possível
+  • Missing Se...
+[2026-05-15 04:27:38] 🧪 SHADOW: Testando Decision Making...
+[2026-05-15 04:27:38] ✅ ROUTER Decision: Next target = saojoselaboratorio.com.br
+[2026-05-15 04:27:38] === FIM SHADOW TEST: saojoselaboratorio.com.br ===
+
+[2026-05-15 16:09:26] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-15 16:10:26] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-15 16:11:26] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-15 16:12:09] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-15 16:23:21] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-15 16:23:34] ✅ PRODUÇÃO: Risk=8/100
+[2026-05-15 16:23:34] ✅ ROUTER: Risk=40/100
+[2026-05-15 16:23:34] 📊 COMPARAÇÃO:
+[2026-05-15 16:23:34]    Prod: 8 | Router: 40 | Diff: 32
+[2026-05-15 16:23:34]    Decisão: ROUTER
+[2026-05-15 16:23:34] ❌ Analyzer falhou: [Errno 32] Broken pipe
+[2026-05-15 16:26:53] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-15 17:28:04] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-16 18:48:26] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-16 18:48:38] ✅ PRODUÇÃO: Risk=8/100
+[2026-05-16 18:48:38] ❌ Analyzer falhou: 'list' object has no attribute 'get'
+[2026-05-16 18:48:38] === FIM SCAN INTELIGENTE ===
+
+[2026-05-16 18:49:03] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-16 18:49:15] ✅ PRODUÇÃO: Risk=8/100
+[2026-05-16 18:49:15] ❌ Analyzer falhou: 'list' object has no attribute 'get'
+[2026-05-16 18:49:15] === FIM SCAN INTELIGENTE ===
+

@@ -1,0 +1,221 @@
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - 🚀 Iniciando loop de produção...
+
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - 
+######################################################################
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - ### CICLO DE PRODUÇÃO #1
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - ######################################################################
+
+2026-05-14 21:28:13,612 - PRODUCTION_DAEMON - INFO - [TARGET] Buscando próximo target...
+2026-05-14 21:28:13,613 - PRODUCTION_DAEMON - INFO - [TARGET] ✅ Target selecionado: testphp.vulnweb.com
+2026-05-14 21:28:13,613 - PRODUCTION_DAEMON - INFO - [TARGET]    Priority: 1
+2026-05-14 21:28:13,613 - PRODUCTION_DAEMON - INFO - [TARGET]    Last scan: NEVER
+2026-05-14 21:28:13,613 - PRODUCTION_DAEMON - INFO - [TARGET]    Scan count: 0
+2026-05-14 21:28:13,613 - PRODUCTION_DAEMON - INFO - 
+======================================================================
+2026-05-14 21:28:13,613 - PRODUCTION_DAEMON - INFO - [SCAN] Iniciando scan de produção: testphp.vulnweb.com
+2026-05-14 21:28:13,613 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-14 21:28:26,101 - PRODUCTION_DAEMON - INFO - 
+[PROOF] Validando vulnerabilidades com Proof Engine...
+2026-05-14 21:28:26,101 - PRODUCTION_DAEMON - INFO - 
+[PROOF] Resultado:
+2026-05-14 21:28:26,101 - PRODUCTION_DAEMON - INFO -   Total detectadas: 4
+2026-05-14 21:28:26,101 - PRODUCTION_DAEMON - INFO -   Provadas: 4
+2026-05-14 21:28:26,101 - PRODUCTION_DAEMON - INFO - 
+[REPORT] Gerando relatório de produção...
+2026-05-14 21:28:26,102 - PRODUCTION_DAEMON - INFO - [REPORT] ✅ Relatório salvo: /root/LIBERTUS/relatorios/production_testphp_vulnweb_com_20260514_212826.md
+2026-05-14 21:28:26,102 - PRODUCTION_DAEMON - INFO - 
+[TARGET] Atualizando target manager...
+2026-05-14 21:28:26,118 - PRODUCTION_DAEMON - INFO - [TARGET] ✅ Target atualizado
+2026-05-14 21:28:26,154 - PRODUCTION_DAEMON - INFO - [GIT] ✅ Commit realizado
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - 
+======================================================================
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - ESTATÍSTICAS DO SISTEMA:
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - Targets ativos: 2
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - Nunca testados: 1
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - Com vulnerabilidades: 1
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - Total de scans: 1
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-14 21:28:26,155 - PRODUCTION_DAEMON - INFO - ⏱️ Aguardando 5 minutos até próximo ciclo...
+
+2026-05-14 21:44:13,714 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-14 21:44:13,715 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-14 21:44:13,715 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-14 21:44:13,715 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-14 21:44:13,715 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-14 21:44:13,715 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-14 21:44:13,715 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-14 21:44:13,715 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-14 21:44:13,716 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-14 21:44:13,716 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-14 21:44:13,716 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-14 21:44:13,716 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-14 21:44:13,716 - PRODUCTION_DAEMON - INFO - 
+======================================================================
+2026-05-14 21:44:13,716 - PRODUCTION_DAEMON - INFO - [SCAN] Iniciando scan de produção: saojoselaboratorio.com.br
+2026-05-14 21:44:13,716 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-14 21:44:26,539 - PRODUCTION_DAEMON - INFO - 
+[PROOF] Validando vulnerabilidades com Proof Engine...
+2026-05-14 21:44:26,540 - PRODUCTION_DAEMON - INFO - 
+[PROOF] Resultado:
+2026-05-14 21:44:26,540 - PRODUCTION_DAEMON - INFO -   Total detectadas: 4
+2026-05-14 21:44:26,540 - PRODUCTION_DAEMON - INFO -   Provadas: 4
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 04:27:20,456 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 04:27:20,457 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-15 04:27:20,562 - PRODUCTION_DAEMON - INFO - 
+======================================================================
+2026-05-15 04:27:20,562 - PRODUCTION_DAEMON - INFO - [SCAN] Iniciando scan de produção: saojoselaboratorio.com.br
+2026-05-15 04:27:20,563 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 04:27:33,271 - PRODUCTION_DAEMON - INFO - 
+[PROOF] Validando vulnerabilidades com Proof Engine...
+2026-05-15 04:27:33,271 - PRODUCTION_DAEMON - INFO - 
+[PROOF] Resultado:
+2026-05-15 04:27:33,271 - PRODUCTION_DAEMON - INFO -   Total detectadas: 4
+2026-05-15 04:27:33,271 - PRODUCTION_DAEMON - INFO -   Provadas: 4
+2026-05-15 04:27:33,359 - httpx - INFO - HTTP Request: GET https://chroma-onnx-models.s3.amazonaws.com/all-MiniLM-L6-v2/onnx.tar.gz "HTTP/1.1 403 Forbidden"
+2026-05-15 04:27:36,127 - httpx - INFO - HTTP Request: GET https://chroma-onnx-models.s3.amazonaws.com/all-MiniLM-L6-v2/onnx.tar.gz "HTTP/1.1 403 Forbidden"
+2026-05-15 04:27:38,476 - httpx - INFO - HTTP Request: GET https://chroma-onnx-models.s3.amazonaws.com/all-MiniLM-L6-v2/onnx.tar.gz "HTTP/1.1 403 Forbidden"
+2026-05-15 04:27:38,590 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 403 Forbidden"
+2026-05-15 16:09:24,090 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 16:09:24,091 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 16:12:08,859 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-15 16:23:19,135 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 16:23:19,136 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-15 16:26:53,589 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:26:53,589 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 16:26:53,590 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 17:27:45,948 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 17:27:45,949 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 17:27:45,949 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 17:27:45,949 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 17:27:45,949 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-15 17:27:54,092 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 17:27:54,092 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 17:27:54,092 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 17:27:54,092 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 17:27:54,092 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 17:27:54,092 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 17:27:54,092 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 17:27:54,093 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 17:27:54,093 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 17:27:54,093 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 17:27:54,093 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 17:27:54,093 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-15 17:28:04,169 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-16 18:48:26,112 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-16 18:48:26,113 - PRODUCTION_DAEMON - INFO - ======================================================================
+
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO - 🏭 LIBERTUS PRODUCTION DAEMON INICIADO
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO - ======================================================================
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO - Modo: PRODUÇÃO - Zero intervenção humana
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO - Componentes:
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO -   ✅ Target Manager (priorização inteligente)
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO -   ✅ Proof Engine (apenas vulns confirmadas)
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO -   ✅ Anti-Block System (evasão de detecção)
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO -   ✅ Scanner Final (Validation Engine integrado)
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO -   ✅ Report Generator (profissional)
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO -   ✅ Git Automation (commits automáticos)
+2026-05-16 18:49:03,336 - PRODUCTION_DAEMON - INFO - ======================================================================
+
