@@ -324,11 +324,12 @@ class LibertusMainLoop:
             logger.info(f"  Aguardando {decisao['tempo']}s...")
             await asyncio.sleep(decisao['tempo'])
         
-        # Salvar decisão na memória
+        # Salvar decisão na memória COM EXPLICAÇÃO
         self.memoria['decisoes_tomadas'].append({
             'timestamp': time.time(),
             'data': datetime.now().isoformat(),
-            'decisao': decisao
+            'decisao': decisao,
+            'explicacao': self._explicar_decisao(decisao)
         })
         
         self._save_memoria()
@@ -834,4 +835,23 @@ if __name__ == "__main__":
                 filtrados.append(target)
         
         return filtrados
+
+    
+    def _explicar_decisao(self, decisao):
+        """Explica por que uma decisão foi tomada"""
+        acao = decisao['acao']
+        
+        if acao == 'scan':
+            return f"Escaneando {decisao['target']} com prioridade {decisao.get('prioridade', 'N/A'):.1f}"
+        
+        elif acao == 'analisar_padroes':
+            return "Analisando padrões aprendidos para ajustar comportamento"
+        
+        elif acao == 'ajustar_estrategia':
+            return "Performance abaixo do esperado - ajustando estratégia"
+        
+        elif acao == 'dormir':
+            return "Nada prioritário no momento - aguardando"
+        
+        return "Decisão desconhecida"
 
