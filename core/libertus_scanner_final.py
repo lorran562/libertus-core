@@ -26,6 +26,8 @@ except ImportError:
     print("⚠️ Validation Engine não encontrado - usando fallback")
 
 
+import aiohttp
+
 class LibertusScannerFinal:
     """
     Scanner COMPLETO com Validation Engine REAL integrado
@@ -45,6 +47,7 @@ class LibertusScannerFinal:
         self.target = target.replace('http://', '').replace('https://', '').split('/')[0]
         self.base_url = f"http://{self.target}"
         
+        self.session = None  # Session HTTP
         self.results = {
             'target': self.target,
             'scan_date': datetime.now().isoformat(),
@@ -426,3 +429,23 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+    async def run_full_scan(self, target: str) -> dict:
+        """
+        Função LIMPA para executar scan completo
+        USO: resultado = await scanner.run_full_scan("https://site.com")
+        """
+        self.target = target.replace('http://', '').replace('https://', '').split('/')[0]
+        self.base_url = f"http://{self.target}"
+        
+        # Criar session HTTP
+        async with aiohttp.ClientSession() as session:
+            self.session = session
+            
+            # Executar scan completo
+            await self._detect_technology()
+            await self._find_testable_params()
+            await self._test_vulnerabilities_real()
+            self._calculate_risk()
+        
+        return self.results
