@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  libertus:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+      - ./memoria:/app/memoria
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

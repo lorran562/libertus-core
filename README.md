@@ -63,3 +63,35 @@ Telegram, APIs Groq/Claude podem ser configurados em `core/`.
 
 **Desenvolvido por Lorran**  
 Sistema Meta-Adaptativo com Valor Real
+
+## 🐳 Rodar com Docker (Recomendado)
+
+```bash
+# 1. Clonar repositório
+git clone https://github.com/lorran562/libertus-core.git LIBERTUS
+cd LIBERTUS
+
+# 2. Rodar com Docker
+docker-compose up -d
+
+# 3. Ver logs
+docker-compose logs -f
+```
+
+## 📦 Rodar sem Docker (Manual)
+
+```bash
+# 1. Criar ambiente virtual
+python3 -m venv venv
+source venv/bin/activate
+
+# 2. Instalar dependências
+pip install -r requirements.txt
+
+# 3. Rodar
+python3 libertus_main_loop.py
+```
+
+---
+
+**Sistema portátil:** Funciona em VPS, PC, qualquer lugar! 🔥
