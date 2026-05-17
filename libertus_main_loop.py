@@ -47,21 +47,41 @@ class LibertusMainLoop:
         self.targets = self._load_targets()
         self.running = True
         
-        # SISTEMA DE OBJETIVOS
-        self.objetivos = [
-            {'nome': 'encontrar_vulnerabilidades_criticas', 'prioridade': 10, 'peso': 1.0},
-            {'nome': 'mapear_padroes', 'prioridade': 7, 'peso': 0.8},
-            {'nome': 'identificar_oportunidades_comerciais', 'prioridade': 8, 'peso': 0.9},
-            {'nome': 'otimizar_eficiencia', 'prioridade': 6, 'peso': 0.7}
-        ]
+        # SISTEMA DE OBJETIVOS (agora dinâmico)
+        self.objetivos = self.memoria.get('objetivos_ativos', [
+            {'nome': 'encontrar_vulnerabilidades_criticas', 'prioridade': 10, 'peso': 1.0, 'resultado_acumulado': 0},
+            {'nome': 'mapear_padroes', 'prioridade': 7, 'peso': 0.8, 'resultado_acumulado': 0},
+            {'nome': 'identificar_oportunidades_comerciais', 'prioridade': 8, 'peso': 0.9, 'resultado_acumulado': 0},
+            {'nome': 'otimizar_eficiencia', 'prioridade': 6, 'peso': 0.7, 'resultado_acumulado': 0}
+        ])
+        
+        # PESOS DINÂMICOS (aprendidos, não fixos)
+        self.pesos_dinamicos = self.memoria.get('pesos_dinamicos', {
+            'wordpress': 1.0,
+            'shopify': 1.0,
+            'laravel': 1.0,
+            'generico': 1.0
+        })
+        
+        # MÉTRICAS DE PERFORMANCE
+        self.meta_metricas = self.memoria.get('meta_metricas', {
+            'scans_ultimos_30': 0,
+            'vulnerabilidades_encontradas': 0,
+            'risk_medio_global': 0,
+            'eficiencia': 0,
+            'ultima_revisao': None
+        })
         
         logger.info("="*70)
-        logger.info("LIBERTUS MAIN LOOP - INICIANDO")
-        logger.info("Sistema autônomo adaptativo")
+        logger.info("LIBERTUS MAIN LOOP - META-ADAPTATIVO")
+        logger.info("Sistema que evolui a própria estratégia")
         logger.info("="*70)
         logger.info("OBJETIVOS ATIVOS:")
         for obj in sorted(self.objetivos, key=lambda x: x['prioridade'], reverse=True):
-            logger.info(f"  [{obj['prioridade']}] {obj['nome']}")
+            logger.info(f"  [{obj['prioridade']}] {obj['nome']} (resultado: {obj['resultado_acumulado']})")
+        logger.info("PESOS DINÂMICOS:")
+        for tipo, peso in self.pesos_dinamicos.items():
+            logger.info(f"  {tipo}: {peso:.2f}")
     
     def _load_memoria(self):
         """Carrega memória persistente"""
@@ -371,14 +391,9 @@ class LibertusMainLoop:
             logger.error(f"[SCAN] ❌ Erro: {e}", exc_info=True)
     
     def _aprender_com_scan(self, target, scan_data):
-        """Aprende padrões com base no scan"""
+        """Aprende padrões com base no scan + META-ADAPTAÇÃO"""
         # Identificar tipo de site
-        if 'wordpress' in target.lower():
-            tipo = 'wordpress'
-        elif 'shopify' in target.lower():
-            tipo = 'shopify'
-        else:
-            tipo = 'generico'
+        tipo = self._identificar_tipo_site(target)
         
         # Atualizar padrões
         if tipo not in self.memoria['padroes_aprendidos']:
@@ -399,6 +414,20 @@ class LibertusMainLoop:
         
         logger.info(f"[APRENDIZADO] Padrão atualizado: {tipo}")
         logger.info(f"  Risk médio: {padroes['risk_medio']:.1f}")
+        
+        # META-ADAPTAÇÃO: Ajustar pesos automaticamente
+        self._ajustar_pesos_automaticamente(tipo, scan_data)
+        
+        # META-ADAPTAÇÃO: Atualizar resultado de objetivos
+        if scan_data['risk_score'] >= 70:
+            self._atualizar_resultado_objetivo('vulnerabilidades_criticas', 1)
+        
+        if scan_data['vulnerabilities_count'] > 0:
+            self._atualizar_resultado_objetivo('mapear_padroes', 1)
+        
+        # META-ADAPTAÇÃO: A cada 10 scans, auto-avaliar
+        if len(self.memoria['scans_realizados']) % 10 == 0:
+            self._avaliar_performance_global()
     
     def _analisar_padroes(self):
         """Analisa padrões aprendidos"""
@@ -449,3 +478,174 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    # ==================== META-ADAPTAÇÃO ====================
+    
+    def _avaliar_performance_global(self):
+        """
+        AUTO-AVALIAÇÃO DE PERFORMANCE
+        Sistema mede a si mesmo
+        """
+        logger.info("[META] Auto-avaliação de performance...")
+        
+        scans = self.memoria['scans_realizados']
+        
+        if len(scans) < 3:
+            logger.info("  Scans insuficientes para avaliação")
+            return
+        
+        # Últimos 10 scans
+        recentes = scans[-10:]
+        
+        # Calcular métricas
+        risk_medio = sum(s.get('risk_score', 0) for s in recentes) / len(recentes)
+        vulns_total = sum(s.get('vulnerabilities_count', 0) for s in recentes)
+        
+        # Atualizar meta-métricas
+        self.meta_metricas.update({
+            'scans_ultimos_30': len(recentes),
+            'vulnerabilidades_encontradas': vulns_total,
+            'risk_medio_global': risk_medio,
+            'eficiencia': vulns_total / len(recentes) if len(recentes) > 0 else 0,
+            'ultima_revisao': datetime.now().isoformat()
+        })
+        
+        logger.info(f"  Risk médio: {risk_medio:.1f}")
+        logger.info(f"  Vulnerabilidades: {vulns_total}")
+        logger.info(f"  Eficiência: {self.meta_metricas['eficiencia']:.2f} vulns/scan")
+        
+        # DECISÃO META: Estratégia atual funciona?
+        if risk_medio < 20:
+            logger.info("  [META-DECISÃO] Performance BAIXA - Revisão necessária")
+            self._revisar_estrategia_completa()
+        elif risk_medio > 60:
+            logger.info("  [META-DECISÃO] Performance ALTA - Manter estratégia")
+        
+        self.memoria['meta_metricas'] = self.meta_metricas
+        self._save_memoria()
+    
+    def _ajustar_pesos_automaticamente(self, tipo_site, resultado_scan):
+        """
+        AJUSTE AUTOMÁTICO DE PESOS
+        Não usa valores fixos - aprende com resultados
+        """
+        risk = resultado_scan.get('risk_score', 0)
+        vulns = resultado_scan.get('vulnerabilities_count', 0)
+        
+        # Peso atual
+        peso_atual = self.pesos_dinamicos.get(tipo_site, 1.0)
+        
+        # APRENDIZADO: Aumentar peso se gera resultados
+        if risk >= 50 or vulns >= 5:
+            novo_peso = min(3.0, peso_atual * 1.2)  # Aumentar 20%
+            logger.info(f"[META-PESO] {tipo_site}: {peso_atual:.2f} → {novo_peso:.2f} (AUMENTADO - bons resultados)")
+        
+        # APRENDIZADO: Reduzir peso se não gera resultados
+        elif risk < 15 and vulns == 0:
+            novo_peso = max(0.3, peso_atual * 0.8)  # Reduzir 20%
+            logger.info(f"[META-PESO] {tipo_site}: {peso_atual:.2f} → {novo_peso:.2f} (REDUZIDO - poucos resultados)")
+        
+        else:
+            novo_peso = peso_atual  # Manter
+        
+        self.pesos_dinamicos[tipo_site] = novo_peso
+        self.memoria['pesos_dinamicos'] = self.pesos_dinamicos
+        self._save_memoria()
+    
+    def _revisar_objetivos(self):
+        """
+        REVISÃO DE OBJETIVOS
+        Detecta objetivos que não geram resultado e substitui
+        """
+        logger.info("[META-OBJETIVO] Revisando objetivos...")
+        
+        for obj in self.objetivos:
+            resultado = obj.get('resultado_acumulado', 0)
+            
+            # Objetivo não gera resultado há muito tempo?
+            if resultado < 5 and len(self.memoria['scans_realizados']) > 20:
+                logger.info(f"  [REVISAR] '{obj['nome']}' com baixo resultado ({resultado})")
+                
+                # DECISÃO META: Substituir objetivo
+                if 'vulnerabilidades' in obj['nome']:
+                    # Trocar foco de "críticas" para "padrões recorrentes"
+                    obj['nome'] = 'encontrar_padroes_recorrentes'
+                    obj['prioridade'] = 9
+                    logger.info(f"    → SUBSTITUÍDO por '{obj['nome']}'")
+                
+                elif 'eficiencia' in obj['nome']:
+                    # Trocar por foco em nichos específicos
+                    obj['nome'] = 'focar_nichos_especificos'
+                    obj['prioridade'] = 8
+                    logger.info(f"    → SUBSTITUÍDO por '{obj['nome']}'")
+                
+                obj['resultado_acumulado'] = 0  # Reset
+        
+        self.memoria['objetivos_ativos'] = self.objetivos
+        self._save_memoria()
+    
+    def _criar_novo_objetivo(self, padrão_descoberto):
+        """
+        CRIAÇÃO DE NOVOS OBJETIVOS
+        Sistema cria objetivos baseado em padrões descobertos
+        """
+        logger.info(f"[META-CRIAÇÃO] Novo padrão descoberto: {padrão_descoberto}")
+        
+        # Verificar se já existe objetivo similar
+        for obj in self.objetivos:
+            if padrão_descoberto['tipo'] in obj['nome']:
+                logger.info("  Objetivo similar já existe")
+                return
+        
+        # CRIAR NOVO OBJETIVO
+        novo_objetivo = {
+            'nome': f"explorar_{padrão_descoberto['tipo']}_vulnerabilidades",
+            'prioridade': 7,
+            'peso': 1.0,
+            'resultado_acumulado': 0,
+            'criado_automaticamente': True,
+            'data_criacao': datetime.now().isoformat()
+        }
+        
+        self.objetivos.append(novo_objetivo)
+        
+        logger.info(f"  [NOVO OBJETIVO] '{novo_objetivo['nome']}' criado")
+        logger.info(f"    Prioridade: {novo_objetivo['prioridade']}")
+        
+        self.memoria['objetivos_ativos'] = self.objetivos
+        self._save_memoria()
+    
+    def _revisar_estrategia_completa(self):
+        """
+        REVISÃO ESTRATÉGICA COMPLETA
+        Sistema questiona e modifica a própria caixa
+        """
+        logger.info("[META-ESTRATÉGIA] Revisão estratégica completa...")
+        
+        # 1. Avaliar performance
+        self._avaliar_performance_global()
+        
+        # 2. Revisar objetivos
+        self._revisar_objetivos()
+        
+        # 3. Analisar padrões descobertos
+        padroes = self.memoria.get('padroes_aprendidos', {})
+        
+        for tipo, dados in padroes.items():
+            risk_medio = dados.get('risk_medio', 0)
+            
+            # Padrão MUITO problemático? Criar objetivo específico
+            if risk_medio > 70:
+                self._criar_novo_objetivo({
+                    'tipo': tipo,
+                    'risk_medio': risk_medio
+                })
+        
+        logger.info("[META-ESTRATÉGIA] Revisão completa")
+    
+    def _atualizar_resultado_objetivo(self, objetivo_nome, valor):
+        """Atualiza resultado acumulado de um objetivo"""
+        for obj in self.objetivos:
+            if objetivo_nome in obj['nome']:
+                obj['resultado_acumulado'] = obj.get('resultado_acumulado', 0) + valor
+                break
