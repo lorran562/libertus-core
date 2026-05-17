@@ -21,6 +21,14 @@ TARGETS_FILE = LOGS_PATH / "targets.json"
 import sys
 sys.path.insert(0, str(CORE_PATH))
 
+# Importar Core
+try:
+    from core.libertus_core_interface import get_core
+except ImportError:
+    print("ERRO: Módulo libertus_core_interface não encontrado")
+    print(f"Tentando importar de: {CORE_PATH}")
+    sys.exit(1)
+
 # Logging
 logging.basicConfig(
     level=logging.INFO,
@@ -31,9 +39,6 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
-
-# Importar Core
-from libertus_core_interface import get_core
 
 class LibertusMainLoop:
     """
@@ -465,42 +470,7 @@ class LibertusMainLoop:
         scans = [s for s in self.memoria['scans_realizados'] if s['target'] == url]
         return scans[-1] if scans else None
     
-    async def run(self):
-        """Loop principal"""
-        logger.info("[LOOP] Sistema ativo")
-        self.memoria['estado_atual'] = 'rodando'
-        
-        while self.running:
-            try:
-                # 1. DECIDIR
-                decisao = await self.decidir_proxima_acao()
-                
-                # 2. EXECUTAR
-                await self.executar_acao(decisao)
-                
-                # 3. Pequeno delay entre ciclos
-                await asyncio.sleep(10)
-            
-            except KeyboardInterrupt:
-                logger.info("[LOOP] Interrompido pelo usuário")
-                self.running = False
-            
-            except Exception as e:
-                logger.error(f"[LOOP] Erro: {e}", exc_info=True)
-                await asyncio.sleep(60)  # Espera 1 min em caso de erro
-        
-        self.memoria['estado_atual'] = 'parado'
-        self._save_memoria()
-        logger.info("[LOOP] Sistema encerrado")
 
-def main():
-    """Entry point"""
-    loop_sistema = LibertusMainLoop()
-    asyncio.run(loop_sistema.run())
-
-if __name__ == "__main__":
-    main()
-    
     # ==================== META-ADAPTAÇÃO ====================
     
     def _avaliar_performance_global(self):
@@ -855,3 +825,40 @@ if __name__ == "__main__":
         
         return "Decisão desconhecida"
 
+
+    async def run(self):
+        """Loop principal"""
+        logger.info("[LOOP] Sistema ativo")
+        self.memoria['estado_atual'] = 'rodando'
+        
+        while self.running:
+            try:
+                # 1. DECIDIR
+                decisao = await self.decidir_proxima_acao()
+                
+                # 2. EXECUTAR
+                await self.executar_acao(decisao)
+                
+                # 3. Pequeno delay entre ciclos
+                await asyncio.sleep(10)
+            
+            except KeyboardInterrupt:
+                logger.info("[LOOP] Interrompido pelo usuário")
+                self.running = False
+            
+            except Exception as e:
+                logger.error(f"[LOOP] Erro: {e}", exc_info=True)
+                await asyncio.sleep(60)  # Espera 1 min em caso de erro
+        
+        self.memoria['estado_atual'] = 'parado'
+        self._save_memoria()
+        logger.info("[LOOP] Sistema encerrado")
+
+def main():
+    """Entry point"""
+    loop_sistema = LibertusMainLoop()
+    asyncio.run(loop_sistema.run())
+
+if __name__ == "__main__":
+    main()
+    
