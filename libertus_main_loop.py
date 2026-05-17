@@ -72,9 +72,17 @@ class LibertusMainLoop:
             'ultima_revisao': None
         })
         
+        # VALOR REAL (não só técnico)
+        self.valor_real = self.memoria.get('valor_real', {
+            'sites_que_geraram_valor': [],
+            'tipos_mais_lucrativos': {},
+            'nichos_prioritarios': [],
+            'estrategias_que_funcionaram': []
+        })
+        
         logger.info("="*70)
-        logger.info("LIBERTUS MAIN LOOP - META-ADAPTATIVO")
-        logger.info("Sistema que evolui a própria estratégia")
+        logger.info("LIBERTUS MAIN LOOP - VALOR REAL")
+        logger.info("Sistema com noção de valor composto")
         logger.info("="*70)
         logger.info("OBJETIVOS ATIVOS:")
         for obj in sorted(self.objetivos, key=lambda x: x['prioridade'], reverse=True):
@@ -260,6 +268,9 @@ class LibertusMainLoop:
         # Ordenar por prioridade calculada
         targets_com_prioridade.sort(key=lambda x: x['prioridade_calculada'], reverse=True)
         
+        # FILTRO ANTI-FARM: Evitar targets fáceis
+        targets_com_prioridade = self._evitar_targets_faceis(targets_com_prioridade)
+        
         if targets_com_prioridade:
             logger.info(f"[PRIORIZAÇÃO] Top 3 targets:")
             for t in targets_com_prioridade[:3]:
@@ -391,7 +402,7 @@ class LibertusMainLoop:
             logger.error(f"[SCAN] ❌ Erro: {e}", exc_info=True)
     
     def _aprender_com_scan(self, target, scan_data):
-        """Aprende padrões com base no scan + META-ADAPTAÇÃO"""
+        """Aprende padrões com base no scan + META-ADAPTAÇÃO + VALOR REAL"""
         # Identificar tipo de site
         tipo = self._identificar_tipo_site(target)
         
@@ -415,6 +426,12 @@ class LibertusMainLoop:
         logger.info(f"[APRENDIZADO] Padrão atualizado: {tipo}")
         logger.info(f"  Risk médio: {padroes['risk_medio']:.1f}")
         
+        # VALOR REAL: Calcular valor composto
+        valor_real = self._calcular_valor_real(target, scan_data)
+        
+        # Registrar se gerou valor
+        self._registrar_valor_real(target, scan_data, valor_real)
+        
         # META-ADAPTAÇÃO: Ajustar pesos automaticamente
         self._ajustar_pesos_automaticamente(tipo, scan_data)
         
@@ -424,6 +441,10 @@ class LibertusMainLoop:
         
         if scan_data['vulnerabilities_count'] > 0:
             self._atualizar_resultado_objetivo('mapear_padroes', 1)
+        
+        # Valor real alto = objetivo comercial cumprido
+        if valor_real >= 0.7:
+            self._atualizar_resultado_objetivo('oportunidades_comerciais', 1)
         
         # META-ADAPTAÇÃO: A cada 10 scans, auto-avaliar
         if len(self.memoria['scans_realizados']) % 10 == 0:
@@ -649,3 +670,168 @@ if __name__ == "__main__":
             if objetivo_nome in obj['nome']:
                 obj['resultado_acumulado'] = obj.get('resultado_acumulado', 0) + valor
                 break
+    
+    # ==================== VALOR REAL ====================
+    
+    def _calcular_valor_real(self, target, scan_data):
+        """
+        EIXO DE VALOR COMPOSTO
+        Não só "risk" - valor REAL considerando múltiplos fatores
+        """
+        risk = scan_data.get('risk_score', 0)
+        vulns = scan_data.get('vulnerabilities_count', 0)
+        tipo = self._identificar_tipo_site(target)
+        
+        # COMPONENTE 1: Impacto técnico (risk)
+        impacto_tecnico = risk / 100.0  # 0-1
+        
+        # COMPONENTE 2: Potencial comercial (tipo de site, nicho)
+        potencial_comercial = self._calcular_potencial_comercial(target, tipo)
+        
+        # COMPONENTE 3: Raridade (não só frequência)
+        raridade = self._calcular_raridade(tipo, vulns)
+        
+        # COMPONENTE 4: Complexidade (evitar targets fáceis demais)
+        complexidade = self._calcular_complexidade(scan_data)
+        
+        # VALOR REAL = média ponderada
+        valor_real = (
+            impacto_tecnico * 0.3 +
+            potencial_comercial * 0.4 +
+            raridade * 0.2 +
+            complexidade * 0.1
+        )
+        
+        logger.info(f"[VALOR REAL] {target}")
+        logger.info(f"  Impacto técnico: {impacto_tecnico:.2f}")
+        logger.info(f"  Potencial comercial: {potencial_comercial:.2f}")
+        logger.info(f"  Raridade: {raridade:.2f}")
+        logger.info(f"  Complexidade: {complexidade:.2f}")
+        logger.info(f"  → VALOR TOTAL: {valor_real:.2f}")
+        
+        return valor_real
+    
+    def _calcular_potencial_comercial(self, target, tipo):
+        """
+        Potencial comercial do site
+        Não é só "risk alto" - é "site que vale a pena"
+        """
+        # Nichos prioritários (baseado em SHIELD)
+        nichos_alto_valor = ['clinica', 'medic', 'hospital', 'contabil', 'advoca', 'law', 'finance']
+        
+        potencial = 0.5  # Base
+        
+        # Nicho prioritário
+        for nicho in nichos_alto_valor:
+            if nicho in target.lower():
+                potencial += 0.3
+                logger.info(f"    [COMERCIAL] Nicho alto valor: {nicho}")
+                break
+        
+        # Tipo conhecido lucrativo
+        if tipo in self.valor_real['tipos_mais_lucrativos']:
+            taxa_conversao = self.valor_real['tipos_mais_lucrativos'][tipo]
+            potencial += taxa_conversao * 0.2
+        
+        return min(1.0, potencial)
+    
+    def _calcular_raridade(self, tipo, vulns):
+        """
+        Raridade do padrão
+        Não é "frequente = importante"
+        É "raro E impactante = importante"
+        """
+        padroes = self.memoria.get('padroes_aprendidos', {})
+        
+        if tipo not in padroes:
+            return 0.8  # Novo = interessante
+        
+        count = padroes[tipo]['count']
+        
+        # Muito comum = menos raro
+        if count > 20:
+            raridade = 0.3
+        elif count > 10:
+            raridade = 0.5
+        else:
+            raridade = 0.7
+        
+        # Mas se gera vulnerabilidades, aumenta
+        if vulns > 5:
+            raridade += 0.2
+        
+        return min(1.0, raridade)
+    
+    def _calcular_complexidade(self, scan_data):
+        """
+        Complexidade do target
+        PENALIZAR baixa complexidade + baixo impacto (evitar farm)
+        VALORIZAR alta complexidade + alto impacto
+        """
+        risk = scan_data.get('risk_score', 0)
+        vulns = scan_data.get('vulnerabilities_count', 0)
+        
+        # Heurística de complexidade
+        if risk < 20 and vulns < 2:
+            # Fácil E baixo impacto = RUIM
+            return 0.2
+        
+        elif risk >= 70 and vulns >= 5:
+            # Difícil E alto impacto = BOM
+            return 0.9
+        
+        else:
+            # Médio
+            return 0.5
+    
+    def _registrar_valor_real(self, target, scan_data, valor_calculado):
+        """
+        Registra sites que geraram VALOR REAL
+        Não só vulnerabilidades
+        """
+        if valor_calculado >= 0.7:
+            self.valor_real['sites_que_geraram_valor'].append({
+                'target': target,
+                'valor': valor_calculado,
+                'timestamp': time.time(),
+                'data': datetime.now().isoformat(),
+                'risk': scan_data.get('risk_score', 0),
+                'vulns': scan_data.get('vulnerabilities_count', 0)
+            })
+            
+            logger.info(f"[VALOR REAL] Site registrado como valioso: {target}")
+            
+            # Atualizar tipos mais lucrativos
+            tipo = self._identificar_tipo_site(target)
+            if tipo not in self.valor_real['tipos_mais_lucrativos']:
+                self.valor_real['tipos_more_lucrativos'][tipo] = 0
+            
+            self.valor_real['tipos_mais_lucrativos'][tipo] += 0.1  # Incrementar
+        
+        self.memoria['valor_real'] = self.valor_real
+        self._save_memoria()
+    
+    def _evitar_targets_faceis(self, targets_priorizados):
+        """
+        FILTRO ANTI-FARM
+        Remove targets fáceis demais com baixo impacto
+        """
+        filtrados = []
+        
+        for target in targets_priorizados:
+            risk_anterior = target.get('risk_anterior', 0)
+            tipo = target.get('tipo', 'generico')
+            
+            # Target muito fácil?
+            if risk_anterior < 15:
+                # Só aceitar se for nicho prioritário
+                if any(nicho in target['url'].lower() for nicho in ['clinica', 'medic', 'contabil', 'advoca']):
+                    filtrados.append(target)
+                    logger.info(f"  [ANTI-FARM] Aceito (nicho prioritário): {target['url']}")
+                else:
+                    logger.info(f"  [ANTI-FARM] Ignorado (fácil + baixo valor): {target['url']}")
+            else:
+                filtrados.append(target)
+        
+        return filtrados
+
