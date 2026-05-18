@@ -8,6 +8,7 @@ Usa TODOS os 17+ módulos e conhecimento do RAG
 import os
 import sys
 import json
+import re
 import asyncio
 import subprocess
 from pathlib import Path
@@ -166,7 +167,7 @@ class LibertusTelegramWrapper:
                 stderr=asyncio.subprocess.PIPE
             )
             
-            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=30)
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
             
             return {
                 'sucesso': True,
@@ -175,7 +176,7 @@ class LibertusTelegramWrapper:
             }
             
         except asyncio.TimeoutError:
-            return {'sucesso': False, 'erro': 'Timeout (30s)'}
+            return {'sucesso': False, 'erro': 'Timeout (60s)'}
         except Exception as e:
             return {'sucesso': False, 'erro': str(e)}
     
@@ -387,12 +388,29 @@ Liste 5 payloads XSS para teste (APENAS os payloads):"""
         linhas = texto.strip().split('\n')
         
         for linha in linhas:
-            # Remove numeração, bullets
+            # Pular linhas de cabeçalho/introdução
+            if any(x in linha.lower() for x in [
+                'aqui estão', 'aqui está', 'lista de', 'payloads',
+                'baseado', 'seguem', 'abaixo', 'here are', 'here is'
+            ]):
+                continue
+            
+            # Remove numeração, bullets, espaços extras
             linha_limpa = re.sub(r'^[\d\.\-\*\s]+', '', linha).strip()
+            
+            # Remove aspas, backticks
             linha_limpa = linha_limpa.strip('`"\'')
             
+            # Remove texto explicativo depois do payload
+            # Ex: "' OR '1'='1 -- comentário aqui" -> "' OR '1'='1"
+            if ' -- ' in linha_limpa:
+                linha_limpa = linha_limpa.split(' -- ')[0].strip()
+            
+            # Só adicionar se for um payload válido
             if linha_limpa and len(linha_limpa) > 2:
-                payloads.append(linha_limpa)
+                # Verificar se parece um payload (tem caracteres especiais ou SQL keywords)
+                if any(char in linha_limpa for char in ["'", '"', '<', '>', '=', 'OR', 'AND', 'UNION', 'SELECT']):
+                    payloads.append(linha_limpa)
         
         return payloads[:10]
     
@@ -402,28 +420,97 @@ Liste 5 payloads XSS para teste (APENAS os payloads):"""
         scan_nmap: Dict, 
         scan_http: Dict
     ) -> list:
-        """Verifica exploits conhecidos"""
+        """Verifica exploits conhecidos usando conhecimento dos PDFs"""
         exploits = []
+        
+        # Buscar conhecimento sobre exploits
+        try:
+            conhecimento_exploits = self.rag.buscar_conhecimento(
+                "exploits vulnerabilidades CVE",
+                n_results=2
+            )
+        except:
+            conhecimento_exploits = []
         
         # Verificar tecnologias conhecidas
         if scan_http.get('tecnologias'):
             for tech in scan_http['tecnologias']:
-                if 'php' in tech.lower():
+                tech_lower = tech.lower()
+                
+                # PHP
+                if 'php' in tech_lower:
+                    # Extrair versão se possível
+                    version_match = re.search(r'(\d+\.\d+\.?\d*)', tech)
+                    version = version_match.group(1) if version_match else "desconhecida"
+                    
                     exploits.append({
-                        'tipo': 'Tecnologia identificada',
-                        'detalhes': f'PHP detectado: {tech}',
-                        'recomendacao': 'Verificar versão PHP contra CVEs conhecidos'
+                        'tipo': 'Tecnologia Identificada',
+                        'severidade': 'MÉDIA',
+                        'tecnologia': f'PHP {version}',
+                        'recomendacao': f'Verificar PHP {version} contra CVEs conhecidos. Atualizar para versão mais recente se vulnerável.',
+                        'cvss_estimado': 6.5
+                    })
+                
+                # Apache
+                if 'apache' in tech_lower:
+                    exploits.append({
+                        'tipo': 'Servidor Web Identificado',
+                        'severidade': 'BAIXA',
+                        'tecnologia': tech,
+                        'recomendacao': 'Verificar versão Apache contra CVEs. Manter atualizado.',
+                        'cvss_estimado': 5.0
+                    })
+                
+                # Nginx
+                if 'nginx' in tech_lower:
+                    exploits.append({
+                        'tipo': 'Servidor Web Identificado',
+                        'severidade': 'BAIXA',
+                        'tecnologia': tech,
+                        'recomendacao': 'Verificar versão Nginx contra CVEs.',
+                        'cvss_estimado': 5.0
                     })
         
         # Verificar portas abertas
         if scan_nmap.get('portas_abertas'):
+            portas_criticas = []
+            
             for porta in scan_nmap['portas_abertas']:
-                if '8080' in porta or '8443' in porta:
-                    exploits.append({
-                        'tipo': 'Porta não-padrão',
-                        'detalhes': f'Porta {porta} aberta',
-                        'recomendacao': 'Investigar serviço exposto'
-                    })
+                # Portas não-padrão são suspeitas
+                if any(p in porta for p in ['8080', '8443', '3000', '4000', '5000']):
+                    portas_criticas.append(porta)
+            
+            if portas_criticas:
+                exploits.append({
+                    'tipo': 'Portas Não-Padrão Abertas',
+                    'severidade': 'MÉDIA',
+                    'detalhes': f'Porta(s) {", ".join(portas_criticas)} detectada(s)',
+                    'recomendacao': 'Investigar serviços expostos nestas portas. Fechar portas desnecessárias. Usar firewall.',
+                    'cvss_estimado': 5.5
+                })
+        
+        # Verificar headers de segurança ausentes (alto risco)
+        if scan_http.get('headers_seguranca_faltando'):
+            headers_faltando = scan_http['headers_seguranca_faltando']
+            
+            if len(headers_faltando) >= 3:
+                exploits.append({
+                    'tipo': 'Múltiplos Headers de Segurança Ausentes',
+                    'severidade': 'ALTA',
+                    'detalhes': f'{len(headers_faltando)} header(s) ausente(s): {", ".join(headers_faltando)}',
+                    'recomendacao': 'Implementar headers de segurança críticos. Aumenta proteção contra XSS, Clickjacking, MIME sniffing.',
+                    'cvss_estimado': 6.8
+                })
+        
+        # Usar conhecimento dos PDFs para sugerir testes adicionais
+        if conhecimento_exploits:
+            exploits.append({
+                'tipo': 'Testes Adicionais Recomendados',
+                'severidade': 'INFO',
+                'detalhes': f'Baseado em {len(conhecimento_exploits)} documento(s) de conhecimento',
+                'recomendacao': 'Sistema detectou conhecimento sobre: exploits, CVEs, técnicas avançadas. Envie mais PDFs para testes mais profundos.',
+                'cvss_estimado': 0.0
+            })
         
         return exploits
     
@@ -465,6 +552,21 @@ Liste 5 payloads XSS para teste (APENAS os payloads):"""
             forms = http_info.get('formularios', 0)
             http_resumo = f"{forms} formulário(s), {headers_faltando} header(s) de segurança ausente(s)"
         
+        # Preparar exploits
+        exploits_texto = "Nenhum exploit adicional verificado"
+        if resultado_scan.get('exploits'):
+            exploits_lista = []
+            for exp in resultado_scan['exploits']:
+                cvss = exp.get('cvss_estimado', 0.0)
+                cvss_str = f"CVSS: {cvss}" if cvss > 0 else ""
+                
+                exploits_lista.append(
+                    f"- **{exp['tipo']}** ({exp['severidade']}) {cvss_str}\n"
+                    f"  {exp.get('tecnologia', exp.get('detalhes', ''))}\n"
+                    f"  Recomendação: {exp['recomendacao']}"
+                )
+            exploits_texto = "\n".join(exploits_lista)
+        
         # Prompt para IA
         prompt = f"""Você é um analista de segurança sênior. Gere um relatório profissional de pentest.
 
@@ -485,8 +587,8 @@ Liste 5 payloads XSS para teste (APENAS os payloads):"""
 **VULNERABILIDADES ENCONTRADAS**:
 {vulns_texto}
 
-**EXPLOITS VERIFICADOS**:
-{len(resultado_scan.get('exploits', []))} exploit(s) potencial(is)
+**EXPLOITS E TECNOLOGIAS VERIFICADAS**:
+{exploits_texto}
 
 Gere relatório profissional incluindo:
 1. 📋 Resumo Executivo
