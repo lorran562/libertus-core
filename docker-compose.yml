@@ -3,9 +3,28 @@ version: '3.8'
 services:
   libertus:
     build: .
+    container_name: libertus-bot
     volumes:
       - ./logs:/app/logs
       - ./memoria:/app/memoria
+      - ./pdfs:/app/pdfs
     environment:
       - PYTHONUNBUFFERED=1
+      - GROQ_API_KEY=${GROQ_API_KEY}
     restart: unless-stopped
+    
+  # ChromaDB standalone (opcional, para produção)
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: libertus-chromadb
+    volumes:
+      - ./memoria/chroma:/chroma/chroma
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+    restart: unless-stopped
+
+networks:
+  default:
+    name: libertus-network
