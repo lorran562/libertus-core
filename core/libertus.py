@@ -48,6 +48,7 @@ from memoria_local   import MemoriaLocal
 from memoria_viva    import MemoriaViva
 from detector_contradicao import DetectorContradicao
 from livro_erros import LivroErros
+from auto_curiosidade import AutoCuriosidade
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
 from groq_client     import Groq
@@ -147,6 +148,12 @@ class Orquestrador:
         except Exception as e:
             self.le = None
             log(f"Livro de Erros offline: {e}", "warn")
+        try:
+            self.ac = AutoCuriosidade(groq_client=None, supabase_client=self.sb)
+            log("Auto-Curiosidade ativa", "mem")
+        except Exception as e:
+            self.ac = None
+            log(f"Auto-Curiosidade offline: {e}", "warn")
         self.clf = IntentClassifier()
         self.decisao  = MotorDecisao(LIBERTUS_ROOT)
         self.obj      = SistemaObjetivos(LIBERTUS_ROOT)
@@ -166,6 +173,7 @@ class Orquestrador:
         self.groq   = Groq(GROQ_KEY) if GROQ_KEY else None
         if self.dc and self.groq: self.dc.groq = self.groq
         if self.le and self.groq: self.le.groq = self.groq
+        if self.ac and self.groq: self.ac.groq = self.groq
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
         if not MODO_AUTONOMO and CLAUDE_OK and ANT_KEY:
@@ -291,6 +299,25 @@ class Orquestrador:
             except Exception as e:
                 log(f"Erro LivroErros registro: {e}", "warn")
 
+        # Auto-Curiosidade: lacuna detectada após erro
+        if self.ac and score_val < 6:
+            try:
+                self.ac.gerar_de_erro(
+                    entrada=entrada,
+                    resultado=str(resultado),
+                    dominio=intent.tipo,
+                    causa=diag_val,
+                )
+            except Exception as e:
+                log(f"Erro AutoCuriosidade: {e}", "warn")
+
+        # Quando resposta está vazia — registrar bloqueio
+        if self.ac and not resultado.strip():
+            try:
+                self.ac.registrar_bloqueio(intent.tipo, entrada)
+            except Exception:
+                pass
+
         # Memória Viva: fechar o ciclo — score >= 7 = útil, < 4 = inútil
         if self.mv and self._memorias_usadas:
             foi_util = score_val >= 7
@@ -305,6 +332,14 @@ class Orquestrador:
 
         if aval.get("score", 0) >= 7 and executor_usado not in ("groq","conversa"):
             self.mem.salvar_aprendizado(f"exec_{executor_usado}", f"Tarefa: {entrada[:80]}", skill=executor_usado)
+
+        # Auto-Curiosidade: analisa sessão a cada 5 interações
+        if self.ac and self._stats.get("total", 0) % 5 == 0:
+            try:
+                historico = f"Entrada: {entrada}\nResultado: {str(resultado)[:400]}"
+                self.ac.gerar_de_sessao(historico)
+            except Exception:
+                pass
 
         score_final = aval.get('score', 0)
         self.sb.salvar_execucao(sid, entrada,
