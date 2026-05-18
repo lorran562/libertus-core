@@ -47,6 +47,7 @@ from supabase_client import Supabase
 from memoria_local   import MemoriaLocal
 from memoria_viva    import MemoriaViva
 from detector_contradicao import DetectorContradicao
+from livro_erros import LivroErros
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
 from groq_client     import Groq
@@ -140,6 +141,12 @@ class Orquestrador:
         except Exception as e:
             self.dc = None
             log(f"Detector Contradicao offline: {e}", "warn")
+        try:
+            self.le = LivroErros(groq_client=None, supabase_client=self.sb)
+            log("Livro de Erros ativo", "mem")
+        except Exception as e:
+            self.le = None
+            log(f"Livro de Erros offline: {e}", "warn")
         self.clf = IntentClassifier()
         self.decisao  = MotorDecisao(LIBERTUS_ROOT)
         self.obj      = SistemaObjetivos(LIBERTUS_ROOT)
@@ -158,6 +165,7 @@ class Orquestrador:
         self.wordlist = WordlistEngine(LIBERTUS_ROOT) if WordlistEngine else None
         self.groq   = Groq(GROQ_KEY) if GROQ_KEY else None
         if self.dc and self.groq: self.dc.groq = self.groq
+        if self.le and self.groq: self.le.groq = self.groq
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
         if not MODO_AUTONOMO and CLAUDE_OK and ANT_KEY:
@@ -203,6 +211,16 @@ class Orquestrador:
                     log(f"Tensoes injetadas: {len(tensoes)}", "mem")
             except Exception as e:
                 log(f"Erro Detector: {e}", "warn")
+
+        # Livro de Erros: consulta falhas passadas antes de responder
+        if self.le:
+            try:
+                aviso_erros = self.le.consultar(entrada)
+                if aviso_erros:
+                    ctx_local = (ctx_local or "") + "\n\n" + aviso_erros
+                    log("Historico de erros injetado", "mem")
+            except Exception as e:
+                log(f"Erro LivroErros consulta: {e}", "warn")
 
         resultado = ""; executor_usado = "fallback"
 
@@ -256,6 +274,22 @@ class Orquestrador:
         score_val = aval.get('score', 0)
         diag_val  = aval.get('diagnostico', '')
         log(f"Score: {score_val}/10 | {diag_val}", "eval")
+
+        # Livro de Erros: registrar falha se score < 6
+        if self.le and score_val < 6:
+            try:
+                self.le.registrar(
+                    entrada=entrada,
+                    resultado=str(resultado),
+                    executor=executor_usado,
+                    score=score_val,
+                    diagnostico=diag_val,
+                    memorias_usadas=getattr(self, "_memorias_usadas", []),
+                    tensoes_ativas=[],
+                    intent_tipo=intent.tipo
+                )
+            except Exception as e:
+                log(f"Erro LivroErros registro: {e}", "warn")
 
         # Memória Viva: fechar o ciclo — score >= 7 = útil, < 4 = inútil
         if self.mv and self._memorias_usadas:
