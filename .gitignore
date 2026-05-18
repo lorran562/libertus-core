@@ -1,7 +1,5 @@
-# Ignorar arquivo .env com API keys
+# API Keys (NUNCA commitar)
 .env
-*.env
-.env.*
 
 # Ignorar PIDs e logs temporários
 /tmp/
@@ -17,4 +15,3 @@ __pycache__/
 memory/heartbeat.json
 memory/tentativas_fix.json
 memory/bugs_persistentes.json
-.env
