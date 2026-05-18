@@ -45,6 +45,7 @@ def _imp(nome):
 
 from supabase_client import Supabase
 from memoria_local   import MemoriaLocal
+from memoria_viva    import MemoriaViva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
 from groq_client     import Groq
@@ -122,6 +123,13 @@ class Orquestrador:
         log(f"Root: {LIBERTUS_ROOT}","info")
         self.sb  = Supabase()
         self.mem = MemoriaLocal(LIBERTUS_ROOT)
+        try:
+            self.mv = MemoriaViva()
+            self.mv.decair()
+            log("Memoria Viva ativa", "mem")
+        except Exception as e:
+            self.mv = None
+            log(f"Memoria Viva offline: {e}", "warn")
         self.clf = IntentClassifier()
         self.decisao  = MotorDecisao(LIBERTUS_ROOT)
         self.obj      = SistemaObjetivos(LIBERTUS_ROOT)
@@ -155,6 +163,19 @@ class Orquestrador:
         intent = self.clf.classificar(entrada)
         log(f"Intencao: {self.clf.resumo(intent)}","intent")
         ctx_local = self.mem.buscar_contexto(entrada)
+
+        # Memória Viva: busca memórias pelo peso_vivo (não mais relevancia estática)
+        self._memorias_usadas = []
+        if self.mv:
+            try:
+                mems_vivas = self.mv.buscar_e_rastrear(entrada, limite=5)
+                if mems_vivas:
+                    self._memorias_usadas = mems_vivas
+                    extra = "\n".join(f"- {m['titulo']}: {m['conteudo'][:200]}" for m in mems_vivas)
+                    ctx_local = (ctx_local or "") + "\n\n[MEMÓRIA VIVA]\n" + extra
+                    log(f"Memoria Viva: {len(mems_vivas)} memorias ({[round(m['peso_vivo'],1) for m in mems_vivas]})", "mem")
+            except Exception as e:
+                log(f"Erro Memoria Viva: {e}", "warn")
         resultado = ""; executor_usado = "fallback"
 
         if intent.tipo == "pentest_completo" and intent.alvo:
@@ -207,6 +228,18 @@ class Orquestrador:
         score_val = aval.get('score', 0)
         diag_val  = aval.get('diagnostico', '')
         log(f"Score: {score_val}/10 | {diag_val}", "eval")
+
+        # Memória Viva: fechar o ciclo — score >= 7 = útil, < 4 = inútil
+        if self.mv and self._memorias_usadas:
+            foi_util = score_val >= 7
+            for m in self._memorias_usadas:
+                try:
+                    if foi_util:
+                        self.mv.foi_util(m["id"], contexto=f"{intent.tipo}|{entrada[:60]}")
+                    elif score_val < 4:
+                        self.mv.foi_inutil(m["id"], contexto=f"{intent.tipo}|{entrada[:60]}")
+                except Exception:
+                    pass
 
         if aval.get("score", 0) >= 7 and executor_usado not in ("groq","conversa"):
             self.mem.salvar_aprendizado(f"exec_{executor_usado}", f"Tarefa: {entrada[:80]}", skill=executor_usado)
