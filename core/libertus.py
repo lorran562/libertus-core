@@ -49,6 +49,7 @@ from memoria_viva    import MemoriaViva
 from detector_contradicao import DetectorContradicao
 from livro_erros import LivroErros
 from auto_curiosidade import AutoCuriosidade
+from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
 from groq_client     import Groq
@@ -154,6 +155,12 @@ class Orquestrador:
         except Exception as e:
             self.ac = None
             log(f"Auto-Curiosidade offline: {e}", "warn")
+        try:
+            self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
+            log("Identidade Cognitiva ativa", "mem")
+        except Exception as e:
+            self.ic = None
+            log(f"Identidade Cognitiva offline: {e}", "warn")
         self.clf = IntentClassifier()
         self.decisao  = MotorDecisao(LIBERTUS_ROOT)
         self.obj      = SistemaObjetivos(LIBERTUS_ROOT)
@@ -174,6 +181,9 @@ class Orquestrador:
         if self.dc and self.groq: self.dc.groq = self.groq
         if self.le and self.groq: self.le.groq = self.groq
         if self.ac and self.groq: self.ac.groq = self.groq
+        if self.ic and self.groq:
+            self.ic.groq = self.groq
+            self.ic.injetar_no_groq(self.groq)   # system prompt vivo desde o boot
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
         if not MODO_AUTONOMO and CLAUDE_OK and ANT_KEY:
@@ -332,6 +342,21 @@ class Orquestrador:
 
         if aval.get("score", 0) >= 7 and executor_usado not in ("groq","conversa"):
             self.mem.salvar_aprendizado(f"exec_{executor_usado}", f"Tarefa: {entrada[:80]}", skill=executor_usado)
+        # Identidade: aprender com sucesso
+        if self.ic and score_val >= 8:
+            try:
+                self.ic.aprender_de_sucesso(entrada, str(resultado), executor_usado, score_val)
+            except Exception:
+                pass
+
+        # Identidade Cognitiva: consolida traços a cada 10 interações
+        if self.ic and self._stats.get("total", 0) % 10 == 0:
+            try:
+                resumo = f"Entrada: {entrada}\nResultado: {str(resultado)[:300]}\nScore: {score_val}/10"
+                self.ic.aprender_de_sessao(resumo)
+                self.ic.injetar_no_groq(self.groq)  # atualiza system prompt
+            except Exception:
+                pass
 
         # Auto-Curiosidade: analisa sessão a cada 5 interações
         if self.ac and self._stats.get("total", 0) % 5 == 0:
