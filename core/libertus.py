@@ -46,6 +46,7 @@ def _imp(nome):
 from supabase_client import Supabase
 from memoria_local   import MemoriaLocal
 from memoria_viva    import MemoriaViva
+from detector_contradicao import DetectorContradicao
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
 from groq_client     import Groq
@@ -130,6 +131,15 @@ class Orquestrador:
         except Exception as e:
             self.mv = None
             log(f"Memoria Viva offline: {e}", "warn")
+        try:
+            self.dc = DetectorContradicao(
+                groq_client=None,   # será ligado ao groq após init
+                supabase_client=self.sb
+            )
+            log("Detector de Contradicao ativo", "mem")
+        except Exception as e:
+            self.dc = None
+            log(f"Detector Contradicao offline: {e}", "warn")
         self.clf = IntentClassifier()
         self.decisao  = MotorDecisao(LIBERTUS_ROOT)
         self.obj      = SistemaObjetivos(LIBERTUS_ROOT)
@@ -147,6 +157,7 @@ class Orquestrador:
         self.metodo   = Metodologia(LIBERTUS_ROOT)   if Metodologia   else None
         self.wordlist = WordlistEngine(LIBERTUS_ROOT) if WordlistEngine else None
         self.groq   = Groq(GROQ_KEY) if GROQ_KEY else None
+        if self.dc and self.groq: self.dc.groq = self.groq
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
         if not MODO_AUTONOMO and CLAUDE_OK and ANT_KEY:
@@ -176,6 +187,23 @@ class Orquestrador:
                     log(f"Memoria Viva: {len(mems_vivas)} memorias ({[round(m['peso_vivo'],1) for m in mems_vivas]})", "mem")
             except Exception as e:
                 log(f"Erro Memoria Viva: {e}", "warn")
+
+        # Contradições abertas — incerteza produtiva enriquece o contexto
+        if self.dc:
+            try:
+                tensoes = self.dc.buscar_tensoes_relevantes(entrada, limite=2)
+                if tensoes:
+                    t_fmt = "\n".join(
+                        f"- TENSÃO [{t.get('tipo_conflito','')}]: {t.get('tema','')} "
+                        f"| Doc A diz: {t.get('afirmacao_a','')[:120]} "
+                        f"| Doc B diz: {t.get('afirmacao_b','')[:120]}"
+                        for t in tensoes
+                    )
+                    ctx_local = (ctx_local or "") + "\n\n[CONTRADIÇÕES ABERTAS]\n" + t_fmt
+                    log(f"Tensoes injetadas: {len(tensoes)}", "mem")
+            except Exception as e:
+                log(f"Erro Detector: {e}", "warn")
+
         resultado = ""; executor_usado = "fallback"
 
         if intent.tipo == "pentest_completo" and intent.alvo:

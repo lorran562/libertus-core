@@ -68,6 +68,7 @@ class Absorvedor:
         )
 
         caminho = mem.salvar(pasta, f"absorvido_{nome}", resumo, ["absorvido", pasta])
+        self._detectar_contradicoes(conteudo_limpo, nome)
         return f"Absorvido em {pasta}: {caminho}"
 
     def _absorver_pdf(self, p: Path) -> str:
@@ -107,3 +108,18 @@ class Absorvedor:
         caminho = mem.salvar("skills", f"codigo_{nome}", resumo,
                              ["codigo", "python", "absorvido"])
         return f"Código absorvido em skills: {caminho}"
+
+    def _detectar_contradicoes(self, conteudo: str, titulo: str):
+        """Roda o detector após absorção. Falha silenciosamente."""
+        try:
+            from detector_contradicao import DetectorContradicao
+            from supabase_client import Supabase
+            dc = DetectorContradicao(
+                groq_client=getattr(self, "_groq", None),
+                supabase_client=Supabase()
+            )
+            found = dc.detectar(conteudo, titulo)
+            if found:
+                print(f"  ⚡ {len(found)} contradição(ões) registrada(s)")
+        except Exception:
+            pass
