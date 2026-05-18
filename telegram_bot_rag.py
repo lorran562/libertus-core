@@ -12,7 +12,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # Configuração
-TOKEN = "8619239720:AAGxEQx1rLtdPV8vmVj4HYFMerctFIOoFY"
+TOKEN = "8619239720:AAGTnX5av0nOQRLucJuyjf8_j4QNnXX9sgA"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
 
 # Adicionar core ao path
