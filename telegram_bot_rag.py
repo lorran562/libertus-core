@@ -23,8 +23,9 @@ sys.path.insert(0, str(CORE_PATH))
 try:
     from libertus_rag import LibertusRAG
     from libertus_ia import LibertusIA
+    from libertus_scanner_inteligente import LibertusScannerInteligente
     RAG_DISPONIVEL = True
-    print("✅ RAG + IA carregados")
+    print("✅ RAG + IA + Scanner carregados")
 except Exception as e:
     RAG_DISPONIVEL = False
     print(f"⚠️ RAG + IA não disponíveis: {e}")
@@ -34,7 +35,8 @@ if RAG_DISPONIVEL:
     try:
         rag = LibertusRAG(persist_dir=str(Path.home() / "LIBERTUS" / "memoria" / "chroma"))
         ia = LibertusIA(api_key=GROQ_API_KEY)
-        print("✅ RAG + IA inicializados")
+        scanner = LibertusScannerInteligente(rag, ia)
+        print("✅ RAG + IA + Scanner inicializados")
     except Exception as e:
         RAG_DISPONIVEL = False
         print(f"❌ Erro ao inicializar RAG + IA: {e}")
@@ -187,6 +189,54 @@ async def create_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Erro ao criar: {e}")
 
+async def scan_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /scan [url] - Scanner inteligente!"""
+    if not RAG_DISPONIVEL:
+        await update.message.reply_text("⚠️ Scanner inteligente não disponível")
+        return
+    
+    if not context.args:
+        await update.message.reply_text("""❌ Use: /scan [url]
+
+**Exemplo:**
+/scan https://site.com
+
+**SCANNER INTELIGENTE:**
+✅ Usa conhecimento dos PDFs absorvidos
+✅ Quanto mais PDFs, mais vulnerabilidades encontra
+✅ IA gera payloads personalizados
+✅ Relatório profissional automático""")
+        return
+    
+    url = context.args[0]
+    
+    # Validar URL
+    if not url.startswith(('http://', 'https://')):
+        url = f"http://{url}"
+    
+    await update.message.reply_text(f"""🔍 **SCANNER INTELIGENTE INICIADO**
+
+🎯 Alvo: {url}
+
+📚 Usando conhecimento absorvido de PDFs...
+⚡ IA gerando payloads personalizados...
+🧠 Testando vulnerabilidades...
+
+*Isso pode levar 30-60 segundos...*""")
+    
+    try:
+        # SCANNER INTELIGENTE!
+        relatorio = await scanner.scan_completo(url)
+        
+        await update.message.reply_text(f"""✅ **SCAN COMPLETO!**
+
+{relatorio}
+
+💡 **QUANTO MAIS PDFs VOCÊ ENVIAR, MELHOR O SCANNER FICA!**""")
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erro ao scanear: {e}")
+
 async def receber_documento(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Processar PDFs enviados"""
     if not RAG_DISPONIVEL:
@@ -267,6 +317,7 @@ def main():
     app.add_handler(CommandHandler("upload", upload_comando))
     app.add_handler(CommandHandler("ask", ask_comando))
     app.add_handler(CommandHandler("create", create_comando))
+    app.add_handler(CommandHandler("scan", scan_comando))  # SCANNER INTELIGENTE!
     
     # Documentos (PDFs)
     app.add_handler(MessageHandler(filters.Document.PDF, receber_documento))
