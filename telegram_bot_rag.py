@@ -24,8 +24,9 @@ try:
     from libertus_rag import LibertusRAG
     from libertus_ia import LibertusIA
     from libertus_scanner_inteligente import LibertusScannerInteligente
+    from libertus_telegram_wrapper import LibertusTelegramWrapper
     RAG_DISPONIVEL = True
-    print("✅ RAG + IA + Scanner carregados")
+    print("✅ RAG + IA + Scanner + Wrapper VPS carregados")
 except Exception as e:
     RAG_DISPONIVEL = False
     print(f"⚠️ RAG + IA não disponíveis: {e}")
@@ -36,7 +37,8 @@ if RAG_DISPONIVEL:
         rag = LibertusRAG(persist_dir=str(Path.home() / "LIBERTUS" / "memoria" / "chroma"))
         ia = LibertusIA(api_key=GROQ_API_KEY)
         scanner = LibertusScannerInteligente(rag, ia)
-        print("✅ RAG + IA + Scanner inicializados")
+        wrapper_vps = LibertusTelegramWrapper(rag, ia)
+        print("✅ RAG + IA + Scanner + Wrapper VPS inicializados")
     except Exception as e:
         RAG_DISPONIVEL = False
         print(f"❌ Erro ao inicializar RAG + IA: {e}")
@@ -190,7 +192,7 @@ async def create_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"❌ Erro ao criar: {e}")
 
 async def scan_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /scan [url] - Scanner inteligente!"""
+    """Comando /scan [url] - Scanner LIBERTUS VPS COMPLETO!"""
     if not RAG_DISPONIVEL:
         await update.message.reply_text("⚠️ Scanner inteligente não disponível")
         return
@@ -201,11 +203,16 @@ async def scan_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
 **Exemplo:**
 /scan https://site.com
 
-**SCANNER INTELIGENTE:**
-✅ Usa conhecimento dos PDFs absorvidos
-✅ Quanto mais PDFs, mais vulnerabilidades encontra
-✅ IA gera payloads personalizados
-✅ Relatório profissional automático""")
+**🔥 SCANNER LIBERTUS VPS:**
+✅ NMAP scan completo
+✅ Scanner HTTP avançado
+✅ SQL Injection (IA + PDFs)
+✅ XSS (IA + PDFs)
+✅ Verificação de exploits
+✅ Usa TODOS os 17+ módulos
+✅ Relatório profissional automático
+
+**Quanto mais PDFs, mais vulnerabilidades encontra!**""")
         return
     
     url = context.args[0]
@@ -214,28 +221,69 @@ async def scan_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not url.startswith(('http://', 'https://')):
         url = f"http://{url}"
     
-    await update.message.reply_text(f"""🔍 **SCANNER INTELIGENTE INICIADO**
+    await update.message.reply_text(f"""🔥 **LIBERTUS VPS SCANNER INICIADO**
 
 🎯 Alvo: {url}
 
-📚 Usando conhecimento absorvido de PDFs...
-⚡ IA gerando payloads personalizados...
-🧠 Testando vulnerabilidades...
+📡 **EXECUTANDO:**
+[1/5] 🔍 NMAP scan completo...
+[2/5] 🌐 Análise HTTP avançada...
+[3/5] 💉 SQL Injection (IA + PDFs)...
+[4/5] 🎭 XSS testing (IA + PDFs)...
+[5/5] 💥 Verificação de exploits...
 
-*Isso pode levar 30-60 segundos...*""")
+📚 Usando conhecimento de {rag.collection.count()} documentos!
+
+*Isso pode levar 60-90 segundos...*""")
     
     try:
-        # SCANNER INTELIGENTE!
-        relatorio = await scanner.scan_completo(url)
+        # 🔥 SCANNER VPS COMPLETO!
+        relatorio = await wrapper_vps.scan_completo_vps(url)
         
-        await update.message.reply_text(f"""✅ **SCAN COMPLETO!**
+        # Enviar relatório
+        # Se for muito grande, dividir em partes
+        if len(relatorio) > 4000:
+            # Telegram tem limite de 4096 caracteres
+            partes = [relatorio[i:i+4000] for i in range(0, len(relatorio), 4000)]
+            
+            for i, parte in enumerate(partes, 1):
+                if i == 1:
+                    await update.message.reply_text(f"""✅ **SCAN VPS COMPLETO!**
 
-{relatorio}
+{parte}""")
+                else:
+                    await update.message.reply_text(parte)
+        else:
+            await update.message.reply_text(f"""✅ **SCAN VPS COMPLETO!**
 
-💡 **QUANTO MAIS PDFs VOCÊ ENVIAR, MELHOR O SCANNER FICA!**""")
+{relatorio}""")
+        
+        # Footer
+        await update.message.reply_text(f"""
+💡 **SISTEMA EVOLUIU!**
+
+📊 Módulos usados:
+• NMAP (portas e serviços)
+• HTTP (headers, forms, tech)
+• SQL Injection (IA + PDFs)
+• XSS (IA + PDFs)
+• Exploit Verification
+
+📚 Conhecimento: {rag.collection.count()} documentos
+
+**🔥 QUANTO MAIS PDFs, MAIS PODEROSO FICA!**
+
+Envie mais PDFs com /upload para melhorar!""")
         
     except Exception as e:
-        await update.message.reply_text(f"❌ Erro ao scanear: {e}")
+        await update.message.reply_text(f"""❌ Erro ao scanear: {e}
+
+**Debug info:**
+- URL: {url}
+- RAG docs: {rag.collection.count()}
+- Wrapper: {'OK' if wrapper_vps else 'ERRO'}
+
+Tente novamente ou envie mais PDFs com /upload""")
 
 async def receber_documento(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Processar PDFs enviados"""
