@@ -33,12 +33,17 @@ except Exception as e:
 
 # ── Novos módulos de evolução ────────────────────────────────────────
 try:
-    from memoria_viva       import MemoriaViva
+    import supabase as _supabase_test  # testa se está instalado
+    from memoria_viva         import MemoriaViva
     from detector_contradicao import DetectorContradicao
-    from livro_erros        import LivroErros
-    from auto_curiosidade   import AutoCuriosidade
+    from livro_erros          import LivroErros
+    from auto_curiosidade     import AutoCuriosidade
     from identidade_cognitiva import IdentidadeCognitiva
     EVOLUCAO_DISPONIVEL = True
+    print("✅ Módulos de evolução carregados")
+except ModuleNotFoundError:
+    EVOLUCAO_DISPONIVEL = False
+    print("⚠️ Evolução desativada — rode: pip install supabase --break-system-packages")
 except Exception as e:
     EVOLUCAO_DISPONIVEL = False
     print(f"⚠️ Módulos de evolução não carregados: {e}")
@@ -413,6 +418,42 @@ async def receber_documento(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     except Exception as e:
         await update.message.reply_text(f"❌ Erro: {e}")
+
+async def evolucao_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /evolucao — estado vivo do LIBERTUS"""
+    if not EVOLUCAO_DISPONIVEL or not mv:
+        await update.message.reply_text(
+            "⚠️ Módulos de evolução não ativos\n\n"
+            "Instale: pip install supabase --break-system-packages"
+        )
+        return
+    try:
+        linhas = ["🧬 *LIBERTUS — ESTADO VIVO*\n"]
+        if mv:
+            top = mv.buscar(limite=3, peso_minimo=3.0)
+            linhas.append("🧠 *Memórias mais vivas:*")
+            for m in top:
+                linhas.append(f"  [{m.get('peso_vivo',0):.1f}] {m.get('titulo','?')[:40]}")
+        if le:
+            erros = le._buscar_erros_relevantes("", 3)
+            linhas.append(f"\n📕 *Erros não corrigidos:* {len(erros)}")
+            for e in erros[:2]:
+                linhas.append(f"  [{e.get('score',0):.1f}] {e.get('causa_provavel','?')[:50]}")
+        if ac:
+            prox = ac.proxima_a_estudar()
+            if prox:
+                linhas.append(f"\n🤔 *Próximo estudo:*")
+                linhas.append(f"  {prox.get('pergunta','?')[:80]}")
+        if ic:
+            tracos = ic._carregar_tracos(3)
+            total  = len(ic._carregar_tracos(50))
+            linhas.append(f"\n🧬 *Traços cognitivos:* {total}")
+            for t in tracos:
+                linhas.append(f"  [{t.get('peso',0):.0f}/10] {t.get('descricao','?')[:50]}")
+        await update.message.reply_text("\n".join(linhas), parse_mode="Markdown")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erro: {e}")
+
 
 async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Mensagens de texto livres — passa pelo cérebro central (libertus.py)"""
