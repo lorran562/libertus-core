@@ -51,25 +51,27 @@ if RAG_DISPONIVEL:
         scanner = LibertusScannerInteligente(rag, ia)
         wrapper_vps = LibertusTelegramWrapper(rag, ia)
         print("✅ RAG + IA + Scanner + Wrapper VPS inicializados")
-    # Inicializar módulos de evolução
-    if EVOLUCAO_DISPONIVEL:
-        try:
-            from supabase_client import Supabase
-            _sb = Supabase()
-            mv  = MemoriaViva()
-            mv.decair()
-            le  = LivroErros(supabase_client=_sb)
-            ac  = AutoCuriosidade(supabase_client=_sb)
-            dc  = DetectorContradicao(supabase_client=_sb)
-            ic  = IdentidadeCognitiva(supabase_client=_sb)
-            print("✅ Memória Viva, Livro de Erros, Auto-Curiosidade, Identidade ativos")
-        except Exception as e:
-            EVOLUCAO_DISPONIVEL = False
-            mv = le = ac = dc = ic = None
-            print(f"⚠️ Evolução parcial: {e}")
     except Exception as e:
         RAG_DISPONIVEL = False
         print(f"❌ Erro ao inicializar RAG + IA: {e}")
+
+# Inicializar módulos de evolução (fora do bloco RAG)
+mv = le = ac = dc = ic = None
+if EVOLUCAO_DISPONIVEL:
+    try:
+        from supabase_client import Supabase
+        _sb = Supabase()
+        mv  = MemoriaViva()
+        mv.decair()
+        le  = LivroErros(supabase_client=_sb)
+        ac  = AutoCuriosidade(supabase_client=_sb)
+        dc  = DetectorContradicao(supabase_client=_sb)
+        ic  = IdentidadeCognitiva(supabase_client=_sb)
+        print("✅ Memória Viva, Livro de Erros, Auto-Curiosidade, Identidade ativos")
+    except Exception as e:
+        EVOLUCAO_DISPONIVEL = False
+        mv = le = ac = dc = ic = None
+        print(f"⚠️ Evolução parcial: {e}")
 
 # ==================== COMANDOS ====================
 
