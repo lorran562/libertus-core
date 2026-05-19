@@ -31,6 +31,18 @@ except Exception as e:
     RAG_DISPONIVEL = False
     print(f"⚠️ RAG + IA não disponíveis: {e}")
 
+# ── Novos módulos de evolução ────────────────────────────────────────
+try:
+    from memoria_viva       import MemoriaViva
+    from detector_contradicao import DetectorContradicao
+    from livro_erros        import LivroErros
+    from auto_curiosidade   import AutoCuriosidade
+    from identidade_cognitiva import IdentidadeCognitiva
+    EVOLUCAO_DISPONIVEL = True
+except Exception as e:
+    EVOLUCAO_DISPONIVEL = False
+    print(f"⚠️ Módulos de evolução não carregados: {e}")
+
 # Inicializar RAG + IA globalmente
 if RAG_DISPONIVEL:
     try:
@@ -39,6 +51,22 @@ if RAG_DISPONIVEL:
         scanner = LibertusScannerInteligente(rag, ia)
         wrapper_vps = LibertusTelegramWrapper(rag, ia)
         print("✅ RAG + IA + Scanner + Wrapper VPS inicializados")
+    # Inicializar módulos de evolução
+    if EVOLUCAO_DISPONIVEL:
+        try:
+            from supabase_client import Supabase
+            _sb = Supabase()
+            mv  = MemoriaViva()
+            mv.decair()
+            le  = LivroErros(supabase_client=_sb)
+            ac  = AutoCuriosidade(supabase_client=_sb)
+            dc  = DetectorContradicao(supabase_client=_sb)
+            ic  = IdentidadeCognitiva(supabase_client=_sb)
+            print("✅ Memória Viva, Livro de Erros, Auto-Curiosidade, Identidade ativos")
+        except Exception as e:
+            EVOLUCAO_DISPONIVEL = False
+            mv = le = ac = dc = ic = None
+            print(f"⚠️ Evolução parcial: {e}")
     except Exception as e:
         RAG_DISPONIVEL = False
         print(f"❌ Erro ao inicializar RAG + IA: {e}")
@@ -129,10 +157,34 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"🔍 Buscando conhecimento sobre: {pergunta}...")
     
     try:
-        # Buscar contexto relevante
+        # ── Memória Viva: busca memórias pelo peso_vivo ──
+        ctx_extra = ""
+        _memorias_usadas = []
+        if EVOLUCAO_DISPONIVEL and mv:
+            try:
+                mems = mv.buscar_e_rastrear(pergunta, limite=3)
+                if mems:
+                    _memorias_usadas = mems
+                    ctx_extra += "\n[MEMÓRIA VIVA]\n" + "\n".join(
+                        f"- {m['titulo']}: {(m.get('conteudo') or '')[:150]}"
+                        for m in mems
+                    )
+            except Exception:
+                pass
+
+        # ── Livro de Erros: aviso de falhas passadas ──
+        if EVOLUCAO_DISPONIVEL and le:
+            try:
+                aviso = le.consultar(pergunta)
+                if aviso:
+                    ctx_extra += "\n\n" + aviso
+            except Exception:
+                pass
+
+        # Buscar contexto RAG
         documentos = rag.buscar_conhecimento(pergunta, n_results=5)
-        
-        if not documentos:
+
+        if not documentos and not ctx_extra:
             await update.message.reply_text("""❌ Nenhum conhecimento encontrado nos PDFs!
 
 💡 **Dica:**
@@ -140,16 +192,45 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
 2. Sistema absorve conhecimento
 3. Depois pergunte novamente!""")
             return
-        
+
         # Gerar resposta com IA
+        contexto_final = (documentos or "") + ctx_extra
         resposta = ia.responder_com_contexto(
             pergunta=pergunta,
-            contexto=documentos,
-            area="pentest"  # TODO: detectar área automaticamente
+            contexto=contexto_final,
+            area="pentest"
         )
-        
+
         await update.message.reply_text(f"🤖 **RESPOSTA:**\n\n{resposta}")
-        
+
+        # ── Feedback automático por tamanho da resposta ──
+        if EVOLUCAO_DISPONIVEL:
+            score_estimado = 8.0 if len(resposta) > 200 else 4.0
+            # Memória Viva: fechar ciclo
+            if mv and _memorias_usadas:
+                for m in _memorias_usadas:
+                    try:
+                        if score_estimado >= 7:
+                            mv.foi_util(m["id"], contexto=pergunta[:60])
+                        else:
+                            mv.foi_inutil(m["id"], contexto=pergunta[:60])
+                    except Exception:
+                        pass
+            # Livro de Erros: registrar se ruim
+            if le and score_estimado < 6:
+                try:
+                    le.registrar(pergunta, resposta, "rag+ia", score_estimado,
+                                 "resposta curta ou vazia")
+                except Exception:
+                    pass
+            # Auto-Curiosidade: detectar lacuna
+            if ac and score_estimado < 6:
+                try:
+                    ac.gerar_de_erro(pergunta, resposta, "pentest",
+                                     "resposta insatisfatória")
+                except Exception:
+                    pass
+
     except Exception as e:
         await update.message.reply_text(f"❌ Erro ao processar: {e}")
 
@@ -361,6 +442,7 @@ def main():
     # Comandos
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("status", status))
+    app.add_handler(CommandHandler("evolucao", evolucao_comando))
     app.add_handler(CommandHandler("stats", stats_comando))
     app.add_handler(CommandHandler("upload", upload_comando))
     app.add_handler(CommandHandler("ask", ask_comando))
