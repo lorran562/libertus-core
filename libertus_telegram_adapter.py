@@ -6,20 +6,15 @@ Adaptador REAL que conecta Telegram Bot ao cérebro completo LIBERTUS VPS
 
 import os
 import sys
+
+# ⚠️ CRÍTICO: CONFIGURAR ANTES DE QUALQUER IMPORT!
+# Forçar API keys NO AMBIENTE antes de importar libertus
+os.environ["GROQ_API_KEY"] = "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"
+os.environ["SUPABASE_URL"] = "https://jkgrmlfqgprcwfooovkx.supabase.co"
+os.environ["SUPABASE_KEY"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprZ3JtbGZxZ3ByY3dmb29vdmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNTY4NTIsImV4cCI6MjA4ODgzMjg1Mn0.f0N9ase2ZoYKq4JL7zVT9rzrjjsslYMPLcwd-k5Z8DA"
+
+# Paths DEPOIS
 from pathlib import Path
-
-# CRÍTICO: Configurar API keys ANTES de importar libertus
-# Pegar do ambiente ou usar padrão
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
-os.environ["GROQ_API_KEY"] = GROQ_API_KEY
-
-# Configurar Supabase (opcional mas recomendado)
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://jkgrmlfqgprcwfooovkx.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprZ3JtbGZxZ3ByY3dmb29vdmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNTY4NTIsImV4cCI6MjA4ODgzMjg1Mn0.f0N9ase2ZoYKq4JL7zVT9rzrjjsslYMPLcwd-k5Z8DA")
-os.environ["SUPABASE_URL"] = SUPABASE_URL
-os.environ["SUPABASE_KEY"] = SUPABASE_KEY
-
-# Configurar paths DEPOIS das variáveis
 LIBERTUS_ROOT = Path("/root/LIBERTUS")
 sys.path.insert(0, str(LIBERTUS_ROOT / "core"))
 sys.path.insert(0, str(LIBERTUS_ROOT))
