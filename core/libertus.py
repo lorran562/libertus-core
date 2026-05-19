@@ -74,7 +74,7 @@ Metodologia    = getattr(_m,"Metodologia",None)
 WordlistEngine = getattr(_w,"WordlistEngine",None)
 
 ANT_KEY  = os.environ.get("ANTHROPIC_API_KEY","")
-GROQ_KEY = os.environ.get("GROQ_API_KEY","")
+GROQ_KEY = os.environ.get("GROQ_API_KEY","") or "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"
 OLL_URL  = os.environ.get("OLLAMA_URL","http://localhost:11434")
 
 C=Fore.CYAN;G=Fore.GREEN;Y=Fore.YELLOW;R=Fore.RED
