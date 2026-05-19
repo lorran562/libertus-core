@@ -33,7 +33,6 @@ except Exception as e:
 
 # ── Novos módulos de evolução ────────────────────────────────────────
 try:
-    import supabase as _supabase_test  # testa se está instalado
     from memoria_viva         import MemoriaViva
     from detector_contradicao import DetectorContradicao
     from livro_erros          import LivroErros
@@ -41,9 +40,6 @@ try:
     from identidade_cognitiva import IdentidadeCognitiva
     EVOLUCAO_DISPONIVEL = True
     print("✅ Módulos de evolução carregados")
-except ModuleNotFoundError:
-    EVOLUCAO_DISPONIVEL = False
-    print("⚠️ Evolução desativada — rode: pip install supabase --break-system-packages")
 except Exception as e:
     EVOLUCAO_DISPONIVEL = False
     print(f"⚠️ Módulos de evolução não carregados: {e}")

@@ -29,6 +29,7 @@ Uso:
 """
 
 import json
+from supabase_client import Supabase
 from datetime import datetime
 from typing import Optional
 
@@ -97,7 +98,10 @@ Responda APENAS em JSON:
 
     def __init__(self, groq_client=None, supabase_client=None):
         self.groq = groq_client
-        self.sb   = supabase_client
+        try:
+            self.sb = supabase_client or Supabase()
+        except Exception:
+            self.sb = supabase_client
 
     # ------------------------------------------------------------------
     # FONTE 1: Lacuna detectada após erro

@@ -28,6 +28,7 @@ Uso:
 
 import os
 import json
+from supabase_client import Supabase
 import uuid
 from datetime import datetime
 from typing import Optional
@@ -74,7 +75,10 @@ ou qual deve prevalecer e por quê. Seja direto. Máximo 3 frases."""
 
     def __init__(self, groq_client=None, supabase_client=None):
         self.groq = groq_client
-        self.sb   = supabase_client
+        try:
+            self.sb = supabase_client or Supabase()
+        except Exception:
+            self.sb = supabase_client
         self._mem_cache = []
 
     # ------------------------------------------------------------------

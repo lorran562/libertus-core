@@ -26,6 +26,7 @@ Uso:
 """
 
 import json
+from supabase_client import Supabase
 import hashlib
 from datetime import datetime
 from typing import Optional
@@ -70,7 +71,10 @@ Se os erros não forem relevantes, responda apenas: NENHUM"""
 
     def __init__(self, groq_client=None, supabase_client=None):
         self.groq = groq_client
-        self.sb   = supabase_client
+        try:
+            self.sb = supabase_client or Supabase()
+        except Exception:
+            self.sb = supabase_client
 
     # ------------------------------------------------------------------
     # REGISTRAR: chamado após avaliação com score < 6

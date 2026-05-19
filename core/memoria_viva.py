@@ -24,16 +24,12 @@ Uso:
 
 import os
 from datetime import datetime
-from supabase import create_client, Client
+from supabase_client import Supabase
 
 
 class MemoriaViva:
     def __init__(self):
-        url = os.environ.get("SUPABASE_URL")
-        key = os.environ.get("SUPABASE_KEY")
-        if not url or not key:
-            raise ValueError("SUPABASE_URL e SUPABASE_KEY precisam estar no ambiente")
-        self.db: Client = create_client(url, key)
+        self.db = Supabase()
 
     # ------------------------------------------------------------------
     # BUSCA: retorna memórias ordenadas por peso_vivo (não mais relevancia)
@@ -43,20 +39,13 @@ class MemoriaViva:
         """
         Busca memórias vivas. Filtra por peso mínimo, ordena por peso_vivo DESC.
         """
-        q = self.db.table("libertus_memoria").select(
-            "id, tipo, titulo, conteudo, tags, projeto, "
-            "peso_vivo, vezes_usada, vezes_util, ultimo_acesso"
-        ).gte("peso_vivo", peso_minimo).order("peso_vivo", desc=True)
+        qs = f"peso_vivo=gte.{peso_minimo}&order=peso_vivo.desc&limit={limite}"
+        qs += "&select=id,tipo,titulo,conteudo,tags,projeto,peso_vivo,vezes_usada,vezes_util,ultimo_acesso"
+        if tipo:    qs += f"&tipo=eq.{tipo}"
+        if projeto: qs += f"&projeto=eq.{projeto}"
 
-        if tipo:
-            q = q.eq("tipo", tipo)
-        if projeto:
-            q = q.eq("projeto", projeto)
+        memorias = self.db.get("libertus_memoria", qs) or []
 
-        resultado = q.limit(limite).execute()
-        memorias = resultado.data or []
-
-        # Filtro por texto no título/conteúdo (simples, sem embedding)
         if query:
             query_lower = query.lower()
             memorias = [
@@ -64,7 +53,6 @@ class MemoriaViva:
                 if query_lower in (m.get("titulo") or "").lower()
                 or query_lower in (m.get("conteudo") or "").lower()
             ]
-
         return memorias
 
     # ------------------------------------------------------------------
@@ -81,12 +69,12 @@ class MemoriaViva:
     def _registrar_uso(self, memoria_id: str, foi_util: bool,
                        contexto: str = None) -> float:
         """Chama a função SQL que ajusta o peso e loga o uso."""
-        result = self.db.rpc("libertus_registrar_uso", {
+        novo_peso = self.db.rpc("libertus_registrar_uso", {
             "p_memoria_id": memoria_id,
             "p_foi_util": foi_util,
             "p_contexto": contexto
-        }).execute()
-        novo_peso = result.data
+        })
+        novo_peso = novo_peso if isinstance(novo_peso, (int, float)) else 5.0
         emoji = "📈" if foi_util else "📉"
         label = "ÚTIL" if foi_util else "INÚTIL"
         print(f"  {emoji} Memória [{memoria_id[:8]}...] marcada como {label} → peso: {novo_peso:.2f}")
@@ -100,8 +88,7 @@ class MemoriaViva:
         Aplica decaimento natural: -0.1 por dia de inatividade.
         Retorna quantas memórias foram afetadas.
         """
-        result = self.db.rpc("libertus_decaimento").execute()
-        count = result.data or 0
+        count = self.db.rpc("libertus_decaimento", {}) or 0
         print(f"  🍂 Decaimento aplicado: {count} memórias afetadas")
         return count
 
@@ -111,25 +98,25 @@ class MemoriaViva:
     def status(self):
         """Imprime relatório de saúde da memória do LIBERTUS."""
         # Top memórias
-        top = self.db.table("libertus_memoria_top").select("*").limit(5).execute()
+        top = self.db.get("libertus_memoria_top", "limit=5") or []
         print("\n🧠 TOP MEMÓRIAS MAIS VIVAS:")
-        for m in (top.data or []):
+        for m in top:
             taxa = m.get('taxa_utilidade_pct', 0)
             print(f"  [{m['peso_vivo']:.1f}] {m['titulo'][:50]} "
                   f"(usada {m['vezes_usada']}x, {taxa}% útil)")
 
         # Memórias morrendo
-        morrendo = self.db.table("libertus_memoria_morrendo").select("*").limit(5).execute()
-        if morrendo.data:
+        morrendo = self.db.get("libertus_memoria_morrendo", "limit=5") or []
+        if morrendo:
             print("\n💀 MEMÓRIAS MORRENDO (peso < 2.0):")
-            for m in morrendo.data:
+            for m in morrendo:
                 dias = int(m.get('dias_sem_acesso') or 0)
                 print(f"  [{m['peso_vivo']:.1f}] {m['titulo'][:50]} "
                       f"({dias} dias sem acesso)")
 
         # Contagem geral
-        total = self.db.table("libertus_memoria").select("id", count="exact").execute()
-        print(f"\n📊 Total de memórias: {total.count}")
+        total = self.db.get("libertus_memoria", "select=id&limit=1000") or []
+        print(f"\n📊 Total de memórias: {len(total)}")
 
     # ------------------------------------------------------------------
     # INTEGRAÇÃO COM RESPOSTAS: wrapper para usar no fluxo principal
@@ -143,11 +130,9 @@ class MemoriaViva:
         """
         memorias = self.buscar(query, tipo, projeto, limite)
         if memorias:
-            ids = [m["id"] for m in memorias]
-            # Atualiza ultimo_acesso para evitar decaimento injusto
-            self.db.table("libertus_memoria").update({
-                "ultimo_acesso": datetime.utcnow().isoformat()
-            }).in_("id", ids).execute()
+            for m in memorias:
+                self.db.patch("libertus_memoria", f"id=eq.{m['id']}",
+                              {"ultimo_acesso": datetime.utcnow().isoformat()})
         return memorias
 
 

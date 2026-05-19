@@ -31,6 +31,7 @@ Uso:
 """
 
 import json
+from supabase_client import Supabase
 from datetime import datetime
 from typing import Optional
 
@@ -87,7 +88,10 @@ Se nada novo foi descoberto: {{"novos_tracos": [], "tracos_confirmados": []}}"""
 
     def __init__(self, groq_client=None, supabase_client=None):
         self.groq = groq_client
-        self.sb   = supabase_client
+        try:
+            self.sb = supabase_client or Supabase()
+        except Exception:
+            self.sb = supabase_client
         self._cache_identidade = None
         self._cache_ts = None
 
