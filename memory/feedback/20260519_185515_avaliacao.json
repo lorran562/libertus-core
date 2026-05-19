@@ -1,0 +1,10 @@
+{
+  "tarefa": "como funciona SQL injection",
+  "score": 3,
+  "executor": "groq",
+  "duracao_ms": 741,
+  "sucesso": false,
+  "timestamp": "2026-05-19T18:55:15.551027",
+  "diagnostico": "Fraco — 0 indicadores de falha detectados",
+  "acao": "reescrever_skill"
+}
