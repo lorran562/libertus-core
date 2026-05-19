@@ -456,23 +456,32 @@ async def evolucao_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Mensagens de texto livres — passa pelo cérebro central (libertus.py)"""
+    """Mensagens de texto livres — passa pelo cérebro central LIBERTUS VPS REAL"""
     texto = update.message.text
     user  = update.effective_user.first_name or "Lorran"
 
-    await update.message.reply_text("🧠 Processando...")
+    await update.message.reply_text("🧠 Processando pelo LIBERTUS VPS...")
 
-    # ── Tenta usar o cérebro central primeiro ──────────────────────────
+    # ── USA LIBERTUS VPS COMPLETO ──────────────────────────────────────
     try:
-        from libertus import Libertus
-        if not hasattr(mensagem_texto, "_cerebro"):
-            mensagem_texto._cerebro = Libertus()
-        resposta = mensagem_texto._cerebro.processar(texto)
-        if resposta and len(str(resposta).strip()) > 10:
-            await update.message.reply_text(str(resposta))
-            return
+        from libertus_telegram_adapter import get_libertus_adapter
+        
+        # Obter adaptador (singleton)
+        adapter = get_libertus_adapter()
+        
+        if adapter.esta_disponivel():
+            # Processar através do cérebro COMPLETO
+            resposta = adapter.processar(texto)
+            
+            if resposta and len(str(resposta).strip()) > 10:
+                await update.message.reply_text(f"🤖 {resposta}")
+                return
+        else:
+            await update.message.reply_text("⚠️ Cérebro LIBERTUS não disponível, usando fallback...")
+            
     except Exception as e:
-        pass  # fallback para RAG abaixo
+        print(f"⚠️ Erro ao usar LIBERTUS VPS: {e}")
+        # Continua para fallback
 
     # ── Fallback: RAG + IA ─────────────────────────────────────────────
     if not RAG_DISPONIVEL:
