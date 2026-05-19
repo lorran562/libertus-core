@@ -413,20 +413,64 @@ async def receber_documento(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"❌ Erro: {e}")
 
 async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Mensagens de texto normais"""
+    """Mensagens de texto livres — passa pelo cérebro central (libertus.py)"""
     texto = update.message.text
-    
-    if not RAG_DISPONIVEL:
-        await update.message.reply_text(f"Você disse: {texto}\n\n⚠️ RAG + IA não disponíveis ainda!")
-        return
-    
-    # Resposta padrão
-    await update.message.reply_text(f"""💬 Recebi: "{texto}"
+    user  = update.effective_user.first_name or "Lorran"
 
-💡 **USE OS COMANDOS:**
-/ask {texto} - Fazer pergunta
-/upload - Enviar PDF
-/create [objetivo] - Criar solução""")
+    await update.message.reply_text("🧠 Processando...")
+
+    # ── Tenta usar o cérebro central primeiro ──────────────────────────
+    try:
+        from libertus import Libertus
+        if not hasattr(mensagem_texto, "_cerebro"):
+            mensagem_texto._cerebro = Libertus()
+        resposta = mensagem_texto._cerebro.processar(texto)
+        if resposta and len(str(resposta).strip()) > 10:
+            await update.message.reply_text(str(resposta))
+            return
+    except Exception as e:
+        pass  # fallback para RAG abaixo
+
+    # ── Fallback: RAG + IA ─────────────────────────────────────────────
+    if not RAG_DISPONIVEL:
+        await update.message.reply_text("⚠️ Sistema não disponível. Tente /ask")
+        return
+    try:
+        # Memória Viva
+        ctx_extra = ""
+        _memorias_usadas = []
+        if EVOLUCAO_DISPONIVEL and mv:
+            mems = mv.buscar_e_rastrear(texto, limite=3)
+            if mems:
+                _memorias_usadas = mems
+                ctx_extra = "\n[MEMÓRIA VIVA]\n" + "\n".join(
+                    f"- {m['titulo']}: {(m.get('conteudo') or '')[:150]}"
+                    for m in mems
+                )
+        if EVOLUCAO_DISPONIVEL and le:
+            aviso = le.consultar(texto)
+            if aviso:
+                ctx_extra += "\n\n" + aviso
+
+        documentos = rag.buscar_conhecimento(texto, n_results=5)
+        contexto_final = (documentos or "") + ctx_extra
+        resposta = ia.responder_com_contexto(
+            pergunta=texto,
+            contexto=contexto_final,
+            area="geral"
+        )
+        await update.message.reply_text(f"🤖 {resposta}")
+
+        # Feedback
+        if EVOLUCAO_DISPONIVEL and mv and _memorias_usadas:
+            score = 8.0 if len(str(resposta)) > 200 else 4.0
+            for m in _memorias_usadas:
+                try:
+                    mv.foi_util(m["id"]) if score >= 7 else mv.foi_inutil(m["id"])
+                except Exception:
+                    pass
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erro: {e}")
 
 # ==================== MAIN ====================
 
