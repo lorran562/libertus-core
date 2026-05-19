@@ -66,9 +66,19 @@ class LibertusTelegramAdapter:
             # Processar através do cérebro completo
             resposta = self.libertus.processar(mensagem)
             
-            return resposta if resposta else "Processado, mas sem resposta gerada."
+            # Converter para string se for lista
+            if isinstance(resposta, list):
+                resposta = "\n".join(str(item) for item in resposta)
+            elif resposta is None:
+                resposta = "Processado, mas sem resposta gerada."
+            else:
+                resposta = str(resposta)
+            
+            return resposta
             
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return f"❌ Erro ao processar: {e}"
     
     def esta_disponivel(self) -> bool:
