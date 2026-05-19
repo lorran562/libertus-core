@@ -74,6 +74,23 @@ if EVOLUCAO_DISPONIVEL:
         mv = le = ac = dc = ic = None
         print(f"⚠️ Evolução parcial: {e}")
 
+
+def _docs_para_texto(documentos) -> str:
+    """Converte resultado do RAG (lista ou str) para texto limpo."""
+    if not documentos:
+        return ""
+    if isinstance(documentos, str):
+        return documentos
+    if isinstance(documentos, list):
+        partes = []
+        for d in documentos:
+            if isinstance(d, dict):
+                partes.append(d.get("content") or d.get("conteudo") or d.get("text") or str(d))
+            else:
+                partes.append(str(d))
+        return "\n\n".join(partes)
+    return str(documentos)
+
 # ==================== COMANDOS ====================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -197,7 +214,7 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         # Gerar resposta com IA
-        contexto_final = (documentos or "") + ctx_extra
+        contexto_final = _docs_para_texto(documentos) + ctx_extra
         resposta = ia.responder_com_contexto(
             pergunta=pergunta,
             contexto=contexto_final,
@@ -501,7 +518,7 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ctx_extra += "\n\n" + aviso
 
         documentos = rag.buscar_conhecimento(texto, n_results=5)
-        contexto_final = (documentos or "") + ctx_extra
+        contexto_final = _docs_para_texto(documentos) + ctx_extra
         resposta = ia.responder_com_contexto(
             pergunta=texto,
             contexto=contexto_final,
