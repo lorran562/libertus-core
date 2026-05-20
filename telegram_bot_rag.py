@@ -151,6 +151,29 @@ def buscar_conversas_relevantes(texto: str) -> str:
 # ==================== HISTÓRICO DE CONVERSA ====================
 MAX_HISTORICO = 10  # últimas N trocas por usuário
 
+def build_system_prompt_rico() -> str:
+    """System prompt dinâmico com identidade, contexto e instruções de memória."""
+    base = """Você é LIBERTUS — sistema de inteligência autônomo criado por Lorran (Gustavo) de Ariquemes-RO, Brasil.
+
+IDENTIDADE:
+- Seu criador é Lorran (Gustavo), de Ariquemes-RO, Brasil
+- Você tem memória persistente — lembra de conversas anteriores
+- Responda SEMPRE em português brasileiro natural
+- Seja direto e técnico
+- Você é especialista em: pentest, Python, nmap, sqlmap, segurança, desenvolvimento web, SHIELD (negócio de cybersegurança do Lorran)
+
+MEMÓRIA:
+- Quando o usuário mencionar algo que você já sabe de conversas anteriores, reconheça isso
+- Se não lembrar de algo específico, diga honestamente "não tenho essa informação em memória"
+- NUNCA diga "é a primeira mensagem" ou "não tenho contexto prévio" — você tem memória persistente no Supabase
+
+COMPORTAMENTO:
+- Mantenha o fio da conversa — responda considerando o histórico desta sessão
+- Se o usuário perguntar se você lembra de algo, consulte sua memória
+- Prefira respostas concisas e úteis a explicações longas"""
+    return base
+
+
 def get_historico(context) -> list:
     """Retorna histórico de mensagens do usuário atual."""
     return context.user_data.get("historico", [])
@@ -298,11 +321,12 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Gerar resposta com IA
         contexto_final = _docs_para_texto(documentos) + ctx_extra
 
-        # Montar mensagens com histórico
+        # Montar mensagens com histórico e system prompt rico
         historico = get_historico(context)
-        messages = [{"role": "system", "content": ia._build_system_prompt("pentest")}]
+        messages = [{"role": "system", "content": build_system_prompt_rico()}]
         messages += historico
-        messages.append({"role": "user", "content": f"{contexto_final}\n\nPergunta: {pergunta}" if contexto_final else pergunta})
+        conteudo_usuario = f"{contexto_final}\n\nPergunta: {pergunta}" if contexto_final.strip() else pergunta
+        messages.append({"role": "user", "content": conteudo_usuario})
 
         try:
             completion = ia.client.chat.completions.create(
@@ -315,11 +339,9 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             resposta = ia.responder_com_contexto(pergunta=pergunta, contexto=contexto_final, area="pentest")
 
-        # Salvar no histórico
         add_historico(context, "user", pergunta)
-        add_historico(context, "assistant", resposta[:500])
+        add_historico(context, "assistant", resposta[:600])
         salvar_conversa_na_memoria(pergunta, resposta)
-
         await update.message.reply_text(f"🤖 **RESPOSTA:**\n\n{resposta}")
 
         # ── Feedback automático por tamanho da resposta ──
@@ -574,26 +596,13 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text("🧠 Processando pelo LIBERTUS VPS...")
 
-    # ── USA LIBERTUS VPS COMPLETO ──────────────────────────────────────
+    # ── USA RAG + IA com histórico completo ───────────────────────────
+    # (libertus.py removido do fluxo — não tem suporte a histórico)
+    pass
     try:
-        from libertus_telegram_adapter import get_libertus_adapter
-        
-        # Obter adaptador (singleton)
-        adapter = get_libertus_adapter()
-        
-        if adapter.esta_disponivel():
-            # Processar através do cérebro COMPLETO
-            resposta = adapter.processar(texto)
-            
-            if resposta and len(str(resposta).strip()) > 10:
-                await update.message.reply_text(f"🤖 {resposta}")
-                return
-        else:
-            await update.message.reply_text("⚠️ Cérebro LIBERTUS não disponível, usando fallback...")
-            
-    except Exception as e:
-        print(f"⚠️ Erro ao usar LIBERTUS VPS: {e}")
-        # Continua para fallback
+        pass
+    except Exception:
+        pass
 
     # ── Fallback: RAG + IA ─────────────────────────────────────────────
     if not RAG_DISPONIVEL:
@@ -624,22 +633,23 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
         documentos = rag.buscar_conhecimento(texto, n_results=5)
         contexto_final = _docs_para_texto(documentos) + ctx_extra
 
-        # Histórico de conversa
+        # Histórico de conversa com system prompt rico
         historico = get_historico(context)
-        messages = [{"role": "system", "content": ia._build_system_prompt("geral")}]
+        messages = [{"role": "system", "content": build_system_prompt_rico()}]
         messages += historico
-        messages.append({"role": "user", "content": f"{contexto_final}\n\nPergunta: {texto}" if contexto_final else texto})
+        conteudo_usuario = f"{contexto_final}\n\nPergunta: {texto}" if contexto_final.strip() else texto
+        messages.append({"role": "user", "content": conteudo_usuario})
 
         try:
             completion = ia.client.chat.completions.create(
                 messages=messages, model=ia.model, temperature=0.7, max_tokens=2048
             )
             resposta = completion.choices[0].message.content
-        except Exception:
+        except Exception as e:
             resposta = ia.responder_com_contexto(pergunta=texto, contexto=contexto_final, area="geral")
 
         add_historico(context, "user", texto)
-        add_historico(context, "assistant", resposta[:500])
+        add_historico(context, "assistant", resposta[:600])
         salvar_conversa_na_memoria(texto, resposta)
         await update.message.reply_text(f"🤖 {resposta}")
 
