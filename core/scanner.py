@@ -244,7 +244,7 @@ class Scanner:
             return [rede]
         try:
             r = subprocess.run(
-                ["sudo", self.nmap_path or "nmap", "-sn", "-T4", rede],
+                [self.nmap_path or "nmap", "-sn", "-T4", rede],
                 capture_output=True, text=True, timeout=60
             )
             hosts = re.findall(r"Nmap scan report for (?:[\w.-]+ \()?(\d+\.\d+\.\d+\.\d+)", r.stdout)
@@ -258,7 +258,7 @@ class Scanner:
             return []
         try:
             # SYN scan com sudo — precisa de root mas é o mais preciso
-            cmd = ["sudo", self.nmap_path, "-sS", "-sV", "-T4", "--open",
+            cmd = [self.nmap_path, "-sS", "-sV", "-T4", "--open",
                    "-p", "21,22,23,25,53,80,110,135,139,143,443,445,"
                          "3306,3389,5432,5900,6379,8080,8443,8888,27017",
                    host]
@@ -271,7 +271,7 @@ class Scanner:
             portas = self._parsear_portas_simples(r.stdout)
             print(f"  🔓 Portas encontradas: {len(portas)}")
             if not portas:
-                cmd2 = ["sudo", self.nmap_path, "-sS", "-T4", "--top-ports", "100", host]
+                cmd2 = [self.nmap_path, "-sS", "-T4", "--top-ports", "100", host]
                 print(f"  🔍 Fallback: {' '.join(cmd2)}")
                 r2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=180)
                 print(r2.stdout[:300] if r2.stdout else "  (vazio)")
