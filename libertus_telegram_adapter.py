@@ -51,19 +51,18 @@ class LibertusTelegramAdapter:
             self.libertus = None
             raise
     
-    def processar(self, mensagem: str) -> str:
+    def processar(self, mensagem: str, historico_externo: list = None) -> str:
         """
-        Processa mensagem através do cérebro completo LIBERTUS
-        
-        Args:
-            mensagem: Mensagem do usuário
-            
-        Returns:
-            Resposta processada pelo LIBERTUS completo
+        Processa mensagem através do cérebro completo LIBERTUS.
+        historico_externo: lista de {"role":..., "content":...} do Telegram.
         """
         if not self.libertus:
             return "❌ Cérebro LIBERTUS não inicializado"
-        
+
+        # Sincroniza histórico externo com o cérebro
+        if historico_externo:
+            self.libertus._historico = historico_externo[-20:]
+
         try:
             # Processar através do cérebro completo
             resposta = self.libertus.processar(mensagem)

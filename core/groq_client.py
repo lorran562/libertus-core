@@ -35,10 +35,12 @@ LorranStack (marketplace SaaS). Use esse contexto quando relevante."""
             self._disponivel = bool(self.key and len(self.key) > 10)
         return self._disponivel
 
-    def conversar(self, mensagem: str, contexto: str = "") -> str:
+    def conversar(self, mensagem: str, contexto: str = "",
+                  historico: list = None) -> str:
         """
         Envia mensagem para o Groq e retorna resposta.
         Contexto é injetado no system prompt se fornecido.
+        Histórico é lista de {"role": "user/assistant", "content": "..."}.
         """
         if not self.disponivel():
             return ""
@@ -47,12 +49,14 @@ LorranStack (marketplace SaaS). Use esse contexto quando relevante."""
         if contexto:
             system += f"\n\nCONTEXTO DO VAULT:\n{contexto[:800]}"
 
+        messages = [{"role": "system", "content": system}]
+        if historico:
+            messages += historico[-20:]  # últimas 10 trocas
+        messages.append({"role": "user", "content": mensagem})
+
         payload = {
             "model":    self.MODEL,
-            "messages": [
-                {"role": "system",  "content": system},
-                {"role": "user",    "content": mensagem},
-            ],
+            "messages": messages,
             "max_tokens":  1024,
             "temperature": 0.7,
         }

@@ -203,6 +203,7 @@ class Orquestrador:
 
         # Memória Viva: busca memórias pelo peso_vivo (não mais relevancia estática)
         self._memorias_usadas = []
+        self._historico = []  # histórico de conversa persistente na sessão
         if self.mv:
             try:
                 mems_vivas = self.mv.buscar_e_rastrear(entrada, limite=5)
@@ -272,7 +273,7 @@ class Orquestrador:
                     resultado = res["resultado"]; executor_usado = "skill"
                     self._stats["skill"] += 1
             if not resultado and self.groq:
-                resultado = self.groq.conversar(entrada, ctx_local)
+                resultado = self.groq.conversar(entrada, ctx_local, historico=self._historico)
                 executor_usado = "groq"; self._stats["groq"] += 1
             if not resultado and self.claude and not MODO_AUTONOMO:
                 log("Chamando Claude...","claude")
@@ -365,6 +366,12 @@ class Orquestrador:
                 self.ac.gerar_de_sessao(historico)
             except Exception:
                 pass
+
+        # Salvar no histórico de sessão
+        self._historico.append({"role": "user", "content": entrada})
+        self._historico.append({"role": "assistant", "content": str(resultado)[:400]})
+        if len(self._historico) > 40:  # máx 20 trocas
+            self._historico = self._historico[-40:]
 
         score_final = aval.get('score', 0)
         self.sb.salvar_execucao(sid, entrada,
