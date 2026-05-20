@@ -612,14 +612,20 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
         adapter = get_libertus_adapter()
         if adapter.esta_disponivel():
             resposta = adapter.processar(texto, historico_externo=get_historico(context))
-            if resposta and len(str(resposta).strip()) > 10:
+            print(f"[DEBUG] Resposta do cérebro: {repr(str(resposta)[:100])}")
+            resposta_str = str(resposta).strip() if resposta else ""
+            if resposta_str and len(resposta_str) > 10:
                 add_historico(context, "user", texto)
-                add_historico(context, "assistant", str(resposta)[:600])
-                salvar_conversa_na_memoria(texto, str(resposta))
-                await update.message.reply_text(f"🤖 {resposta}")
+                add_historico(context, "assistant", resposta_str[:600])
+                salvar_conversa_na_memoria(texto, resposta_str)
+                await update.message.reply_text(f"🤖 {resposta_str}")
                 return
+            else:
+                print(f"[DEBUG] Resposta curta ou vazia: {repr(resposta_str)}")
     except Exception as e:
-        print(f"⚠️ Cérebro: {e}")
+        import traceback
+        print(f"⚠️ Cérebro erro: {e}")
+        traceback.print_exc()
 
     # ── Fallback: RAG + IA ─────────────────────────────────────────────
     if not RAG_DISPONIVEL:
