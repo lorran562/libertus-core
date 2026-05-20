@@ -396,6 +396,20 @@ class Orquestrador:
         if len(self._historico) > 40:  # máx 20 trocas
             self._historico = self._historico[-40:]
 
+        # Loop autônomo: a cada 10 interações, busca e aprende sozinho
+        if self.ba and self._stats.get("total", 0) % 10 == 0:
+            try:
+                import threading
+                def aprender():
+                    respondidas = self.ba.ciclo(limite=2)
+                    if respondidas:
+                        for r in respondidas:
+                            log(f"[AUTO] Aprendi: {r.get('pergunta','?')[:50]}", "mem")
+                t = threading.Thread(target=aprender, daemon=True)
+                t.start()
+            except Exception:
+                pass
+
         score_final = aval.get('score', 0)
         self.sb.salvar_execucao(sid, entrada,
             {"executor":executor_usado,"intent":intent.tipo},
