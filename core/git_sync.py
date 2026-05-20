@@ -57,6 +57,10 @@ class GitSync:
         if not self.git_ok:
             return "Git não disponível"
 
+        # Garantir identidade git configurada
+        self._git(["git", "config", "user.email", "libertus@shield.ai"])
+        self._git(["git", "config", "user.name", "LIBERTUS"])
+
         # Adiciona arquivos
         if arquivos:
             for arq in arquivos:

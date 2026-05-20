@@ -16,11 +16,14 @@ PID_FILE = Path("/tmp/libertus_daemon.pid")
 
 def log(msg):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    line = f"[{timestamp}] {msg}\n"
-    print(line.strip())
-    WATCHDOG_LOG.write_text(
-        WATCHDOG_LOG.read_text() + line if WATCHDOG_LOG.exists() else line
-    )
+    line = f"[{timestamp}] {msg}"
+    print(line)
+    try:
+        WATCHDOG_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with open(WATCHDOG_LOG, "a") as f:
+            f.write(line + "\n")
+    except Exception:
+        pass  # log em arquivo é opcional
 
 def is_daemon_alive():
     """Verifica se daemon está rodando via PID + heartbeat"""
