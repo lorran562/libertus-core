@@ -236,15 +236,13 @@ class Orquestrador:
             except Exception as e:
                 log(f"Erro Detector: {e}", "warn")
 
-        # Livro de Erros: consulta falhas passadas antes de responder
-        if self.le:
-            try:
-                aviso_erros = self.le.consultar(entrada)
-                if aviso_erros:
-                    ctx_local = (ctx_local or "") + "\n\n" + aviso_erros
-                    log("Historico de erros injetado", "mem")
-            except Exception as e:
-                log(f"Erro LivroErros consulta: {e}", "warn")
+        # Livro de Erros: registra erros mas NÃO injeta no contexto do Groq
+        # (injeção causava contexto confuso e respostas vazias)
+        pass
+
+        # Limitar contexto para não confundir o modelo
+        if ctx_local and len(ctx_local) > 1500:
+            ctx_local = ctx_local[:1500] + "\n[contexto truncado]"
 
         resultado = ""; executor_usado = "fallback"
 
