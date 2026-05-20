@@ -236,13 +236,16 @@ class Scanner:
     # ── Nmap wrappers ─────────────────────────────────────────────────────
 
     def _ping_sweep(self, rede: str) -> List[str]:
-        """Descobre hosts ativos na rede."""
+        """Descobre hosts ativos. Para domínios, retorna diretamente."""
         if not self.nmap_ok:
+            return [rede]
+        # Para domínios/hostnames, não fazer ping sweep — ir direto ao scan
+        if not re.match(r"^\d+\.\d+\.\d+\.\d+", rede) and "/" not in rede:
             return [rede]
         try:
             r = subprocess.run(
-                [self.nmap_path or self.nmap_path or "nmap", "-sn", "-T4", rede, "--open"],
-                capture_output=True, text=True, timeout=120
+                [self.nmap_path or "nmap", "-sn", "-T4", rede],
+                capture_output=True, text=True, timeout=60
             )
             hosts = re.findall(r"Nmap scan report for (?:[\w.-]+ \()?(\d+\.\d+\.\d+\.\d+)", r.stdout)
             return hosts if hosts else [rede]
@@ -250,16 +253,28 @@ class Scanner:
             return [rede]
 
     def _port_scan(self, host: str) -> List[Dict]:
-        """Scan de portas em um host."""
+        """Scan de portas em um host. Usa -sT (sem root) em vez de -sS."""
         if not self.nmap_ok:
             return []
         try:
             r = subprocess.run(
-                [self.nmap_path or "nmap", "-sS", "-T4", "--open", "-p-", host],
-                capture_output=True, text=True, timeout=300
+                [self.nmap_path or "nmap", "-sT", "-T4", "--open",
+                 "-p", "21,22,23,25,53,80,110,135,139,143,443,445,"
+                       "3306,3389,5432,5900,6379,8080,8443,8888,27017",
+                 host],
+                capture_output=True, text=True, timeout=120
             )
-            return self._parsear_portas_simples(r.stdout)
-        except Exception:
+            portas = self._parsear_portas_simples(r.stdout)
+            # Se não encontrou nada, tenta top 100
+            if not portas:
+                r2 = subprocess.run(
+                    [self.nmap_path or "nmap", "-sT", "-T4", "--top-ports", "100", host],
+                    capture_output=True, text=True, timeout=120
+                )
+                portas = self._parsear_portas_simples(r2.stdout)
+            return portas
+        except Exception as e:
+            print(f"  ⚠️ port_scan erro: {e}")
             return []
 
     def _executar_nmap(self, cmd: List[str]) -> str:
