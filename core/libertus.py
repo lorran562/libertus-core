@@ -127,6 +127,9 @@ class Orquestrador:
         log(f"Root: {LIBERTUS_ROOT}","info")
         self.sb  = Supabase()
         self.mem = MemoriaLocal(LIBERTUS_ROOT)
+        self._historico = []   # histórico de conversa — persiste entre mensagens
+        self._memorias_usadas = []
+        self._stats = {"total":0,"groq":0,"claude":0,"skill":0,"autonomo":0,"ollama":0}
         try:
             self.mv = MemoriaViva()
             self.mv.decair()
@@ -203,7 +206,9 @@ class Orquestrador:
 
         # Memória Viva: busca memórias pelo peso_vivo (não mais relevancia estática)
         self._memorias_usadas = []
-        self._historico = []  # histórico de conversa persistente na sessão
+        # NOTA: self._historico NÃO é resetado aqui — persiste entre mensagens
+        if not hasattr(self, '_historico'):
+            self._historico = []  # só inicializa se não existir
         if self.mv:
             try:
                 mems_vivas = self.mv.buscar_e_rastrear(entrada, limite=5)
