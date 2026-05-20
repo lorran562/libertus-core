@@ -49,6 +49,7 @@ from memoria_viva    import MemoriaViva
 from detector_contradicao import DetectorContradicao
 from livro_erros import LivroErros
 from auto_curiosidade import AutoCuriosidade
+from buscador_autonomo import BuscadorAutonomo
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
@@ -159,6 +160,12 @@ class Orquestrador:
             self.ac = None
             log(f"Auto-Curiosidade offline: {e}", "warn")
         try:
+            self.ba = BuscadorAutonomo(groq_client=None, supabase_client=self.sb)
+            log("Buscador Autonomo ativo", "mem")
+        except Exception as e:
+            self.ba = None
+            log(f"Buscador Autonomo offline: {e}", "warn")
+        try:
             self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
             log("Identidade Cognitiva ativa", "mem")
         except Exception as e:
@@ -184,6 +191,7 @@ class Orquestrador:
         if self.dc and self.groq: self.dc.groq = self.groq
         if self.le and self.groq: self.le.groq = self.groq
         if self.ac and self.groq: self.ac.groq = self.groq
+        if self.ba and self.groq: self.ba.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
             pass  # identidade ativa mas não sobrescreve SYSTEM (evita respostas vazias)

@@ -822,6 +822,58 @@ async def sqli_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"❌ Erro: {e}")
 
 
+async def estudar_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /estudar — LIBERTUS busca na web e aprende autonomamente"""
+    limite = 1
+    if context.args:
+        try:
+            limite = min(int(context.args[0]), 5)
+        except Exception:
+            pass
+
+    await update.message.reply_text(f"📚 Buscando e aprendendo {limite} topico(s) da fila de estudo...\nIsso pode levar alguns instantes.")
+
+    try:
+        import sys
+        sys.path.insert(0, "./core")
+        from buscador_autonomo import BuscadorAutonomo
+        from supabase_client import Supabase
+        from groq_client import Groq
+        import os
+
+        sb = Supabase()
+        groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+        ba = BuscadorAutonomo(groq_client=groq, supabase_client=sb)
+
+        import asyncio
+        loop = asyncio.get_event_loop()
+        respondidas = await loop.run_in_executor(None, lambda: ba.ciclo(limite=limite))
+
+        if not respondidas:
+            # Mostrar fila de estudo
+            fila = sb.get("libertus_fila_estudo", "limit=5") or []
+            if fila:
+                linhas = ["📋 *Fila de estudo atual:*"]
+                for c in fila:
+                    linhas.append(f"  [{c.get('urgencia',0):.1f}] {c.get('pergunta','?')[:60]}")
+                await update.message.reply_text("\n".join(linhas), parse_mode="Markdown")
+            else:
+                await update.message.reply_text("✅ Nenhuma curiosidade pendente no momento!")
+            return
+
+        # Reportar o que aprendeu
+        linhas = [f"🧠 *LIBERTUS aprendeu {len(respondidas)} novo(s) tópico(s):*\n"]
+        for r in respondidas:
+            linhas.append(f"📌 *{r.get('pergunta','?')[:60]}*")
+            linhas.append(f"_{r.get('resumo','')[:150]}..._")
+            linhas.append("")
+
+        await update.message.reply_text("\n".join(linhas), parse_mode="Markdown")
+
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erro ao estudar: {e}")
+
+
 async def limpar_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Comando /limpar — reseta histórico de conversa"""
     limpar_historico(context)
@@ -843,6 +895,7 @@ def main():
     app.add_handler(CommandHandler("evolucao", evolucao_comando))
     app.add_handler(CommandHandler("limpar", limpar_comando))
     app.add_handler(CommandHandler("scan", scan_nmap_comando))
+    app.add_handler(CommandHandler("estudar", estudar_comando))
     app.add_handler(CommandHandler("sqli", sqli_comando))
     app.add_handler(CommandHandler("stats", stats_comando))
     app.add_handler(CommandHandler("upload", upload_comando))
