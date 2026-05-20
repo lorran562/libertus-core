@@ -769,14 +769,18 @@ async def sqli_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         import asyncio, subprocess
         sqlmap_path = "/snap/bin/sqlmap"
+        import os
+        snap_env = os.environ.copy()
+        snap_env["PATH"] = "/snap/bin:/root/go/bin:/home/libertus/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
         cmd = [sqlmap_path, "-u", url, "--batch", "--random-agent",
-               "--level=1", "--risk=1", "--dbs", "--timeout=30"]
+               "--level=1", "--risk=1", "--dbs", "--timeout=30",
+               "--output-dir=/tmp/sqlmap_out"]
 
         loop = asyncio.get_event_loop()
 
         def rodar_sqlmap():
-            r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=300, env=snap_env)
             return r.stdout + r.stderr
 
         output = await loop.run_in_executor(None, rodar_sqlmap)
