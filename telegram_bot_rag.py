@@ -689,6 +689,135 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ==================== MAIN ====================
 
+async def scan_nmap_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /scan [alvo] — executa nmap real e salva resultado na memória"""
+    args = context.args
+    if not args:
+        await update.message.reply_text(
+            "❌ Use: /scan [alvo]\n\nExemplos:\n  /scan scanme.nmap.org\n  /scan 192.168.1.1\n  /scan localhost"
+        )
+        return
+
+    alvo = args[0]
+    await update.message.reply_text(f"🔍 Iniciando scan em {alvo}... pode demorar até 2 min.")
+
+    try:
+        import subprocess, sys
+        sys.path.insert(0, "./core")
+        from pathlib import Path
+        from scanner import Scanner
+
+        scanner = Scanner(Path("./core").parent)
+        if not scanner.nmap_ok:
+            await update.message.reply_text("❌ nmap não encontrado. Verifique a instalação.")
+            return
+
+        # Executar scan em thread separada para não bloquear
+        import asyncio
+        loop = asyncio.get_event_loop()
+        resultado = await loop.run_in_executor(None, scanner.scan_rapido, alvo)
+
+        # Formatar resultado
+        resposta = scanner.interpretar(resultado)
+
+        # Salvar na memória para uso futuro
+        if EVOLUCAO_DISPONIVEL and mv:
+            try:
+                from supabase_client import Supabase
+                sb = Supabase()
+                portas_str = ", ".join(
+                    f"{p['porta']}/{p.get('servico','?')}"
+                    for p in resultado.get('portas', [])
+                )
+                sb.post("libertus_memoria", {
+                    "tipo": "scan_resultado",
+                    "titulo": f"Scan nmap: {alvo}",
+                    "conteudo": "Alvo: " + alvo + "\nPortas: " + portas_str + "\n\n" + resposta[:800],
+                    "tags": ["nmap", "scan", alvo],
+                    "projeto": "SHIELD",
+                    "peso_vivo": 8.0,
+                    "decaimento_ativo": True
+                })
+                print(f"  ✅ Resultado do scan salvo na memória")
+            except Exception as e:
+                print(f"  ⚠️ Erro ao salvar scan: {e}")
+
+        # Enviar resultado (Telegram tem limite de 4096 chars)
+        if len(resposta) > 4000:
+            partes = [resposta[i:i+4000] for i in range(0, len(resposta), 4000)]
+            for parte in partes:
+                await update.message.reply_text(parte)
+        else:
+            await update.message.reply_text(resposta or "✅ Scan concluído — nenhuma porta aberta encontrada.")
+
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erro no scan: {e}")
+
+
+async def sqli_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /sqli [url] — executa sqlmap e salva resultado na memória"""
+    args = context.args
+    if not args:
+        await update.message.reply_text(
+            "❌ Use: /sqli [url]\n\nExemplos:\n  /sqli http://testphp.vulnweb.com/artists.php?artist=1\n\n⚠️ Use apenas em alvos com autorização!"
+        )
+        return
+
+    url = args[0]
+    await update.message.reply_text(f"💉 Iniciando teste SQLi em {url}...\nIsso pode demorar alguns minutos.")
+
+    try:
+        import asyncio, subprocess
+        sqlmap_path = "/snap/bin/sqlmap"
+
+        cmd = [sqlmap_path, "-u", url, "--batch", "--random-agent",
+               "--level=1", "--risk=1", "--dbs", "--timeout=30"]
+
+        loop = asyncio.get_event_loop()
+
+        def rodar_sqlmap():
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            return r.stdout + r.stderr
+
+        output = await loop.run_in_executor(None, rodar_sqlmap)
+
+        # Extrair informações relevantes
+        linhas_relevantes = [
+            l for l in output.split("\n")
+            if any(k in l.lower() for k in [
+                "vulnerable", "vulnerável", "parameter", "database",
+                "payload", "injection", "error", "available databases",
+                "[*]", "[+]", "[!]"
+            ])
+        ]
+        resumo = "\n".join(linhas_relevantes[:50]) if linhas_relevantes else output[:2000]
+
+        # Salvar na memória
+        if EVOLUCAO_DISPONIVEL and mv:
+            try:
+                from supabase_client import Supabase
+                sb = Supabase()
+                sb.post("libertus_memoria", {
+                    "tipo": "sqli_resultado",
+                    "titulo": f"SQLi: {url[:60]}",
+                    "conteudo": f"URL: {url}\n\n" + resumo[:800],
+                    "tags": ["sqlmap", "sqli", "pentest"],
+                    "projeto": "SHIELD",
+                    "peso_vivo": 8.0,
+                    "decaimento_ativo": True
+                })
+            except Exception:
+                pass
+
+        resposta = f"💉 RESULTADO SQLi\nAlvo: {url}\n\n" + resumo[:3500]
+        await update.message.reply_text(resposta)
+
+    except subprocess.TimeoutExpired:
+        await update.message.reply_text("⏱️ Timeout — o sqlmap demorou demais. Tente com um alvo mais simples.")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erro: {e}")
+
+
 async def limpar_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Comando /limpar — reseta histórico de conversa"""
     limpar_historico(context)
@@ -709,6 +838,8 @@ def main():
     app.add_handler(CommandHandler("status", status))
     app.add_handler(CommandHandler("evolucao", evolucao_comando))
     app.add_handler(CommandHandler("limpar", limpar_comando))
+    app.add_handler(CommandHandler("scan", scan_nmap_comando))
+    app.add_handler(CommandHandler("sqli", sqli_comando))
     app.add_handler(CommandHandler("stats", stats_comando))
     app.add_handler(CommandHandler("upload", upload_comando))
     app.add_handler(CommandHandler("ask", ask_comando))
@@ -722,7 +853,7 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, mensagem_texto))
     
     print("✅ Bot RAG + IA rodando!")
-    print("📱 Comandos: /start, /upload, /ask, /create, /stats")
+    print("📱 Comandos: /start, /upload, /ask, /create, /stats, /scan, /sqli, /evolucao, /limpar")
     
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
