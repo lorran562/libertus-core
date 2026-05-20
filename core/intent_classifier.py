@@ -213,15 +213,22 @@ class IntentClassifier:
             if m:
                 return m.group(0).strip()
         # Tenta extrair palavra após preposições comuns
+        # Palavras-chave de alvo seguidas de hostname
         m = re.search(
-            r"(?:site|domínio|dominio|servidor|ip|url|arquivo|sistema)\s+(?:do|da|de|em|no|na)?\s*([\w\-\.\/\\:]+)",
+            r"(?:site|domínio|dominio|servidor|ip|url|arquivo|sistema|em|no|na|alvo)\s+(?:do|da|de|em|no|na)?\s*([\w\-\.\/\\:]+)",
             texto, re.IGNORECASE
         )
+        if m:
+            return m.group(1).strip()
+        # Preposição seguida de alvo: "em localhost", "no servidor"
+        m = re.search(r"\bem\s+([\w\-\.]+)\b", texto, re.IGNORECASE)
         if m:
             return m.group(1).strip()
         # Última palavra que parece um alvo
         palavras = texto.split()
         for palavra in reversed(palavras):
+            if palavra.lower() in ("localhost", "127.0.0.1"):
+                return palavra
             if "." in palavra and len(palavra) > 4:
                 return palavra.strip(".,!?")
         return ""
