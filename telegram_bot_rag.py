@@ -91,6 +91,63 @@ def _docs_para_texto(documentos) -> str:
         return "\n\n".join(partes)
     return str(documentos)
 
+# ==================== MEMÓRIA PERSISTENTE DE CONVERSA ====================
+
+def salvar_conversa_na_memoria(pergunta: str, resposta: str, tags: list = None):
+    """Salva troca importante na Memória Viva — persiste entre sessões."""
+    if not EVOLUCAO_DISPONIVEL or not mv:
+        return
+    try:
+        from supabase_client import Supabase
+        sb = Supabase()
+
+        # Só salva se tiver substância (não perguntas triviais)
+        if len(pergunta) < 10 or len(resposta) < 50:
+            return
+
+        titulo = f"Conversa: {pergunta[:60]}"
+        conteudo = f"Lorran perguntou: {pergunta}\n\nLIBERTUS respondeu: {resposta[:800]}"
+
+        # Verifica se já existe conversa similar recente
+        existentes = sb.get(
+            "libertus_memoria",
+            f"tipo=eq.conversa&titulo=like.Conversa%3A {pergunta[:20]}%&limit=1"
+        )
+        if existentes:
+            return  # evita duplicata
+
+        sb.post("libertus_memoria", {
+            "tipo": "conversa",
+            "titulo": titulo,
+            "conteudo": conteudo,
+            "tags": tags or ["conversa", "telegram"],
+            "projeto": "LIBERTUS",
+            "peso_vivo": 6.0,  # começa com peso médio
+            "decaimento_ativo": True
+        })
+    except Exception:
+        pass
+
+def buscar_conversas_relevantes(texto: str) -> str:
+    """Busca conversas passadas relevantes para o contexto atual."""
+    if not EVOLUCAO_DISPONIVEL or not mv:
+        return ""
+    try:
+        conversas = mv.buscar(
+            query=texto,
+            tipo="conversa",
+            limite=3,
+            peso_minimo=2.0
+        )
+        if not conversas:
+            return ""
+        partes = ["[CONVERSAS ANTERIORES RELEVANTES]"]
+        for c in conversas:
+            partes.append(f"- {c.get('conteudo', '')[:200]}")
+        return "\n".join(partes)
+    except Exception:
+        return ""
+
 # ==================== HISTÓRICO DE CONVERSA ====================
 MAX_HISTORICO = 10  # últimas N trocas por usuário
 
@@ -221,6 +278,11 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception:
                 pass
 
+        # ── Conversas passadas relevantes ──
+        conv_passadas = buscar_conversas_relevantes(pergunta)
+        if conv_passadas:
+            ctx_extra += "\n\n" + conv_passadas
+
         # Buscar contexto RAG
         documentos = rag.buscar_conhecimento(pergunta, n_results=5)
 
@@ -256,6 +318,7 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Salvar no histórico
         add_historico(context, "user", pergunta)
         add_historico(context, "assistant", resposta[:500])
+        salvar_conversa_na_memoria(pergunta, resposta)
 
         await update.message.reply_text(f"🤖 **RESPOSTA:**\n\n{resposta}")
 
@@ -553,6 +616,11 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if aviso:
                 ctx_extra += "\n\n" + aviso
 
+        # ── Conversas passadas relevantes ──
+        conv_passadas = buscar_conversas_relevantes(texto)
+        if conv_passadas:
+            ctx_extra += "\n\n" + conv_passadas
+
         documentos = rag.buscar_conhecimento(texto, n_results=5)
         contexto_final = _docs_para_texto(documentos) + ctx_extra
 
@@ -572,6 +640,7 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         add_historico(context, "user", texto)
         add_historico(context, "assistant", resposta[:500])
+        salvar_conversa_na_memoria(texto, resposta)
         await update.message.reply_text(f"🤖 {resposta}")
 
         # Feedback
