@@ -183,7 +183,7 @@ class Orquestrador:
         if self.ac and self.groq: self.ac.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
-            self.ic.injetar_no_groq(self.groq)   # system prompt vivo desde o boot
+            pass  # identidade ativa mas não sobrescreve SYSTEM (evita respostas vazias)
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
         if not MODO_AUTONOMO and CLAUDE_OK and ANT_KEY:
@@ -362,7 +362,7 @@ class Orquestrador:
             try:
                 resumo = f"Entrada: {entrada}\nResultado: {str(resultado)[:300]}\nScore: {score_val}/10"
                 self.ic.aprender_de_sessao(resumo)
-                self.ic.injetar_no_groq(self.groq)  # atualiza system prompt
+                pass  # identidade consolidada mas SYSTEM mantido estável
             except Exception:
                 pass
 
