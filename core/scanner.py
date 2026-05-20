@@ -54,11 +54,15 @@ class Scanner:
         self.root       = root
         # Procurar nmap — snap instala em /snap/bin que pode não estar no PATH
         import os
+        # /snap/bin/nmap é o wrapper correto — usar com env PATH incluindo snap
+        import os
+        snap_env = os.environ.copy()
+        snap_env["PATH"] = "/snap/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        self._snap_env = snap_env
+
         nmap_paths = [
-            "/snap/nmap/current/usr/bin/nmap",  # binário real do snap
-            "/snap/nmap/4576/usr/bin/nmap",     # versão específica instalada
-            "/snap/bin/nmap",                    # wrapper snap
-            shutil.which("nmap"),                # PATH padrão
+            "/snap/bin/nmap",     # wrapper snap — único que funciona
+            shutil.which("nmap"),
             "/usr/bin/nmap",
             "/usr/local/bin/nmap",
         ]
@@ -265,7 +269,8 @@ class Scanner:
                          "3306,3389,5432,5900,6379,8080,8443,8888,27017",
                    host]
             print(f"  🔍 Executando: {' '.join(cmd)}")
-            r = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=180,
+                               env=getattr(self, '_snap_env', None))
             print(f"  📄 Output nmap ({len(r.stdout)} chars):")
             print(r.stdout[:500] if r.stdout else "  (vazio)")
             if r.stderr:
@@ -275,7 +280,8 @@ class Scanner:
             if not portas:
                 cmd2 = [self.nmap_path, "-sT", "-T4", "--top-ports", "100", host]
                 print(f"  🔍 Fallback: {' '.join(cmd2)}")
-                r2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=180)
+                r2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=180,
+                                   env=getattr(self, '_snap_env', None))
                 print(r2.stdout[:300] if r2.stdout else "  (vazio)")
                 portas = self._parsear_portas_simples(r2.stdout)
             return portas
