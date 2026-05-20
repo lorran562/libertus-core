@@ -656,6 +656,12 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ==================== MAIN ====================
 
+async def limpar_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /limpar — reseta histórico de conversa"""
+    limpar_historico(context)
+    await update.message.reply_text("🧹 Histórico limpo! Começando nova conversa.")
+
+
 def main():
     print("🔥 Iniciando LIBERTUS RAG + IA Bot...")
     
