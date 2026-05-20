@@ -91,6 +91,26 @@ def _docs_para_texto(documentos) -> str:
         return "\n\n".join(partes)
     return str(documentos)
 
+# ==================== HISTÓRICO DE CONVERSA ====================
+MAX_HISTORICO = 10  # últimas N trocas por usuário
+
+def get_historico(context) -> list:
+    """Retorna histórico de mensagens do usuário atual."""
+    return context.user_data.get("historico", [])
+
+def add_historico(context, role: str, content: str):
+    """Adiciona mensagem ao histórico, mantendo limite."""
+    if "historico" not in context.user_data:
+        context.user_data["historico"] = []
+    context.user_data["historico"].append({"role": role, "content": content})
+    # Mantém só as últimas MAX_HISTORICO trocas (cada troca = 2 msgs)
+    if len(context.user_data["historico"]) > MAX_HISTORICO * 2:
+        context.user_data["historico"] = context.user_data["historico"][-(MAX_HISTORICO * 2):]
+
+def limpar_historico(context):
+    """Limpa histórico do usuário."""
+    context.user_data["historico"] = []
+
 # ==================== COMANDOS ====================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -215,11 +235,27 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # Gerar resposta com IA
         contexto_final = _docs_para_texto(documentos) + ctx_extra
-        resposta = ia.responder_com_contexto(
-            pergunta=pergunta,
-            contexto=contexto_final,
-            area="pentest"
-        )
+
+        # Montar mensagens com histórico
+        historico = get_historico(context)
+        messages = [{"role": "system", "content": ia._build_system_prompt("pentest")}]
+        messages += historico
+        messages.append({"role": "user", "content": f"{contexto_final}\n\nPergunta: {pergunta}" if contexto_final else pergunta})
+
+        try:
+            completion = ia.client.chat.completions.create(
+                messages=messages,
+                model=ia.model,
+                temperature=0.7,
+                max_tokens=2048
+            )
+            resposta = completion.choices[0].message.content
+        except Exception:
+            resposta = ia.responder_com_contexto(pergunta=pergunta, contexto=contexto_final, area="pentest")
+
+        # Salvar no histórico
+        add_historico(context, "user", pergunta)
+        add_historico(context, "assistant", resposta[:500])
 
         await update.message.reply_text(f"🤖 **RESPOSTA:**\n\n{resposta}")
 
@@ -519,11 +555,23 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         documentos = rag.buscar_conhecimento(texto, n_results=5)
         contexto_final = _docs_para_texto(documentos) + ctx_extra
-        resposta = ia.responder_com_contexto(
-            pergunta=texto,
-            contexto=contexto_final,
-            area="geral"
-        )
+
+        # Histórico de conversa
+        historico = get_historico(context)
+        messages = [{"role": "system", "content": ia._build_system_prompt("geral")}]
+        messages += historico
+        messages.append({"role": "user", "content": f"{contexto_final}\n\nPergunta: {texto}" if contexto_final else texto})
+
+        try:
+            completion = ia.client.chat.completions.create(
+                messages=messages, model=ia.model, temperature=0.7, max_tokens=2048
+            )
+            resposta = completion.choices[0].message.content
+        except Exception:
+            resposta = ia.responder_com_contexto(pergunta=texto, contexto=contexto_final, area="geral")
+
+        add_historico(context, "user", texto)
+        add_historico(context, "assistant", resposta[:500])
         await update.message.reply_text(f"🤖 {resposta}")
 
         # Feedback
@@ -552,6 +600,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("status", status))
     app.add_handler(CommandHandler("evolucao", evolucao_comando))
+    app.add_handler(CommandHandler("limpar", limpar_comando))
     app.add_handler(CommandHandler("stats", stats_comando))
     app.add_handler(CommandHandler("upload", upload_comando))
     app.add_handler(CommandHandler("ask", ask_comando))
