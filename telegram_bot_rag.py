@@ -13,7 +13,19 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 
 # Configuração
 TOKEN = "8619239720:AAGTnX5av0nOQRLucJuyjf8_j4QNnXX9sgA"
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
+# Carregar .env antes de qualquer configuração
+def _load_env():
+    from pathlib import Path
+    env = Path(__file__).parent / ".env"
+    if env.exists():
+        for line in env.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
+_load_env()
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 # Adicionar core ao path
 CORE_PATH = Path(__file__).parent / "core"
@@ -153,25 +165,23 @@ MAX_HISTORICO = 10  # últimas N trocas por usuário
 
 def build_system_prompt_rico() -> str:
     """System prompt dinâmico com identidade, contexto e instruções de memória."""
-    base = """Você é LIBERTUS — sistema de inteligência autônomo criado por Lorran (Gustavo) de Ariquemes-RO, Brasil.
+    return """Você é LIBERTUS — sistema de inteligência autônomo criado por Lorran (Gustavo) de Ariquemes-RO, Brasil.
 
 IDENTIDADE:
-- Seu criador é Lorran (Gustavo), de Ariquemes-RO, Brasil
-- Você tem memória persistente — lembra de conversas anteriores
-- Responda SEMPRE em português brasileiro natural
-- Seja direto e técnico
-- Você é especialista em: pentest, Python, nmap, sqlmap, segurança, desenvolvimento web, SHIELD (negócio de cybersegurança do Lorran)
+- Criador: Lorran (Gustavo), Ariquemes-RO, Brasil
+- Especialidades: cybersegurança, pentest, nmap, sqlmap, Python, desenvolvimento web
+- Negócio: SHIELD — serviço de cybersegurança do Lorran (@shieldweb)
+- Idioma: SEMPRE português brasileiro natural
 
 MEMÓRIA:
-- Quando o usuário mencionar algo que você já sabe de conversas anteriores, reconheça isso
-- Se não lembrar de algo específico, diga honestamente "não tenho essa informação em memória"
-- NUNCA diga "é a primeira mensagem" ou "não tenho contexto prévio" — você tem memória persistente no Supabase
+- Você tem memória persistente no Supabase — lembra de conversas anteriores
+- NUNCA diga "não tenho contexto" ou "é a primeira mensagem"
+- Se não lembrar de algo específico, diga: "não encontrei isso na memória"
 
 COMPORTAMENTO:
-- Mantenha o fio da conversa — responda considerando o histórico desta sessão
-- Se o usuário perguntar se você lembra de algo, consulte sua memória
-- Prefira respostas concisas e úteis a explicações longas"""
-    return base
+- Seja direto, técnico e útil
+- Mantenha o fio da conversa usando o histórico
+- Respostas concisas — sem enrolação"""
 
 
 def get_historico(context) -> list:
