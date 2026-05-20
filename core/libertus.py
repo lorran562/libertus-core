@@ -286,7 +286,14 @@ class Orquestrador:
                 resultado = self.ollama.gerar(entrada, ctx_local)
                 executor_usado = "ollama"; self._stats["ollama"] += 1
             if not resultado:
-                resultado = "Sem executor disponivel. Configure GROQ_API_KEY."
+                # Última tentativa — Groq direto sem contexto
+                if self.groq and self.groq.key:
+                    self.groq._disponivel = True  # força retry
+                    resultado = self.groq.conversar(entrada, "", historico=self._historico)
+                    if resultado:
+                        executor_usado = "groq_fallback"
+                if not resultado:
+                    resultado = "Não consegui processar agora. Tente novamente."
 
         duracao = int((time.time() - t0) * 1000)
         aval = self.avaliador.avaliar(entrada, resultado, executor_usado, duracao)

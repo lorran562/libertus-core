@@ -29,9 +29,13 @@ LorranStack (marketplace SaaS). Use esse contexto quando relevante."""
             "Content-Type":  "application/json",
         }
         self._disponivel: Optional[bool] = None
+        self._erros_consecutivos: int = 0
 
     def disponivel(self) -> bool:
         if self._disponivel is None:
+            self._disponivel = bool(self.key and len(self.key) > 10)
+        # Recupera automaticamente após falhas temporárias
+        if not self._disponivel and self._erros_consecutivos < 3:
             self._disponivel = bool(self.key and len(self.key) > 10)
         return self._disponivel
 
@@ -65,13 +69,21 @@ LorranStack (marketplace SaaS). Use esse contexto quando relevante."""
             r = httpx.post(self.URL, headers=self.headers,
                            json=payload, timeout=30)
             if r.status_code == 200:
+                self._erros_consecutivos = 0
                 return r.json()["choices"][0]["message"]["content"].strip()
             elif r.status_code == 401:
-                self._disponivel = False
+                self._erros_consecutivos += 1
+                if self._erros_consecutivos >= 3:
+                    self._disponivel = False
+                return ""
+            elif r.status_code == 429:  # rate limit — não desabilita
+                import time; time.sleep(2)
                 return ""
             else:
+                self._erros_consecutivos += 1
                 return ""
         except Exception:
+            self._erros_consecutivos += 1
             return ""
 
     def gerar_skill(self, tarefa: str, contexto: str = "") -> str:
