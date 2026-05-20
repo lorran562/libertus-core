@@ -1,0 +1,12 @@
+{
+  "alvo": "scanme.nmap.org",
+  "timestamp": "2026-05-20T14:23:39.371886",
+  "hosts": [
+    "scanme.nmap.org"
+  ],
+  "portas": [],
+  "vetores": [],
+  "proximos_passos": [
+    "Scan mais agressivo: nmap -sV -sC -O --script=vuln ALVO"
+  ]
+}
