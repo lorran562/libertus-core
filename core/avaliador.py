@@ -28,6 +28,12 @@ class Avaliador:
         r"chunks?\s+salvos?",
         r"\d+\s+(porta|host|finding|vulnerabilidade)",
         r"Absorvido|Analisado|Escaneado|Reconhecido",
+        # Indicadores de conversa natural
+        r"posso ajudar|como posso|estou (pronto|aqui|funcionando|disponível)",
+        r"lorran|libertus|ariquemes|shield|groq",
+        r"sim|não|claro|certeza|entendi|compreendi|concordo",
+        r"python|nmap|sqlmap|pentest|segurança|scan|vulnerabilidade",
+        r"obrigado|agradeço|melhor|ótimo|perfeito|excelente",
     ]
 
     INDICADORES_FALHA = [
