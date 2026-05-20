@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-LIBERTUS_ROOT = Path("/root/LIBERTUS")
+LIBERTUS_ROOT = Path(__file__).parent.resolve()  # relativo ao arquivo
 DAEMON_SCRIPT = LIBERTUS_ROOT / "core" / "libertus_daemon.py"
 HEARTBEAT_FILE = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 WATCHDOG_LOG = LIBERTUS_ROOT / "evolution_logs" / "watchdog.log"

@@ -31,6 +31,11 @@ from avaliador         import Avaliador
 from git_sync          import GitSync
 from auto_refatoracao  import AutoRefatoracao
 from absorcao_docling  import AbsorcaoDocling
+try:
+    from buscador_autonomo import BuscadorAutonomo
+    BUSCADOR_OK = True
+except Exception:
+    BUSCADOR_OK = False
 
 
 
