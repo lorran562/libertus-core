@@ -55,8 +55,10 @@ class Scanner:
         # Procurar nmap — snap instala em /snap/bin que pode não estar no PATH
         import os
         nmap_paths = [
-            "/snap/bin/nmap",          # snap (Ubuntu)
-            shutil.which("nmap"),       # PATH padrão
+            "/snap/nmap/current/usr/bin/nmap",  # binário real do snap
+            "/snap/nmap/4576/usr/bin/nmap",     # versão específica instalada
+            "/snap/bin/nmap",                    # wrapper snap
+            shutil.which("nmap"),                # PATH padrão
             "/usr/bin/nmap",
             "/usr/local/bin/nmap",
         ]
