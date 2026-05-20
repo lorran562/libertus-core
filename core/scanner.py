@@ -52,7 +52,15 @@ class Scanner:
 
     def __init__(self, root: Path = None):
         self.root       = root
-        self.nmap_ok    = shutil.which("nmap") is not None
+        # Procurar nmap em múltiplos caminhos (snap instala em /snap/bin)
+        nmap_paths = [
+            shutil.which("nmap"),
+            "/snap/bin/nmap",
+            "/usr/bin/nmap",
+            "/usr/local/bin/nmap",
+        ]
+        self.nmap_path = next((p for p in nmap_paths if p and __import__('os').path.exists(p)), None)
+        self.nmap_ok   = self.nmap_path is not None
         self.dir_output = (root / "memory" / "feedback") if root else None
         if self.dir_output:
             self.dir_output.mkdir(parents=True, exist_ok=True)
@@ -230,7 +238,7 @@ class Scanner:
             return [rede]
         try:
             r = subprocess.run(
-                ["nmap", "-sn", "-T4", rede, "--open"],
+                [self.nmap_path or self.nmap_path or "nmap", "-sn", "-T4", rede, "--open"],
                 capture_output=True, text=True, timeout=120
             )
             hosts = re.findall(r"Nmap scan report for (?:[\w.-]+ \()?(\d+\.\d+\.\d+\.\d+)", r.stdout)
@@ -244,7 +252,7 @@ class Scanner:
             return []
         try:
             r = subprocess.run(
-                ["nmap", "-sS", "-T4", "--open", "-p-", host],
+                [self.nmap_path or "nmap", "-sS", "-T4", "--open", "-p-", host],
                 capture_output=True, text=True, timeout=300
             )
             return self._parsear_portas_simples(r.stdout)
