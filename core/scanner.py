@@ -52,15 +52,18 @@ class Scanner:
 
     def __init__(self, root: Path = None):
         self.root       = root
-        # Procurar nmap em múltiplos caminhos (snap instala em /snap/bin)
+        # Procurar nmap — snap instala em /snap/bin que pode não estar no PATH
+        import os
         nmap_paths = [
-            shutil.which("nmap"),
-            "/snap/bin/nmap",
+            "/snap/bin/nmap",          # snap (Ubuntu)
+            shutil.which("nmap"),       # PATH padrão
             "/usr/bin/nmap",
             "/usr/local/bin/nmap",
         ]
-        self.nmap_path = next((p for p in nmap_paths if p and __import__('os').path.exists(p)), None)
+        self.nmap_path = next((p for p in nmap_paths if p and os.path.exists(p)), None)
         self.nmap_ok   = self.nmap_path is not None
+        if self.nmap_ok:
+            print(f"  nmap encontrado: {self.nmap_path}")
         self.dir_output = (root / "memory" / "feedback") if root else None
         if self.dir_output:
             self.dir_output.mkdir(parents=True, exist_ok=True)
