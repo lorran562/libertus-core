@@ -258,20 +258,23 @@ class Scanner:
             return []
         try:
             # SYN scan com sudo — precisa de root mas é o mais preciso
-            r = subprocess.run(
-                ["sudo", self.nmap_path, "-sS", "-sV", "-T4", "--open",
-                 "-p", "21,22,23,25,53,80,110,135,139,143,443,445,"
-                       "3306,3389,5432,5900,6379,8080,8443,8888,27017",
-                 host],
-                capture_output=True, text=True, timeout=120
-            )
+            cmd = ["sudo", self.nmap_path, "-sS", "-sV", "-T4", "--open",
+                   "-p", "21,22,23,25,53,80,110,135,139,143,443,445,"
+                         "3306,3389,5432,5900,6379,8080,8443,8888,27017",
+                   host]
+            print(f"  🔍 Executando: {' '.join(cmd)}")
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
+            print(f"  📄 Output nmap ({len(r.stdout)} chars):")
+            print(r.stdout[:500] if r.stdout else "  (vazio)")
+            if r.stderr:
+                print(f"  ⚠️ stderr: {r.stderr[:200]}")
             portas = self._parsear_portas_simples(r.stdout)
+            print(f"  🔓 Portas encontradas: {len(portas)}")
             if not portas:
-                # Fallback: top 1000 portas
-                r2 = subprocess.run(
-                    ["sudo", self.nmap_path, "-sS", "-T4", "--top-ports", "1000", host],
-                    capture_output=True, text=True, timeout=120
-                )
+                cmd2 = ["sudo", self.nmap_path, "-sS", "-T4", "--top-ports", "100", host]
+                print(f"  🔍 Fallback: {' '.join(cmd2)}")
+                r2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=180)
+                print(r2.stdout[:300] if r2.stdout else "  (vazio)")
                 portas = self._parsear_portas_simples(r2.stdout)
             return portas
         except Exception as e:
