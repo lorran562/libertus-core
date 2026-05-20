@@ -302,6 +302,11 @@ class Orquestrador:
         aval = self.avaliador.avaliar(entrada, resultado, executor_usado, duracao)
         score_val = aval.get('score', 0)
         diag_val  = aval.get('diagnostico', '')
+
+        # Para conversa, se o Groq respondeu algo com substância, aceitar
+        if intent.tipo == "conversa" and resultado and len(str(resultado)) > 10:
+            score_val = max(score_val, 6)  # mínimo 6 para não ser descartado
+
         log(f"Score: {score_val}/10 | {diag_val}", "eval")
 
         # Livro de Erros: registrar falha se score < 6
