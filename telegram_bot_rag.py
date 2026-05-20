@@ -36,9 +36,8 @@ try:
     from libertus_rag import LibertusRAG
     from libertus_ia import LibertusIA
     from libertus_scanner_inteligente import LibertusScannerInteligente
-    from libertus_telegram_wrapper import LibertusTelegramWrapper
     RAG_DISPONIVEL = True
-    print("✅ RAG + IA + Scanner + Wrapper VPS carregados")
+    print("✅ RAG + IA + Scanner carregados")
 except Exception as e:
     RAG_DISPONIVEL = False
     print(f"⚠️ RAG + IA não disponíveis: {e}")
@@ -62,8 +61,7 @@ if RAG_DISPONIVEL:
         rag = LibertusRAG(persist_dir=str(Path.home() / "LIBERTUS" / "memoria" / "chroma"))
         ia = LibertusIA(api_key=GROQ_API_KEY)
         scanner = LibertusScannerInteligente(rag, ia)
-        wrapper_vps = LibertusTelegramWrapper(rag, ia)
-        print("✅ RAG + IA + Scanner + Wrapper VPS inicializados")
+        print("✅ RAG + IA + Scanner inicializados")
     except Exception as e:
         RAG_DISPONIVEL = False
         print(f"❌ Erro ao inicializar RAG + IA: {e}")
