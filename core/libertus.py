@@ -284,8 +284,15 @@ class Orquestrador:
                     resultado = res["resultado"]; executor_usado = "skill"
                     self._stats["skill"] += 1
             if not resultado and self.groq:
-                resultado = self.groq.conversar(entrada, ctx_local, historico=self._historico)
+                # Limitar histórico a 6 trocas para não estourar tokens
+                hist_reduzido = self._historico[-12:] if len(self._historico) > 12 else self._historico
+                resultado = self.groq.conversar(entrada, ctx_local, historico=hist_reduzido)
                 executor_usado = "groq"; self._stats["groq"] += 1
+                # Retry sem contexto se ainda vazio
+                if not resultado:
+                    resultado = self.groq.conversar(entrada, "", historico=hist_reduzido[-4:])
+                    if resultado:
+                        executor_usado = "groq_retry"
             if not resultado and self.claude and not MODO_AUTONOMO:
                 log("Chamando Claude...","claude")
                 resposta = self.claude.pensar(self._ctx(entrada, ctx_local))
@@ -300,11 +307,12 @@ class Orquestrador:
                 # Última tentativa — Groq direto sem contexto
                 if self.groq and self.groq.key:
                     self.groq._disponivel = True  # força retry
-                    resultado = self.groq.conversar(entrada, "", historico=self._historico)
+                    # Sem histórico e sem contexto — mínimo absoluto
+                    resultado = self.groq.conversar(entrada, "")
                     if resultado:
                         executor_usado = "groq_fallback"
                 if not resultado:
-                    resultado = "Não consegui processar agora. Tente novamente."
+                    resultado = "Desculpe, estou com dificuldade agora. Tente novamente em instantes."
 
         duracao = int((time.time() - t0) * 1000)
         aval = self.avaliador.avaliar(entrada, resultado, executor_usado, duracao)
