@@ -309,17 +309,7 @@ class Orquestrador:
                 if res.get("status") == "done":
                     resultado = res["resultado"]; executor_usado = "skill"
                     self._stats["skill"] += 1
-            if not resultado and self.groq:
-                hist_reduzido = self._historico[-12:] if len(self._historico) > 12 else self._historico
-                log(f"Chamando LLM principal ({type(self.groq).__name__})...", "info")
-                resultado = self.groq.conversar(entrada, ctx_local[:500], historico=hist_reduzido)
-                executor_usado = "llm"; self._stats["groq"] += 1
-                log(f"LLM retornou: {len(str(resultado))} chars", "info")
-                if not resultado:
-                    log("Retry sem contexto...", "warn")
-                    resultado = self.groq.conversar(entrada, "", historico=hist_reduzido[-4:])
-                    if resultado:
-                        executor_usado = "llm_retry"
+            # Sem Groq — vai direto ao Claude abaixo
             if not resultado and self.claude and not MODO_AUTONOMO:
                 log("Chamando Claude...","claude")
                 resposta = self.claude.pensar(self._ctx(entrada, ctx_local))
