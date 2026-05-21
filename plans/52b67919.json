@@ -1,0 +1,40 @@
+{
+  "id": "52b67919",
+  "timestamp": "2026-05-20T17:07:17.769751",
+  "estado": {
+    "timestamp": "2026-05-20T17:07:17.769762",
+    "arquivos_core": 39,
+    "logs_evolucao": 38,
+    "planos_pendentes": 13,
+    "skills_total": 48,
+    "skills_autonomas": 39,
+    "taxa_autonomia": 81.2,
+    "memorias_total": 169,
+    "arquivos_memoria": 0,
+    "arquivos_evolucao": 15,
+    "arquivos_skills": 0,
+    "arquivos_projetos": 0
+  },
+  "oportunidades": [
+    {
+      "tipo": "planos_acumulados",
+      "descricao": "13 planos pendentes",
+      "prioridade": 7,
+      "acao_sugerida": "executar_planos_pendentes"
+    },
+    {
+      "tipo": "skills_insuficientes",
+      "descricao": "Apenas 48 skills — meta: 100+",
+      "prioridade": 7,
+      "acao_sugerida": "criar_novas_skills"
+    }
+  ],
+  "acoes": [
+    {
+      "tipo": "gerar_skills",
+      "descricao": "Analisar tarefas frequentes e gerar skills reutilizáveis",
+      "prioridade": 7
+    }
+  ],
+  "status": "pendente"
+}

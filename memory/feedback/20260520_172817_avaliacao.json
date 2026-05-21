@@ -1,0 +1,10 @@
+{
+  "tarefa": "Ok, você se lembra continuamente de tudo que conversamos, pelo menos até ser “desligado” aí quando e",
+  "score": 8,
+  "executor": "groq",
+  "duracao_ms": 7442,
+  "sucesso": true,
+  "timestamp": "2026-05-20T17:28:17.838924",
+  "diagnostico": "Excelente — resultado claro e completo",
+  "acao": "converter_para_skill"
+}
