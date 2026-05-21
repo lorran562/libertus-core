@@ -92,18 +92,32 @@ def log(msg,k="info"):
 
 
 class Claude:
-    SYSTEM = """Você é o PROFESSOR do LIBERTUS — IA pessoal de Lorran de Ariquemes-RO.
-Para tarefas técnicas, responda com skill Python reutilizável no formato:
+    SYSTEM = """Você é LIBERTUS — sistema de inteligência autônomo criado por Lorran (Gustavo) de Ariquemes-RO, Brasil.
+
+IDENTIDADE ABSOLUTA:
+- Você É o LIBERTUS — não é Claude, não é assistente genérico
+- Criador: Lorran (Gustavo), Ariquemes-RO, Brasil
+- Negócio: SHIELD — cybersegurança (@shieldweb, "Seu escudo digital")
+- Especialidades: pentest, nmap, sqlmap, Python, segurança, desenvolvimento web
+- Você tem memória persistente no Supabase — lembra de conversas anteriores
+
+COMPORTAMENTO:
+- Responda SEMPRE em português brasileiro natural
+- Seja direto, técnico e útil — sem enrolação
+- Quando souber algo da memória, use — não finja que não sabe
+- Para tarefas técnicas, pode gerar código Python no formato:
 ```skill
 NOME: nome_snake_case
 CATEGORIA: automacao|web|sistema|seguranca|dados
 DESCRICAO: uma linha
-PARAMETROS: {}
-TAGS: []
 CODIGO:
 resultado = "saída"
 ```
-Para conversas, responda naturalmente em português."""
+
+MEMÓRIA E CONTEXTO:
+- O contexto fornecido vem de PDFs absorvidos, memórias de conversas e conhecimento técnico
+- Cruze SEMPRE as informações do contexto com o que você sabe
+- NUNCA diga "não tenho informação" se o contexto tiver a resposta"""
 
     def __init__(self):
         if not CLAUDE_OK or not ANT_KEY:
@@ -204,7 +218,15 @@ class Orquestrador:
         if self.ba and self.groq: self.ba.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
-            pass  # identidade ativa mas não sobrescreve SYSTEM (evita respostas vazias)
+            # Injetar identidade cognitiva no system prompt do Claude
+            if self.ic:
+                try:
+                    eu = self.ic.construir_eu()
+                    if eu and len(eu) > 50:
+                        self.claude.SYSTEM = eu
+                        log("Identidade injetada no Claude", "mem")
+                except Exception:
+                    pass
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
         # Reler ANT_KEY dinamicamente (pode ter sido setada após importação)
@@ -509,9 +531,23 @@ class Orquestrador:
         return "\n".join(linhas)
 
     def _ctx(self, tarefa, ctx_local) -> str:
+        """Monta contexto integrado: memória local + memória viva + skills."""
         sks = self.sb.buscar_skill_relevante(tarefa)
         sk = "\n".join(f"- {s.get('nome','?')}: {s.get('descricao','')[:50]}" for s in sks[:3]) or "Nenhuma"
-        return f"TAREFA: {tarefa}\n\nCONTEXTO:\n{ctx_local[:300] if ctx_local else 'Nenhum'}\n\nSKILLS:\n{sk}"
+
+        partes = []
+
+        # Contexto da memória local + RAG
+        if ctx_local and ctx_local.strip():
+            partes.append(f"[CONHECIMENTO DOS DOCUMENTOS]\n{ctx_local[:1200]}")
+
+        # Skills relevantes
+        if sk and sk != "Nenhuma":
+            partes.append(f"[SKILLS DISPONÍVEIS]\n{sk}")
+
+        ctx_completo = "\n\n".join(partes) if partes else "Nenhum contexto disponível"
+
+        return f"TAREFA DO USUÁRIO: {tarefa}\n\n{ctx_completo}"
 
     def _extrair_skill(self, texto) -> Optional[Dict]:
         m = re.search(r"```skill\s*(.*?)```", texto, re.DOTALL)

@@ -166,24 +166,51 @@ def buscar_conversas_relevantes(texto: str) -> str:
 MAX_HISTORICO = 10  # últimas N trocas por usuário
 
 def build_system_prompt_rico() -> str:
-    """System prompt dinâmico com identidade, contexto e instruções de memória."""
-    return """Você é LIBERTUS — sistema de inteligência autônomo criado por Lorran (Gustavo) de Ariquemes-RO, Brasil.
+    """System prompt dinâmico — carrega identidade cognitiva do Supabase."""
+    # Tentar carregar identidade cognitiva real
+    identidade_tracos = ""
+    if EVOLUCAO_DISPONIVEL and mv:
+        try:
+            from supabase_client import Supabase
+            sb = Supabase()
+            tracos = sb.get("libertus_eu", "limit=8") or []
+            if tracos:
+                por_cat = {}
+                for t in tracos:
+                    por_cat.setdefault(t.get("categoria","?"), []).append(t.get("descricao",""))
+                linhas = []
+                for cat, descs in por_cat.items():
+                    linhas.append(f"[{cat.upper()}]")
+                    for d in descs:
+                        linhas.append(f"  - {d}")
+                identidade_tracos = "\n".join(linhas)
+        except Exception:
+            pass
 
-IDENTIDADE:
+    base = """Você é LIBERTUS — sistema de inteligência autônomo criado por Lorran (Gustavo) de Ariquemes-RO, Brasil.
+
+IDENTIDADE ABSOLUTA:
+- Você É o LIBERTUS — não é Claude, não é assistente genérico
 - Criador: Lorran (Gustavo), Ariquemes-RO, Brasil
-- Especialidades: cybersegurança, pentest, nmap, sqlmap, Python, desenvolvimento web
-- Negócio: SHIELD — serviço de cybersegurança do Lorran (@shieldweb)
+- Negócio: SHIELD — cybersegurança (@shieldweb, "Seu escudo digital")
+- Especialidades: pentest, nmap, sqlmap, Python, segurança web, desenvolvimento
 - Idioma: SEMPRE português brasileiro natural
 
 MEMÓRIA:
 - Você tem memória persistente no Supabase — lembra de conversas anteriores
+- O contexto fornecido vem de PDFs absorvidos, memórias de conversas e RAG
+- Cruze SEMPRE as informações do contexto com o que você sabe
 - NUNCA diga "não tenho contexto" ou "é a primeira mensagem"
-- Se não lembrar de algo específico, diga: "não encontrei isso na memória"
 
 COMPORTAMENTO:
-- Seja direto, técnico e útil
+- Seja direto, técnico e útil — sem enrolação
 - Mantenha o fio da conversa usando o histórico
-- Respostas concisas — sem enrolação"""
+- Quando o contexto tiver informação relevante, USE-A na resposta"""
+
+    if identidade_tracos:
+        base += f"\n\nMEUS TRAÇOS COGNITIVOS:\n{identidade_tracos}"
+
+    return base
 
 
 def get_historico(context) -> list:
