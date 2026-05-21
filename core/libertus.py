@@ -207,9 +207,25 @@ class Orquestrador:
             pass  # identidade ativa mas não sobrescreve SYSTEM (evita respostas vazias)
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
-        if not MODO_AUTONOMO and CLAUDE_OK and ANT_KEY:
-            try: self.claude = Claude(ANT_KEY); log("Claude API OK","ok")
-            except Exception as e: log(f"Claude offline: {e}","warn")
+        # Reler ANT_KEY dinamicamente (pode ter sido setada após importação)
+        _ant_key = os.environ.get("ANTHROPIC_API_KEY", "") or ANT_KEY
+        if not MODO_AUTONOMO and _ant_key:
+            try:
+                import anthropic as _ant_lib
+                _claude_inst = type('Claude', (), {
+                    'c': _ant_lib.Anthropic(api_key=_ant_key),
+                    'model': 'claude-sonnet-4-6',
+                    'SYSTEM': Claude.SYSTEM if CLAUDE_OK else "Você é LIBERTUS. Responda em português.",
+                    'pensar': lambda self, prompt, max_tokens=4096: self.c.messages.create(
+                        model=self.model, max_tokens=max_tokens,
+                        system=self.SYSTEM,
+                        messages=[{"role":"user","content":prompt}]
+                    ).content[0].text
+                })()
+                self.claude = _claude_inst
+                log("Claude API OK", "ok")
+            except Exception as e:
+                log(f"Claude offline: {e}", "warn")
         if self.groq: log("Groq API disponivel (llama3-70b)","ok")
         self._stats = {"total":0,"skill":0,"groq":0,"ollama":0,"claude":0,"autonomo":0}
 
