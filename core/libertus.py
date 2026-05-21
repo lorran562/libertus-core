@@ -76,6 +76,7 @@ WordlistEngine = getattr(_w,"WordlistEngine",None)
 
 ANT_KEY  = os.environ.get("ANTHROPIC_API_KEY","")
 GROQ_KEY = os.environ.get("GROQ_API_KEY","")
+CLAUDE_KEY = ANT_KEY or GROQ_KEY  # usa Claude se disponível
 OLL_URL  = os.environ.get("OLLAMA_URL","http://localhost:11434")
 
 C=Fore.CYAN;G=Fore.GREEN;Y=Fore.YELLOW;R=Fore.RED
@@ -187,7 +188,16 @@ class Orquestrador:
         self.recon    = Reconhecimento(LIBERTUS_ROOT) if Reconhecimento else None
         self.metodo   = Metodologia(LIBERTUS_ROOT)   if Metodologia   else None
         self.wordlist = WordlistEngine(LIBERTUS_ROOT) if WordlistEngine else None
-        self.groq   = Groq(GROQ_KEY) if GROQ_KEY else None
+        # Usar Claude se tiver key Anthropic, senão Groq
+        if ANT_KEY:
+            from claude_client import Claude
+            self.groq = Claude(ANT_KEY)
+            log("Claude API ativa (Haiku)", "ok")
+        elif GROQ_KEY:
+            self.groq = Groq(GROQ_KEY)
+            log("Groq API ativa", "ok")
+        else:
+            self.groq = None
         if self.dc and self.groq: self.dc.groq = self.groq
         if self.le and self.groq: self.le.groq = self.groq
         if self.ac and self.groq: self.ac.groq = self.groq

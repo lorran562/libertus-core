@@ -26,6 +26,10 @@ def _load_env():
 _load_env()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+ANT_API_KEY  = os.getenv("ANTHROPIC_API_KEY", "")
+# Usar Claude se disponível, senão Groq
+ACTIVE_KEY   = ANT_API_KEY or GROQ_API_KEY
+USING_CLAUDE = bool(ANT_API_KEY)
 
 # Adicionar core ao path
 CORE_PATH = Path(__file__).parent / "core"
@@ -59,7 +63,7 @@ except Exception as e:
 if RAG_DISPONIVEL:
     try:
         rag = LibertusRAG(persist_dir=str(Path.home() / "LIBERTUS" / "memoria" / "chroma"))
-        ia = LibertusIA(api_key=GROQ_API_KEY)
+        ia = LibertusIA(api_key=ACTIVE_KEY)
         scanner = LibertusScannerInteligente(rag, ia)
         print("✅ RAG + IA + Scanner inicializados")
     except Exception as e:
