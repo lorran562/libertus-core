@@ -278,7 +278,7 @@ class Orquestrador:
                 mems_vivas = self.mv.buscar_e_rastrear(entrada, limite=5)
                 if mems_vivas:
                     self._memorias_usadas = mems_vivas
-                    extra = "\n".join(f"- {m['titulo']}: {m['conteudo'][:200]}" for m in mems_vivas)
+                    extra = "\n".join(f"- {m['titulo']}: {(m.get('conteudo') or '')[:600]}" for m in mems_vivas)
                     ctx_local = (ctx_local or "") + "\n\n[MEMÓRIA VIVA]\n" + extra
                     log(f"Memoria Viva: {len(mems_vivas)} memorias ({[round(m['peso_vivo'],1) for m in mems_vivas]})", "mem")
             except Exception as e:
