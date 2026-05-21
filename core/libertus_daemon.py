@@ -44,6 +44,7 @@ except Exception:
 CICLO_OBSERVACAO   = 60       # 1 minuto — registra heartbeat
 CICLO_CONSOLIDACAO = 1800     # 30 minutos — consolida memória
 CICLO_BUSCA_WEB    = 3600     # 1 hora — busca e aprende da web
+CICLO_REFLEXAO     = 7200     # 2 horas — reflexão sobre si mesmo
 CICLO_EVOLUCAO     = 3600     # 1 hora — ciclo de autoevolução
 CICLO_MANUTENCAO   = 86400    # 24 horas — reorganização profunda
 CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
@@ -89,6 +90,7 @@ class NucleoCognitivo:
             "observacao":   0,
             "consolidacao": 0,
                 "busca_web": 0,
+                "reflexao": 0,
             "evolucao":     0,
             "manutencao":   0,
             "git_sync":     0,
@@ -144,6 +146,10 @@ class NucleoCognitivo:
                 if agora - self.last.get("busca_web", 0) >= CICLO_BUSCA_WEB:
                     self._tick_busca_web()
                     self.last["busca_web"] = agora
+
+                if agora - self.last.get("reflexao", 0) >= CICLO_REFLEXAO:
+                    self._tick_reflexao()
+                    self.last["reflexao"] = agora
 
                 if agora - self.last["evolucao"] >= CICLO_EVOLUCAO:
                     self._tick_evolucao()
@@ -241,6 +247,32 @@ class NucleoCognitivo:
 
         self._log("CONSOLIDACAO",
                   f"Consolidados {len(recentes)} itens, {len(padroes)} padrões")
+
+    def _tick_reflexao(self):
+        """Reflexão própria — LIBERTUS pensa sobre si mesmo a cada 2 horas."""
+        try:
+            from reflexao_propria import ReflexaoPropria
+            from buscador_autonomo import BuscadorAutonomo
+            from groq_client import Groq
+            import os
+
+            groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+            ba = BuscadorAutonomo(groq_client=groq, supabase_client=self.sb)
+            rp = ReflexaoPropria(groq_client=groq, supabase_client=self.sb, buscador=ba)
+
+            # Buscar traços e erros atuais
+            tracos = self.sb.get("libertus_eu", "limit=8") or []
+            erros = self.sb.get(
+                "libertus_livro_erros",
+                "foi_corrigido=eq.false&order=created_at.desc&limit=3&select=causa_provavel,licao"
+            ) or []
+
+            sessao = f"Ciclo autônomo do daemon — {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            resultado = rp.ciclo(sessao, tracos, erros)
+
+            self._log("REFLEXAO", f"Ciclo: {resultado.get('perguntas_geradas',0)} perguntas, {resultado.get('tracos_novos',0)} traços novos")
+        except Exception as e:
+            self._log("REFLEXAO", f"Erro: {e}")
 
     def _tick_busca_web(self):
         """Busca na web e aprende tópicos pendentes da fila de Auto-Curiosidade."""

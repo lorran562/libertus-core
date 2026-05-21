@@ -50,6 +50,7 @@ from detector_contradicao import DetectorContradicao
 from livro_erros import LivroErros
 from auto_curiosidade import AutoCuriosidade
 from buscador_autonomo import BuscadorAutonomo
+from reflexao_propria import ReflexaoPropria
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
@@ -181,6 +182,12 @@ class Orquestrador:
             self.ba = None
             log(f"Buscador Autonomo offline: {e}", "warn")
         try:
+            self.rp = ReflexaoPropria(groq_client=None, supabase_client=self.sb, buscador=self.ba)
+            log("Reflexao Propria ativa", "mem")
+        except Exception as e:
+            self.rp = None
+            log(f"Reflexao Propria offline: {e}", "warn")
+        try:
             self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
             log("Identidade Cognitiva ativa", "mem")
         except Exception as e:
@@ -216,6 +223,7 @@ class Orquestrador:
         if self.le and self.groq: self.le.groq = self.groq
         if self.ac and self.groq: self.ac.groq = self.groq
         if self.ba and self.groq: self.ba.groq = self.groq
+        if self.rp and self.groq: self.rp.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
             # Injetar identidade cognitiva no system prompt do Claude
@@ -417,6 +425,22 @@ class Orquestrador:
         if self.ic and score_val >= 8:
             try:
                 self.ic.aprender_de_sucesso(entrada, str(resultado), executor_usado, score_val)
+            except Exception:
+                pass
+
+        # Reflexão Própria: a cada 15 interações, pensa sobre si mesmo
+        if self.rp and self._stats.get("total", 0) % 15 == 0:
+            try:
+                import threading
+                tracos = self.ic._carregar_tracos(8) if self.ic else []
+                erros = self.le._buscar_erros_relevantes("", 3) if self.le else []
+                sessao = f"Entrada: {entrada}\nResultado: {str(resultado)[:300]}\nScore: {score_val}/10"
+                t = threading.Thread(
+                    target=self.rp.ciclo,
+                    args=(sessao, tracos, erros),
+                    daemon=True
+                )
+                t.start()
             except Exception:
                 pass
 
