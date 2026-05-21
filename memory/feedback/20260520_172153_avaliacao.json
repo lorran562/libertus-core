@@ -1,0 +1,10 @@
+{
+  "tarefa": "Legal, enquanto nós estamos conversando aqui, você fica procurando informações na web?",
+  "score": 10,
+  "executor": "groq",
+  "duracao_ms": 3849,
+  "sucesso": true,
+  "timestamp": "2026-05-20T17:21:53.318055",
+  "diagnostico": "Excelente — resultado claro e completo",
+  "acao": "converter_para_skill"
+}

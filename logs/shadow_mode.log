@@ -46,3 +46,28 @@ MEDIUM (4x):
 [2026-05-20 17:06:22] ❌ Analyzer falhou: 'list' object has no attribute 'get'
 [2026-05-20 17:06:22] === FIM SCAN INTELIGENTE ===
 
+[2026-05-20 17:11:23] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-20 17:11:32] ✅ PRODUÇÃO: Risk=14/100
+[2026-05-20 17:11:32] ❌ Analyzer falhou: 'list' object has no attribute 'get'
+[2026-05-20 17:11:32] === FIM SCAN INTELIGENTE ===
+
+[2026-05-20 17:16:32] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-20 17:16:40] ✅ PRODUÇÃO: Risk=14/100
+[2026-05-20 17:16:40] ❌ Analyzer falhou: 'list' object has no attribute 'get'
+[2026-05-20 17:16:40] === FIM SCAN INTELIGENTE ===
+
+[2026-05-20 17:21:40] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-20 17:21:49] ✅ PRODUÇÃO: Risk=14/100
+[2026-05-20 17:21:49] ❌ Analyzer falhou: 'list' object has no attribute 'get'
+[2026-05-20 17:21:49] === FIM SCAN INTELIGENTE ===
+
+[2026-05-20 17:26:49] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-20 17:26:58] ✅ PRODUÇÃO: Risk=14/100
+[2026-05-20 17:26:58] ❌ Analyzer falhou: 'list' object has no attribute 'get'
+[2026-05-20 17:26:58] === FIM SCAN INTELIGENTE ===
+
+[2026-05-20 17:31:58] === SCAN INTELIGENTE: saojoselaboratorio.com.br ===
+[2026-05-20 17:32:07] ✅ PRODUÇÃO: Risk=14/100
+[2026-05-20 17:32:07] ❌ Analyzer falhou: 'list' object has no attribute 'get'
+[2026-05-20 17:32:07] === FIM SCAN INTELIGENTE ===
+

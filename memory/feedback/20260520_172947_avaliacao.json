@@ -1,0 +1,10 @@
+{
+  "tarefa": "Perguntei se você se lembra continuamente de tudo, pelo menos a cada sessão, tipo oque eu te disse n",
+  "score": 8,
+  "executor": "groq",
+  "duracao_ms": 7017,
+  "sucesso": true,
+  "timestamp": "2026-05-20T17:29:47.220581",
+  "diagnostico": "Excelente — resultado claro e completo",
+  "acao": "converter_para_skill"
+}

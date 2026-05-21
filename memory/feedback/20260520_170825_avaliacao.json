@@ -1,0 +1,10 @@
+{
+  "tarefa": "Calma, eu tinha colocado, mas tava mais pra um comando, mas agora coloquei pra você mesmo fazer suas",
+  "score": 10,
+  "executor": "groq",
+  "duracao_ms": 3390,
+  "sucesso": true,
+  "timestamp": "2026-05-20T17:08:25.183813",
+  "diagnostico": "Excelente — resultado claro e completo",
+  "acao": "converter_para_skill"
+}
