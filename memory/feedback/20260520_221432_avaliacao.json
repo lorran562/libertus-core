@@ -1,0 +1,10 @@
+{
+  "tarefa": "Estou sabendo que você está buscando conhecimento sobre livro abirtriu ? Oque encontrou?",
+  "score": 3,
+  "executor": "groq",
+  "duracao_ms": 8187,
+  "sucesso": false,
+  "timestamp": "2026-05-20T22:14:32.169815",
+  "diagnostico": "Fraco — 0 indicadores de falha detectados",
+  "acao": "reescrever_skill"
+}
