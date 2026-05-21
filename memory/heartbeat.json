@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-05-21T13:49:09.463963",
-  "uptime_horas": 1.24,
-  "ticks": 149,
+  "timestamp": "2026-05-21T17:50:58.954923",
+  "uptime_horas": 0.0,
+  "ticks": 1,
   "stats": {
-    "memorias_consolidadas": 3,
-    "ciclos_evolucao": 2,
-    "padroes_detectados": 10,
+    "memorias_consolidadas": 0,
+    "ciclos_evolucao": 0,
+    "padroes_detectados": 0,
     "skills_melhoradas": 0,
-    "commits_feitos": 1,
+    "commits_feitos": 0,
     "bugs_corrigidos": 0,
     "documentos_absorvidos": 0,
     "scans_realizados": 0,
     "vulnerabilidades_encontradas": 0,
     "erros": 0
   },
-  "proximo_evolucao_em": 2744,
-  "proximo_git_em": 9934
+  "proximo_evolucao_em": -1779400258,
+  "proximo_git_em": -1779389458
 }
