@@ -25,6 +25,8 @@ import urllib.request
 import urllib.parse
 from datetime import datetime
 
+TAVILY_KEY = "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"
+
 
 class BuscadorAutonomo:
 
@@ -107,67 +109,128 @@ Responda em português brasileiro."""
         }
 
     # ------------------------------------------------------------------
-    # BUSCA WEB: DuckDuckGo sem API key
+    # BUSCA WEB: Tavily (primário) + Wikipedia (complementar)
     # ------------------------------------------------------------------
     def _buscar_web(self, query: str, max_results: int = 5) -> str:
-        """Busca no DuckDuckGo e retorna texto dos resultados."""
-        try:
-            # DuckDuckGo instant answer API (grátis, sem key)
-            query_encoded = urllib.parse.quote(query + " pentest cybersecurity")
-            url = f"https://api.duckduckgo.com/?q={query_encoded}&format=json&no_redirect=1&no_html=1"
+        """Busca com Tavily API + Wikipedia. Retorna conteúdo rico e limpo."""
+        partes = []
 
-            req = urllib.request.Request(url, headers={
-                "User-Agent": "Mozilla/5.0 LIBERTUS/4.0"
-            })
-            with urllib.request.urlopen(req, timeout=10) as resp:
+        # 1. Tavily — feita para IA, resultados limpos e relevantes
+        tavily = self._buscar_tavily(query, max_results)
+        if tavily:
+            partes.append(f"[TAVILY WEB]\n{tavily}")
+
+        # 2. Wikipedia — conhecimento enciclopédico profundo
+        wiki = self._buscar_wikipedia(query)
+        if wiki:
+            partes.append(f"[WIKIPEDIA]\n{wiki}")
+
+        # 3. Fallback DuckDuckGo se ambos falharem
+        if not partes:
+            ddg = self._buscar_duckduckgo(query)
+            if ddg:
+                partes.append(f"[DUCKDUCKGO]\n{ddg}")
+
+        return "\n\n".join(partes)
+
+    def _buscar_tavily(self, query: str, max_results: int = 5) -> str:
+        """Tavily API — otimizada para agentes de IA."""
+        try:
+            payload = json.dumps({
+                "api_key": TAVILY_KEY,
+                "query": query,
+                "search_depth": "advanced",
+                "max_results": max_results,
+                "include_answer": True,
+                "include_raw_content": False,
+            }).encode()
+
+            req = urllib.request.Request(
+                "https://api.tavily.com/search",
+                data=payload,
+                headers={"Content-Type": "application/json"}
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
                 data = json.loads(resp.read().decode())
 
             partes = []
 
-            # Abstract (resposta direta)
-            if data.get("AbstractText"):
-                partes.append(f"RESUMO: {data['AbstractText']}")
+            # Resposta direta gerada pela Tavily
+            if data.get("answer"):
+                partes.append(f"RESPOSTA: {data['answer']}")
 
-            # Related topics
-            for topic in data.get("RelatedTopics", [])[:max_results]:
-                if isinstance(topic, dict) and topic.get("Text"):
-                    partes.append(f"- {topic['Text'][:300]}")
+            # Resultados individuais
+            for r in data.get("results", [])[:max_results]:
+                titulo   = r.get("title", "")
+                conteudo = r.get("content", "")
+                url      = r.get("url", "")
+                if conteudo:
+                    partes.append(f"• {titulo}\n  {conteudo[:400]}\n  Fonte: {url}")
 
-            # Answer direto
-            if data.get("Answer"):
-                partes.append(f"RESPOSTA DIRETA: {data['Answer']}")
-
-            if partes:
-                return "\n\n".join(partes)
-
-            # Fallback: busca HTML simples
-            return self._buscar_html(query)
+            return "\n\n".join(partes)
 
         except Exception as e:
-            print(f"  ⚠️  Erro DuckDuckGo: {e}")
-            return self._buscar_html(query)
+            print(f"  ⚠️  Tavily erro: {e}")
+            return ""
 
-    def _buscar_html(self, query: str) -> str:
-        """Fallback: busca via HTML do DuckDuckGo."""
+    def _buscar_wikipedia(self, query: str) -> str:
+        """Wikipedia API — conhecimento enciclopédico."""
         try:
-            query_encoded = urllib.parse.quote(query)
-            url = f"https://html.duckduckgo.com/html/?q={query_encoded}"
-            req = urllib.request.Request(url, headers={
-                "User-Agent": "Mozilla/5.0 LIBERTUS/4.0"
+            # Buscar artigo
+            search_url = (
+                "https://pt.wikipedia.org/api/rest_v1/page/summary/"
+                + urllib.parse.quote(query.replace(" ", "_"))
+            )
+            req = urllib.request.Request(search_url, headers={
+                "User-Agent": "LIBERTUS/4.0"
             })
             with urllib.request.urlopen(req, timeout=10) as resp:
-                html = resp.read().decode("utf-8", errors="ignore")
+                data = json.loads(resp.read().decode())
 
-            # Extrair snippets simples
-            import re
-            snippets = re.findall(r'class="result__snippet"[^>]*>([^<]{50,500})', html)
-            titles = re.findall(r'class="result__title"[^>]*>.*?<a[^>]*>([^<]{10,200})', html)
+            extract = data.get("extract", "")
+            title   = data.get("title", "")
+            if extract and len(extract) > 50:
+                return f"{title}: {extract[:800]}"
 
+        except Exception:
+            pass
+
+        # Fallback: busca em inglês
+        try:
+            search_url = (
+                "https://en.wikipedia.org/api/rest_v1/page/summary/"
+                + urllib.parse.quote(query.replace(" ", "_"))
+            )
+            req = urllib.request.Request(search_url, headers={
+                "User-Agent": "LIBERTUS/4.0"
+            })
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode())
+
+            extract = data.get("extract", "")
+            title   = data.get("title", "")
+            if extract and len(extract) > 50:
+                return f"{title}: {extract[:800]}"
+        except Exception:
+            pass
+
+        return ""
+
+    def _buscar_duckduckgo(self, query: str) -> str:
+        """Fallback DuckDuckGo quando Tavily falhar."""
+        try:
+            query_encoded = urllib.parse.quote(query)
+            url = f"https://api.duckduckgo.com/?q={query_encoded}&format=json&no_redirect=1&no_html=1"
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 LIBERTUS/4.0"})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode())
             partes = []
-            for i, (t, s) in enumerate(zip(titles[:5], snippets[:5])):
-                partes.append(f"{t.strip()}: {s.strip()}")
-
-            return "\n\n".join(partes) if partes else ""
+            if data.get("AbstractText"):
+                partes.append(data["AbstractText"])
+            for t in data.get("RelatedTopics", [])[:3]:
+                if isinstance(t, dict) and t.get("Text"):
+                    partes.append(t["Text"][:200])
+            return "\n".join(partes)
         except Exception:
             return ""
 
