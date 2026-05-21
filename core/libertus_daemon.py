@@ -141,6 +141,7 @@ class NucleoCognitivo:
 
                 if agora - self.last["consolidacao"] >= CICLO_CONSOLIDACAO:
                     self._tick_consolidacao()
+                    self._salvar_briefing()
                     self.last["consolidacao"] = agora
 
                 if agora - self.last.get("busca_web", 0) >= CICLO_BUSCA_WEB:
@@ -247,6 +248,76 @@ class NucleoCognitivo:
 
         self._log("CONSOLIDACAO",
                   f"Consolidados {len(recentes)} itens, {len(padroes)} padrões")
+
+    def _salvar_briefing(self):
+        """Salva estado atual do daemon no Supabase para injeção no contexto."""
+        try:
+            # Últimas atividades
+            logs = []
+            import os
+            log_path = self.root / "evolution_logs" / "daemon.log"
+            if log_path.exists():
+                linhas = log_path.read_text().splitlines()[-20:]
+                logs = [l for l in linhas if l.strip()]
+
+            # Últimas pesquisas
+            memorias_recentes = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.auto_aprendizado&order=created_at.desc&limit=5&select=titulo,created_at"
+            ) or []
+
+            # Reflexões recentes
+            insights = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.insight_proprio&order=created_at.desc&limit=3&select=titulo,conteudo"
+            ) or []
+
+            briefing = {
+                "timestamp": datetime.now().isoformat(),
+                "daemon_ativo": True,
+                "uptime_horas": round((time.time() - self._inicio) / 3600, 1) if hasattr(self, '_inicio') else 0,
+                "ultimas_pesquisas": [m.get('titulo','?') for m in memorias_recentes],
+                "insights_recentes": [i.get('titulo','?') for i in insights],
+                "ciclos_completados": self.stats.get("ciclos", 0),
+                "memorias_consolidadas": self.stats.get("memorias_consolidadas", 0),
+            }
+
+            # Salvar como memória especial
+            existente = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.briefing_daemon&select=id&limit=1"
+            ) or []
+
+            briefing_txt = (
+                f"Daemon ativo há {briefing['uptime_horas']}h. "
+                f"Ciclos: {briefing['ciclos_completados']}. "
+                f"Últimas pesquisas: {', '.join(briefing['ultimas_pesquisas'][:3])}. "
+                f"Insights: {', '.join(briefing['insights_recentes'][:2])}."
+            )
+
+            if existente:
+                self.sb.patch(
+                    "libertus_memoria",
+                    f"tipo=eq.briefing_daemon",
+                    {
+                        "conteudo": briefing_txt,
+                        "titulo": f"Estado do Daemon — {datetime.now().strftime('%H:%M')}",
+                        "updated_at": datetime.now().isoformat()
+                    }
+                )
+            else:
+                self.sb.post("libertus_memoria", {
+                    "tipo": "briefing_daemon",
+                    "titulo": f"Estado do Daemon — {datetime.now().strftime('%H:%M')}",
+                    "conteudo": briefing_txt,
+                    "tags": ["daemon", "estado", "briefing"],
+                    "projeto": "LIBERTUS",
+                    "peso_vivo": 9.0,
+                    "decaimento_ativo": False
+                })
+
+        except Exception as e:
+            self._log("BRIEFING", f"Erro: {e}")
 
     def _tick_reflexao(self):
         """Reflexão própria — LIBERTUS pensa sobre si mesmo a cada 2 horas."""
