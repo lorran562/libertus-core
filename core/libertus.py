@@ -208,7 +208,7 @@ class Orquestrador:
         self.ollama = Ollama(OLL_URL)
         self.claude: Optional[Claude] = None
         if not MODO_AUTONOMO and CLAUDE_OK and ANT_KEY:
-            try: self.claude = Claude(); log("Claude API OK","ok")
+            try: self.claude = Claude(ANT_KEY); log("Claude API OK","ok")
             except Exception as e: log(f"Claude offline: {e}","warn")
         if self.groq: log("Groq API disponivel (llama3-70b)","ok")
         self._stats = {"total":0,"skill":0,"groq":0,"ollama":0,"claude":0,"autonomo":0}
@@ -294,15 +294,16 @@ class Orquestrador:
                     resultado = res["resultado"]; executor_usado = "skill"
                     self._stats["skill"] += 1
             if not resultado and self.groq:
-                # Limitar histórico a 6 trocas para não estourar tokens
                 hist_reduzido = self._historico[-12:] if len(self._historico) > 12 else self._historico
-                resultado = self.groq.conversar(entrada, ctx_local, historico=hist_reduzido)
-                executor_usado = "groq"; self._stats["groq"] += 1
-                # Retry sem contexto se ainda vazio
+                log(f"Chamando LLM principal ({type(self.groq).__name__})...", "info")
+                resultado = self.groq.conversar(entrada, ctx_local[:500], historico=hist_reduzido)
+                executor_usado = "llm"; self._stats["groq"] += 1
+                log(f"LLM retornou: {len(str(resultado))} chars", "info")
                 if not resultado:
+                    log("Retry sem contexto...", "warn")
                     resultado = self.groq.conversar(entrada, "", historico=hist_reduzido[-4:])
                     if resultado:
-                        executor_usado = "groq_retry"
+                        executor_usado = "llm_retry"
             if not resultado and self.claude and not MODO_AUTONOMO:
                 log("Chamando Claude...","claude")
                 resposta = self.claude.pensar(self._ctx(entrada, ctx_local))
