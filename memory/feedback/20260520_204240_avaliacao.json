@@ -1,0 +1,10 @@
+{
+  "tarefa": "Eu coloquei os módulos de busca na web que eu avia te prometido",
+  "score": 8,
+  "executor": "groq",
+  "duracao_ms": 6149,
+  "sucesso": true,
+  "timestamp": "2026-05-20T20:42:40.880503",
+  "diagnostico": "Excelente — resultado claro e completo",
+  "acao": "converter_para_skill"
+}
