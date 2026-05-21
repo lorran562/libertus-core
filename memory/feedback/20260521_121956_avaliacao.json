@@ -1,0 +1,10 @@
+{
+  "tarefa": "Bom dia libertus, como se sente em comparação com a 2 dias atrás?",
+  "score": 3,
+  "executor": "groq",
+  "duracao_ms": 3285,
+  "sucesso": false,
+  "timestamp": "2026-05-21T12:19:56.665806",
+  "diagnostico": "Fraco — 0 indicadores de falha detectados",
+  "acao": "reescrever_skill"
+}
