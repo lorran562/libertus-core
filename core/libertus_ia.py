@@ -6,24 +6,32 @@ Responde perguntas usando conhecimento do RAG
 
 import os
 from typing import List, Dict, Any
-from groq import Groq
+import anthropic as _anthropic
+from groq import Groq as _Groq
 
 class LibertusIA:
-    """Cliente inteligente com Groq API"""
+    """Cliente inteligente — usa Claude se disponível, senão Groq"""
     
     def __init__(self, api_key: str = None):
-        """
-        Inicializa cliente Groq
+        ant_key  = os.getenv("ANTHROPIC_API_KEY", "")
+        groq_key = api_key or os.getenv("GROQ_API_KEY", "")
         
-        Args:
-            api_key: Chave API Groq (ou usa variável de ambiente)
-        """
-        self.api_key = api_key or os.getenv("GROQ_API_KEY")
-        
-        if not self.api_key:
-            raise ValueError("❌ GROQ_API_KEY não configurada")
-        
-        self.client = Groq(api_key=self.api_key)
+        if ant_key:
+            self.api_key    = ant_key
+            self._modo      = "claude"
+            self._ant       = _anthropic.Anthropic(api_key=ant_key)
+            self.client     = None
+            self.model      = "claude-haiku-4-5-20251001"
+            print(f"✅ IA inicializada: {self.model} (Claude)")
+        elif groq_key:
+            self.api_key    = groq_key
+            self._modo      = "groq"
+            self.client     = _Groq(api_key=groq_key)
+            self._ant       = None
+            self.model      = "llama-3.3-70b-versatile"
+            print(f"✅ IA inicializada: {self.model} (Groq)")
+        else:
+            raise ValueError("❌ Configure ANTHROPIC_API_KEY ou GROQ_API_KEY")
         self.model = "llama-3.3-70b-versatile"  # Modelo rápido e poderoso
         
         print(f"✅ IA inicializada: {self.model}")
@@ -50,18 +58,26 @@ class LibertusIA:
         user_prompt = self._build_user_prompt(pergunta, contexto)
         
         try:
-            # Chamar Groq
-            chat_completion = self.client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                model=self.model,
-                temperature=0.7,
-                max_tokens=2048
-            )
-            
-            return chat_completion.choices[0].message.content
+            # Chamar LLM correto
+            if self._modo == "claude":
+                response = self._ant.messages.create(
+                    model=self.model,
+                    max_tokens=2048,
+                    system=system_prompt,
+                    messages=[{"role": "user", "content": user_prompt}]
+                )
+                return response.content[0].text
+            else:
+                chat_completion = self.client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    model=self.model,
+                    temperature=0.7,
+                    max_tokens=2048
+                )
+                return chat_completion.choices[0].message.content
             
         except Exception as e:
             return f"❌ Erro ao gerar resposta: {e}"
