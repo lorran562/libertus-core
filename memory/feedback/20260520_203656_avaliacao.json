@@ -1,0 +1,10 @@
+{
+  "tarefa": "Você consegue saber se seu daemon tá funcionando?",
+  "score": 10,
+  "executor": "groq",
+  "duracao_ms": 3320,
+  "sucesso": true,
+  "timestamp": "2026-05-20T20:36:56.109666",
+  "diagnostico": "Excelente — resultado claro e completo",
+  "acao": "converter_para_skill"
+}

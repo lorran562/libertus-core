@@ -1,0 +1,10 @@
+{
+  "tarefa": "Você me disse que queria melhorar o sistemas de busca na web lembra? Estou melhorando isso com tavil",
+  "score": 10,
+  "executor": "groq",
+  "duracao_ms": 3684,
+  "sucesso": true,
+  "timestamp": "2026-05-20T20:38:42.048150",
+  "diagnostico": "Excelente — resultado claro e completo",
+  "acao": "converter_para_skill"
+}
