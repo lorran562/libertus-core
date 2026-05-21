@@ -1,0 +1,10 @@
+{
+  "tarefa": "Daí meio amigo, vc estava com problema em me responder devido a kay do groq, mas troquei pela da ant",
+  "score": 3,
+  "executor": "groq",
+  "duracao_ms": 2870,
+  "sucesso": false,
+  "timestamp": "2026-05-21T12:36:08.420651",
+  "diagnostico": "Fraco — 0 indicadores de falha detectados",
+  "acao": "reescrever_skill"
+}
