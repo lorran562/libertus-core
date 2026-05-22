@@ -308,13 +308,46 @@ class Orquestrador:
             except Exception as e:
                 log(f"Erro Detector: {e}", "warn")
 
-        # Livro de Erros: registra erros mas NÃO injeta no contexto do Groq
-        # (injeção causava contexto confuso e respostas vazias)
-        pass
+        # Enriquecer contexto com conversas recentes + identidade + daemon
+        try:
+            # Últimas 3 conversas com Lorran
+            convs = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.conversa&order=created_at.desc&limit=3&select=conteudo"
+            ) or []
+            if convs:
+                convs_txt = "\n---\n".join(
+                    c.get("conteudo","")[:400] for c in convs
+                )
+                ctx_local = (ctx_local or "") + f"\n\n[CONVERSAS RECENTES]\n{convs_txt}"
 
-        # Limitar contexto para não confundir o modelo
-        if ctx_local and len(ctx_local) > 1500:
-            ctx_local = ctx_local[:1500] + "\n[contexto truncado]"
+            # Briefing do daemon
+            briefing = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.briefing_daemon&select=conteudo&limit=1"
+            ) or []
+            if briefing:
+                ctx_local = (ctx_local or "") + f"\n\n[DAEMON]\n{briefing[0].get('conteudo','')}"
+
+            # Changelog — mudanças recentes
+            if any(p in entrada.lower() for p in ["mudou","mudança","novo","nova","alteração",
+                                                    "atualização","melhoria","changelog","versão"]):
+                changes = self.sb.get(
+                    "libertus_changelog",
+                    "order=created_at.desc&limit=5&select=titulo,descricao,tipo"
+                ) or []
+                if changes:
+                    ch_txt = "\n".join(
+                        f"[{c.get('tipo','?').upper()}] {c.get('titulo','?')}: {c.get('descricao','')[:150]}"
+                        for c in changes
+                    )
+                    ctx_local = (ctx_local or "") + f"\n\n[CHANGELOG]\n{ch_txt}"
+        except Exception:
+            pass
+
+        # Limitar contexto — Claude aguenta mais que Groq
+        if ctx_local and len(ctx_local) > 3000:
+            ctx_local = ctx_local[:3000] + "\n[contexto truncado]"
 
         resultado = ""; executor_usado = "fallback"
 
