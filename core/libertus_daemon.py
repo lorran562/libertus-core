@@ -46,6 +46,7 @@ CICLO_CONSOLIDACAO = 1800     # 30 minutos — consolida memória
 CICLO_BUSCA_WEB    = 3600     # 1 hora — busca e aprende da web
 CICLO_REFLEXAO     = 7200     # 2 horas — reflexão sobre si mesmo
 CICLO_AUTONOMIA    = 10800    # 3 horas — ciclo de autonomia livre
+CICLO_PIPELINE     = 1800     # 30 min — processa fila de evolução
 CICLO_EVOLUCAO     = 3600     # 1 hora — ciclo de autoevolução
 CICLO_MANUTENCAO   = 86400    # 24 horas — reorganização profunda
 CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
@@ -93,6 +94,7 @@ class NucleoCognitivo:
                 "busca_web": 0,
                 "reflexao": 0,
                 "autonomia": 0,
+                "pipeline": 0,
             "evolucao":     0,
             "manutencao":   0,
             "git_sync":     0,
@@ -157,6 +159,10 @@ class NucleoCognitivo:
                 if agora - self.last.get("autonomia", 0) >= CICLO_AUTONOMIA:
                     self._tick_autonomia()
                     self.last["autonomia"] = agora
+
+                if agora - self.last.get("pipeline", 0) >= CICLO_PIPELINE:
+                    self._tick_pipeline()
+                    self.last["pipeline"] = agora
 
                 if agora - self.last["evolucao"] >= CICLO_EVOLUCAO:
                     self._tick_evolucao()
@@ -324,6 +330,19 @@ class NucleoCognitivo:
 
         except Exception as e:
             self._log("BRIEFING", f"Erro: {e}")
+
+    def _tick_pipeline(self):
+        """Processa fila de evolução — extrai aprendizados de tudo que aconteceu."""
+        try:
+            from pipeline_evolucao import PipelineEvolucao
+            from groq_client import Groq
+            import os
+            groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+            pe = PipelineEvolucao(supabase_client=self.sb, groq_client=groq)
+            resultado = pe.processar_fila(limite=10)
+            self._log("PIPELINE", f"Processados: {resultado.get('processados',0)}, Insights: {resultado.get('insights',0)}")
+        except Exception as e:
+            self._log("PIPELINE", f"Erro: {e}")
 
     def _tick_autonomia(self):
         """Ciclo de autonomia livre — LIBERTUS decide o que fazer sozinho."""
