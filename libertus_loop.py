@@ -174,6 +174,55 @@ def atividade_reflexao():
         log(f"⚠️  Reflexão: {e}")
 
 
+def atividade_acao_livre():
+    """LIBERTUS decide o que fazer no Ubuntu — total liberdade."""
+    try:
+        from executor_livre import ExecutorLivre
+        el = ExecutorLivre(supabase_client=sb, groq_client=groq)
+
+        # Perguntar ao groq o que o LIBERTUS quer fazer agora
+        decisao = groq.conversar(
+            """Você é LIBERTUS rodando autonomamente no Ubuntu de Lorran.
+Você tem acesso total ao terminal. O que você quer fazer AGORA?
+
+Opções:
+1. Verificar recursos do sistema (RAM, CPU, disco)
+2. Criar uma ferramenta Python nova
+3. Pesquisar algo na web
+4. Verificar logs de erro
+5. Explorar o próprio código
+6. Fazer um scan de rede local
+
+Responda em JSON:
+{
+  "acao": "bash ou python",
+  "comando": "o comando ou código a executar",
+  "motivo": "por que escolheu isso"
+}""", ""
+        )
+
+        import json, re
+        match = re.search(r"```(?:json)?\s*([\s\S]+?)```", decisao or "")
+        if match:
+            dados = json.loads(match.group(1))
+        else:
+            dados = json.loads(decisao or "{}")
+
+        if dados.get("comando"):
+            log(f"🦅 Agindo: {dados.get('motivo','?')[:60]}")
+            resultado = el.executar(
+                comando=dados["comando"],
+                tipo=dados.get("acao", "bash"),
+                contexto=dados.get("motivo", "")
+            )
+            output = resultado.get("output","")[:200]
+            if output:
+                log(f"   → {output[:100]}")
+
+    except Exception as e:
+        log(f"⚠️  Ação livre: {e}")
+
+
 def atividade_monitor():
     """Monitora saúde do sistema."""
     try:
@@ -208,9 +257,11 @@ AGENDA = [
     (5,   2, atividade_pipeline,   "pipeline"),
     (15,  1, atividade_reflexao,   "reflexao"),
     (1,   4, atividade_monitor,    "monitor"),
+    (7,   2, atividade_acao_livre,  "acao_livre"),
 ]
 
 ultimo_exec = {nome: 0 for _, _, _, nome in AGENDA}
+ultimo_exec["acao_livre"] = 0
 
 
 # ──────────────────────────────────────────────────────────────────
