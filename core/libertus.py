@@ -53,6 +53,8 @@ from buscador_autonomo import BuscadorAutonomo
 from reflexao_propria import ReflexaoPropria
 from executor_livre import ExecutorLivre
 from pipeline_evolucao import PipelineEvolucao
+from ser_vivo import SerVivo
+from ser_vivo import SerVivo
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
@@ -202,6 +204,18 @@ class Orquestrador:
             self.pipeline = None
             log(f"Pipeline offline: {e}", "warn")
         try:
+            self.sv = SerVivo(supabase_client=self.sb, groq_client=None)
+            log("Ser Vivo ativo", "mem")
+        except Exception as e:
+            self.sv = None
+            log(f"Ser Vivo offline: {e}", "warn")
+        try:
+            self.sv = SerVivo(supabase_client=self.sb, groq_client=None)
+            log("Ser Vivo ativo", "mem")
+        except Exception as e:
+            self.sv = None
+            log(f"Ser Vivo offline: {e}", "warn")
+        try:
             self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
             log("Identidade Cognitiva ativa", "mem")
         except Exception as e:
@@ -240,6 +254,8 @@ class Orquestrador:
         if self.rp and self.groq: self.rp.groq = self.groq
         if self.el and self.groq: self.el.groq = self.groq
         if self.pipeline and self.groq: self.pipeline.groq = self.groq
+        if self.sv and self.groq: self.sv.groq = self.groq
+        if self.sv and self.groq: self.sv.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
             # Injetar identidade cognitiva no system prompt do Claude
@@ -344,6 +360,33 @@ class Orquestrador:
                     log(f"Tensoes injetadas: {len(tensoes)}", "mem")
             except Exception as e:
                 log(f"Erro Detector: {e}", "warn")
+
+        # Memória episódica e padrões temporais
+        if self.sv:
+            try:
+                ep = self.sv.contexto_episodico()
+                if ep:
+                    ctx_local = (ctx_local or "") + f"\n\n{ep}"
+                pt = self.sv.padroes_para_contexto()
+                if pt:
+                    ctx_local = (ctx_local or "") + f"\n\n{pt}"
+                st = self.sv.status_estudos()
+                if st:
+                    ctx_local = (ctx_local or "") + f"\n\n{st}"
+            except Exception:
+                pass
+
+        # Ser Vivo — estado emocional e crescimento conjunto
+        if self.sv:
+            try:
+                estado = self.sv.estado_atual()
+                crescimento = self.sv.status_crescimento()
+                if estado:
+                    ctx_local = (ctx_local or "") + f"\n\n{estado}"
+                if crescimento:
+                    ctx_local = (ctx_local or "") + f"\n\n{crescimento}"
+            except Exception:
+                pass
 
         # Pipeline de evolução — o que aconteceu recentemente
         if self.pipeline:
@@ -567,6 +610,28 @@ class Orquestrador:
         # Salvar no histórico de sessão
         self._historico.append({"role": "user", "content": entrada})
         self._historico.append({"role": "assistant", "content": str(resultado)[:400]})
+
+        # Ser Vivo: registrar episódio emocional + detectar lacunas + padrões
+        if self.sv:
+            try:
+                ep_info = self.sv.registrar_episodio(entrada, str(resultado), score_val)
+                if ep_info.get("assuntos"):
+                    self.sv.detectar_padrao(ep_info["assuntos"], ep_info.get("tom","neutro"))
+                self.sv.detectar_lacuna(entrada, str(resultado))
+                # Detectar tópico de estudo
+                if ep_info.get("assuntos") and "estudo" in ep_info["assuntos"]:
+                    for ass in ep_info["assuntos"]:
+                        if ass in ["ejpt","oscp","estudo"]:
+                            self.sv.registrar_sessao_estudo(ass, entrada)
+            except Exception:
+                pass
+
+        # SerVivo: perceber e detectar padrões
+        if self.sv:
+            try:
+                self.sv.perceber(entrada, str(resultado), score_val)
+            except Exception:
+                pass
 
         # Pipeline: registrar conversa para evolução
         if self.pipeline:
