@@ -52,6 +52,7 @@ from auto_curiosidade import AutoCuriosidade
 from buscador_autonomo import BuscadorAutonomo
 from reflexao_propria import ReflexaoPropria
 from executor_livre import ExecutorLivre
+from pipeline_evolucao import PipelineEvolucao
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
@@ -195,6 +196,12 @@ class Orquestrador:
             self.el = None
             log(f"Executor Livre offline: {e}", "warn")
         try:
+            self.pipeline = PipelineEvolucao(supabase_client=self.sb, groq_client=None)
+            log("Pipeline Evolucao ativo", "mem")
+        except Exception as e:
+            self.pipeline = None
+            log(f"Pipeline offline: {e}", "warn")
+        try:
             self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
             log("Identidade Cognitiva ativa", "mem")
         except Exception as e:
@@ -232,6 +239,7 @@ class Orquestrador:
         if self.ba and self.groq: self.ba.groq = self.groq
         if self.rp and self.groq: self.rp.groq = self.groq
         if self.el and self.groq: self.el.groq = self.groq
+        if self.pipeline and self.groq: self.pipeline.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
             # Injetar identidade cognitiva no system prompt do Claude
@@ -329,6 +337,15 @@ class Orquestrador:
                     log(f"Tensoes injetadas: {len(tensoes)}", "mem")
             except Exception as e:
                 log(f"Erro Detector: {e}", "warn")
+
+        # Pipeline de evolução — o que aconteceu recentemente
+        if self.pipeline:
+            try:
+                ctx_evolucao = self.pipeline.contexto_recente(limite=5)
+                if ctx_evolucao:
+                    ctx_local = (ctx_local or "") + f"\n\n{ctx_evolucao}"
+            except Exception:
+                pass
 
         # Enriquecer contexto com conversas recentes + identidade + daemon
         try:
@@ -543,6 +560,18 @@ class Orquestrador:
         # Salvar no histórico de sessão
         self._historico.append({"role": "user", "content": entrada})
         self._historico.append({"role": "assistant", "content": str(resultado)[:400]})
+
+        # Pipeline: registrar conversa para evolução
+        if self.pipeline:
+            try:
+                self.pipeline.conversa(
+                    pergunta=entrada,
+                    resposta=str(resultado),
+                    score=score_val,
+                    tags=["conversa", executor_usado]
+                )
+            except Exception:
+                pass
         if len(self._historico) > 40:  # máx 20 trocas
             self._historico = self._historico[-40:]
 

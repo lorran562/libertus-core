@@ -130,6 +130,21 @@ def salvar_conversa_na_memoria(pergunta: str, resposta: str, tags: list = None):
         if existentes:
             return  # evita duplicata
 
+        # Registrar no pipeline de evolução
+        try:
+            from pipeline_evolucao import PipelineEvolucao
+            pe = PipelineEvolucao(supabase_client=sb)
+            pe.registrar(
+                tipo="conversa_telegram",
+                conteudo=conteudo,
+                titulo=titulo,
+                fonte="telegram_bot",
+                tags=tags_auto,
+                peso=7.0
+            )
+        except Exception:
+            pass
+
         sb.post("libertus_memoria", {
             "tipo": "conversa",
             "titulo": titulo,
