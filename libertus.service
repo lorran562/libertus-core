@@ -1,0 +1,18 @@
+[Unit]
+Description=LIBERTUS — IA Autônoma de Lorran
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=libertus
+WorkingDirectory=/home/libertus/LIBERTUS
+ExecStart=/home/libertus/LIBERTUS/libertus_start.sh
+ExecStop=/bin/bash -c 'pkill -f telegram_bot_rag.py; pkill -f libertus_daemon.py; pkill -f watchdog.py; pkill -f libertus_loop.py'
+Restart=on-failure
+RestartSec=30
+StandardOutput=append:/home/libertus/LIBERTUS/logs/service.log
+StandardError=append:/home/libertus/LIBERTUS/logs/service.log
+
+[Install]
+WantedBy=multi-user.target
