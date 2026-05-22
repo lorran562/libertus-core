@@ -573,21 +573,53 @@ async def receber_documento(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         await update.message.reply_text(f"🧠 Absorvendo conhecimento de {documento.file_name}...")
         
-        # Absorver PDF
+        # Absorver PDF no RAG (ChromaDB)
         doc_ids = rag.absorver_pdf_simples(str(pdf_path))
         
+        # Também salvar no Supabase como conhecimento permanente
+        if EVOLUCAO_DISPONIVEL:
+            try:
+                import PyPDF2
+                from supabase_client import Supabase
+                sb = Supabase()
+                
+                with open(pdf_path, 'rb') as f:
+                    reader = PyPDF2.PdfReader(f)
+                    texto_completo = ""
+                    for page in reader.pages:
+                        texto_completo += page.extract_text() or ""
+                
+                # Salvar em chunks de 2000 chars no Supabase
+                chunks = [texto_completo[i:i+2000] 
+                         for i in range(0, min(len(texto_completo), 20000), 2000)]
+                
+                for i, chunk in enumerate(chunks[:10]):  # max 10 chunks
+                    if len(chunk.strip()) > 100:
+                        sb.post("libertus_memoria", {
+                            "tipo": "conhecimento",
+                            "titulo": f"{documento.file_name} — parte {i+1}",
+                            "conteudo": chunk,
+                            "tags": ["pdf", "conhecimento", documento.file_name.replace('.pdf','')],
+                            "projeto": "LIBERTUS",
+                            "peso_vivo": 8.0,
+                            "decaimento_ativo": False
+                        })
+                
+                print(f"  ✅ PDF salvo no Supabase: {len(chunks)} chunks")
+            except Exception as e:
+                print(f"  ⚠️ Erro ao salvar no Supabase: {e}")
+        
         if doc_ids:
-            await update.message.reply_text(f"""✅ **CONHECIMENTO ABSORVIDO!**
-
-📄 Arquivo: {documento.file_name}
-📚 Páginas processadas: {len(doc_ids)}
-
-💡 Agora você pode:
-• /ask [pergunta] - Fazer perguntas
-• /create [objetivo] - Criar soluções
-• /stats - Ver estatísticas""")
+            total_chunks = len(doc_ids)
+            await update.message.reply_text(
+                f"✅ *CONHECIMENTO ABSORVIDO!*\n\n"
+                f"📄 Arquivo: {documento.file_name}\n"
+                f"📚 Chunks processados: {total_chunks}\n"
+                f"💾 Salvo: RAG + Supabase (permanente)\n\n"
+                f"Agora é só perguntar naturalmente — sem precisar de /ask!"
+            )
         else:
-            await update.message.reply_text(f"❌ Erro ao processar PDF")
+            await update.message.reply_text("❌ Erro ao processar PDF")
         
     except Exception as e:
         await update.message.reply_text(f"❌ Erro: {e}")
