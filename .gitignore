@@ -1,18 +1,21 @@
-# API Keys (NUNCA commitar)
-.env
-
-# Ignorar PIDs e logs temporários
-/tmp/
-*.pid
-*.log
-
-# Ignorar cache Python
+# Python
 __pycache__/
 *.pyc
 *.pyo
 
-# Ignorar memória local
+# Logs e evolução (gerados automaticamente — não precisam ir pro GitHub)
+evolution_logs/
+evolucao/
+memory/feedback/
 memory/heartbeat.json
-memory/tentativas_fix.json
-memory/bugs_persistentes.json
+plans/
+
+# ChromaDB local
+memoria/chroma/
+
+# Ambiente
 .env
+
+# Relatórios gerados
+relatorios_pdf/
+relatorios/

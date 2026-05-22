@@ -191,8 +191,11 @@ Máximo 200 palavras."""
         ) or "Nenhum erro recente"
 
         try:
+            # Incluir perfil do Lorran para perguntas mais relevantes
+            perfil_lorran = self.analisar_lorran()
+            sessao_enriquecida = sessao[:600] + (f"\n\nPERFIL DE LORRAN:\n{perfil_lorran}" if perfil_lorran else "")
             prompt = self.PROMPT_GERAR_PERGUNTAS.format(
-                sessao=sessao[:800],
+                sessao=sessao_enriquecida[:1000],
                 tracos=tracos_fmt,
                 erros=erros_fmt
             )
@@ -219,6 +222,42 @@ Máximo 200 palavras."""
     # ------------------------------------------------------------------
     # PESQUISAR SOBRE A PRÓPRIA NATUREZA
     # ------------------------------------------------------------------
+    def analisar_lorran(self) -> str:
+        """Analisa padrões do Lorran nas conversas para moldar personalidade."""
+        if not self.sb:
+            return ""
+        try:
+            # Buscar conversas com tags do Lorran
+            categorias = ["lorran_irlanda", "lorran_shield", "lorran_dinheiro",
+                         "lorran_emocional", "lorran_filosofico", "lorran_tecnico"]
+
+            perfil = []
+            for cat in categorias:
+                convs = self.sb.get(
+                    "libertus_memoria",
+                    f"tipo=eq.conversa&order=created_at.desc&limit=3&select=conteudo"
+                ) or []
+
+                if convs:
+                    tema = cat.replace("lorran_", "")
+                    perfil.append(f"[{tema.upper()}] Lorran fala sobre isso frequentemente")
+
+            # Total de conversas
+            total = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.conversa&select=id&limit=1000"
+            ) or []
+
+            resumo = (
+                f"Total de conversas com Lorran: {len(total)}\n"
+                f"Temas recorrentes: {', '.join(p for p in perfil)}\n"
+                f"Lorran é de Ariquemes-RO, quer ir para Irlanda, "
+                f"tem o SHIELD de cybersegurança, quer trabalhar remotamente em dólar."
+            )
+            return resumo
+        except Exception:
+            return ""
+
     def _pesquisar(self, pergunta: str) -> str:
         """Pesquisa a pergunta na web + memória própria."""
         conhecimento = ""

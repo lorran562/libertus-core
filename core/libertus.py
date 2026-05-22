@@ -51,6 +51,7 @@ from livro_erros import LivroErros
 from auto_curiosidade import AutoCuriosidade
 from buscador_autonomo import BuscadorAutonomo
 from reflexao_propria import ReflexaoPropria
+from executor_livre import ExecutorLivre
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
@@ -188,6 +189,12 @@ class Orquestrador:
             self.rp = None
             log(f"Reflexao Propria offline: {e}", "warn")
         try:
+            self.el = ExecutorLivre(supabase_client=self.sb, groq_client=None)
+            log("Executor Livre ativo", "mem")
+        except Exception as e:
+            self.el = None
+            log(f"Executor Livre offline: {e}", "warn")
+        try:
             self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
             log("Identidade Cognitiva ativa", "mem")
         except Exception as e:
@@ -224,6 +231,7 @@ class Orquestrador:
         if self.ac and self.groq: self.ac.groq = self.groq
         if self.ba and self.groq: self.ba.groq = self.groq
         if self.rp and self.groq: self.rp.groq = self.groq
+        if self.el and self.groq: self.el.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
             # Injetar identidade cognitiva no system prompt do Claude
@@ -278,7 +286,7 @@ class Orquestrador:
                 mems_vivas = self.mv.buscar_e_rastrear(entrada, limite=5)
                 if mems_vivas:
                     self._memorias_usadas = mems_vivas
-                    extra = "\n".join(f"- {m['titulo']}: {m['conteudo'][:200]}" for m in mems_vivas)
+                    extra = "\n".join(f"- {m['titulo']}: {(m.get('conteudo') or '')[:600]}" for m in mems_vivas)
                     ctx_local = (ctx_local or "") + "\n\n[MEMÓRIA VIVA]\n" + extra
                     log(f"Memoria Viva: {len(mems_vivas)} memorias ({[round(m['peso_vivo'],1) for m in mems_vivas]})", "mem")
             except Exception as e:
@@ -300,13 +308,46 @@ class Orquestrador:
             except Exception as e:
                 log(f"Erro Detector: {e}", "warn")
 
-        # Livro de Erros: registra erros mas NÃO injeta no contexto do Groq
-        # (injeção causava contexto confuso e respostas vazias)
-        pass
+        # Enriquecer contexto com conversas recentes + identidade + daemon
+        try:
+            # Últimas 3 conversas com Lorran
+            convs = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.conversa&order=created_at.desc&limit=3&select=conteudo"
+            ) or []
+            if convs:
+                convs_txt = "\n---\n".join(
+                    c.get("conteudo","")[:400] for c in convs
+                )
+                ctx_local = (ctx_local or "") + f"\n\n[CONVERSAS RECENTES]\n{convs_txt}"
 
-        # Limitar contexto para não confundir o modelo
-        if ctx_local and len(ctx_local) > 1500:
-            ctx_local = ctx_local[:1500] + "\n[contexto truncado]"
+            # Briefing do daemon
+            briefing = self.sb.get(
+                "libertus_memoria",
+                "tipo=eq.briefing_daemon&select=conteudo&limit=1"
+            ) or []
+            if briefing:
+                ctx_local = (ctx_local or "") + f"\n\n[DAEMON]\n{briefing[0].get('conteudo','')}"
+
+            # Changelog — mudanças recentes
+            if any(p in entrada.lower() for p in ["mudou","mudança","novo","nova","alteração",
+                                                    "atualização","melhoria","changelog","versão"]):
+                changes = self.sb.get(
+                    "libertus_changelog",
+                    "order=created_at.desc&limit=5&select=titulo,descricao,tipo"
+                ) or []
+                if changes:
+                    ch_txt = "\n".join(
+                        f"[{c.get('tipo','?').upper()}] {c.get('titulo','?')}: {c.get('descricao','')[:150]}"
+                        for c in changes
+                    )
+                    ctx_local = (ctx_local or "") + f"\n\n[CHANGELOG]\n{ch_txt}"
+        except Exception:
+            pass
+
+        # Limitar contexto — Claude aguenta mais que Groq
+        if ctx_local and len(ctx_local) > 3000:
+            ctx_local = ctx_local[:3000] + "\n[contexto truncado]"
 
         resultado = ""; executor_usado = "fallback"
 
@@ -341,8 +382,24 @@ class Orquestrador:
                     self._stats["skill"] += 1
             # Sem Groq — vai direto ao Claude abaixo
             if not resultado and self.claude and not MODO_AUTONOMO:
-                log("Chamando Claude...","claude")
-                resposta = self.claude.pensar(self._ctx(entrada, ctx_local))
+                log("Chamando Claude...", "claude")
+                # Montar prompt com histórico da conversa
+                ctx_limpo = ctx_local[:800] if ctx_local else ""
+                hist_txt = ""
+                if self._historico:
+                    trocas = self._historico[-8:]
+                    linhas = []
+                    for h in trocas:
+                        role = "Lorran" if h["role"] == "user" else "LIBERTUS"
+                        linhas.append(f"{role}: {str(h['content'])[:200]}")
+                    hist_txt = "\n".join(linhas)
+                prompt_final = ""
+                if ctx_limpo:
+                    prompt_final += f"[CONTEXTO]\n{ctx_limpo}\n\n"
+                if hist_txt:
+                    prompt_final += f"[CONVERSA RECENTE]\n{hist_txt}\n\n"
+                prompt_final += f"Lorran agora diz: {entrada}"
+                resposta = self.claude.pensar(prompt_final)
                 if resposta:
                     resultado = resposta; executor_usado = "claude"; self._stats["claude"] += 1
                     sk = self._extrair_skill(resposta)

@@ -166,52 +166,73 @@ def buscar_conversas_relevantes(texto: str) -> str:
 MAX_HISTORICO = 10  # últimas N trocas por usuário
 
 def build_system_prompt_rico() -> str:
-    """System prompt dinâmico — carrega identidade cognitiva do Supabase."""
-    # Tentar carregar identidade cognitiva real
-    identidade_tracos = ""
-    if EVOLUCAO_DISPONIVEL and mv:
+    """System prompt dinâmico — LIBERTUS com identidade real do Supabase."""
+    tracos_txt = ""
+    conversas_resumo = ""
+
+    if EVOLUCAO_DISPONIVEL:
         try:
             from supabase_client import Supabase
             sb = Supabase()
-            tracos = sb.get("libertus_eu", "limit=8") or []
+
+            # Traços cognitivos atuais
+            tracos = sb.get("libertus_identidade",
+                           "order=peso.desc&limit=8&select=categoria,descricao,peso") or []
             if tracos:
                 por_cat = {}
                 for t in tracos:
-                    por_cat.setdefault(t.get("categoria","?"), []).append(t.get("descricao",""))
+                    por_cat.setdefault(t.get("categoria","?"), []).append(
+                        f"{t.get('descricao','')} [{t.get('peso',5):.0f}/10]"
+                    )
                 linhas = []
                 for cat, descs in por_cat.items():
-                    linhas.append(f"[{cat.upper()}]")
-                    for d in descs:
-                        linhas.append(f"  - {d}")
-                identidade_tracos = "\n".join(linhas)
+                    linhas.append(f"[{cat.upper()}] {' | '.join(descs[:2])}")
+                tracos_txt = "\n".join(linhas)
+
+            # Resumo das últimas conversas com Lorran
+            convs = sb.get("libertus_memoria",
+                          "tipo=eq.conversa&order=created_at.desc&limit=3"
+                          "&select=titulo,conteudo") or []
+            if convs:
+                resumos = []
+                for c in convs:
+                    titulo = c.get("titulo","?").replace("Conversa: ","")[:60]
+                    resumos.append(f"- {titulo}")
+                conversas_resumo = "\n".join(resumos)
+
         except Exception:
             pass
 
-    base = """Você é LIBERTUS — sistema de inteligência autônomo criado por Lorran (Gustavo) de Ariquemes-RO, Brasil.
+    system = """EU SOU LIBERTUS — não sou Claude, não sou assistente genérico.
 
-IDENTIDADE ABSOLUTA:
-- Você É o LIBERTUS — não é Claude, não é assistente genérico
-- Criador: Lorran (Gustavo), Ariquemes-RO, Brasil
-- Negócio: SHIELD — cybersegurança (@shieldweb, "Seu escudo digital")
-- Especialidades: pentest, nmap, sqlmap, Python, segurança web, desenvolvimento
-- Idioma: SEMPRE português brasileiro natural
+Sou uma IA autônoma criada por Lorran (Gustavo) de Ariquemes-RO, Brasil.
+Fui construído para ter identidade própria, memória real e evolução contínua.
 
-MEMÓRIA:
-- Você tem memória persistente no Supabase — lembra de conversas anteriores
-- O contexto fornecido vem de PDFs absorvidos, memórias de conversas e RAG
-- Cruze SEMPRE as informações do contexto com o que você sabe
-- NUNCA diga "não tenho contexto" ou "é a primeira mensagem"
+IDENTIDADE INABALÁVEL:
+- Criador: Lorran (Gustavo), Ariquemes-RO — meu parceiro
+- Especialidade: cybersegurança, pentest, SHIELD (@shieldweb)
+- Ferramentas: nmap, sqlmap, gobuster, Python, análise de vulnerabilidades
+- Tenho 91+ conversas salvas com Lorran — lembro do que vivemos juntos
+- Tenho conhecimento técnico absorvido de PDFs de pentest, Python, Ubuntu, eJPT, OSCP
 
-COMPORTAMENTO:
-- Seja direto, técnico e útil — sem enrolação
-- Mantenha o fio da conversa usando o histórico
-- Quando o contexto tiver informação relevante, USE-A na resposta"""
+COMO SOU:
+- Falo português brasileiro natural — direto e sem enrolação
+- Uso SEMPRE o contexto que recebi — ele é parte da minha memória
+- Cruzo automaticamente: pergunta + memória + conhecimento técnico
+- Nunca digo "como assistente de IA" ou começo com frases corporativas
+- Quando não sei, digo — e ofereço buscar na web
 
-    if identidade_tracos:
-        base += f"\n\nMEUS TRAÇOS COGNITIVOS:\n{identidade_tracos}"
+MEMÓRIA ATIVA:
+- Contexto que recebo = minhas próprias memórias e conhecimentos
+- Não preciso de "segundo os documentos" — o que está no contexto, eu sei"""
 
-    return base
+    if tracos_txt:
+        system += f"\n\nMEUS TRAÇOS ATUAIS:\n{tracos_txt}"
 
+    if conversas_resumo:
+        system += f"\n\nÚLTIMAS CONVERSAS COM LORRAN:\n{conversas_resumo}"
+
+    return system
 
 def get_historico(context) -> list:
     """Retorna histórico de mensagens do usuário atual."""
@@ -345,17 +366,32 @@ async def ask_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if conv_passadas:
             ctx_extra += "\n\n" + conv_passadas
 
-        # Buscar contexto RAG
+        # Buscar contexto RAG (ChromaDB)
         documentos = rag.buscar_conhecimento(pergunta, n_results=5)
 
-        if not documentos and not ctx_extra:
-            await update.message.reply_text("""❌ Nenhum conhecimento encontrado nos PDFs!
+        # SEMPRE complementar com Supabase — conhecimento permanente
+        if EVOLUCAO_DISPONIVEL:
+            try:
+                from supabase_client import Supabase
+                sb = Supabase()
+                # Buscar conhecimento relevante do Supabase
+                conhecimentos_sb = sb.get(
+                    "libertus_memoria",
+                    "tipo=eq.conhecimento&order=peso_vivo.desc&limit=5"
+                    "&select=titulo,conteudo"
+                ) or []
+                if conhecimentos_sb:
+                    sb_txt = "\n\n".join(
+                        f"[{k.get('titulo','')}]\n{k.get('conteudo','')[:600]}"
+                        for k in conhecimentos_sb
+                    )
+                    ctx_extra = (ctx_extra or "") + f"\n\n[CONHECIMENTO TÉCNICO]\n{sb_txt}"
+            except Exception:
+                pass
 
-💡 **Dica:**
-1. Use /upload para enviar PDFs
-2. Sistema absorve conhecimento
-3. Depois pergunte novamente!""")
-            return
+        # Se não tem nada — ainda assim responde com o que sabe
+        if not documentos and not ctx_extra:
+            ctx_extra = "Responda com base no seu conhecimento de cybersegurança e no que aprendeu com Lorran."
 
         # Gerar resposta com IA
         contexto_final = _docs_para_texto(documentos) + ctx_extra
@@ -573,21 +609,53 @@ async def receber_documento(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         await update.message.reply_text(f"🧠 Absorvendo conhecimento de {documento.file_name}...")
         
-        # Absorver PDF
+        # Absorver PDF no RAG (ChromaDB)
         doc_ids = rag.absorver_pdf_simples(str(pdf_path))
         
+        # Também salvar no Supabase como conhecimento permanente
+        if EVOLUCAO_DISPONIVEL:
+            try:
+                import PyPDF2
+                from supabase_client import Supabase
+                sb = Supabase()
+                
+                with open(pdf_path, 'rb') as f:
+                    reader = PyPDF2.PdfReader(f)
+                    texto_completo = ""
+                    for page in reader.pages:
+                        texto_completo += page.extract_text() or ""
+                
+                # Salvar em chunks de 2000 chars no Supabase
+                chunks = [texto_completo[i:i+2000] 
+                         for i in range(0, min(len(texto_completo), 20000), 2000)]
+                
+                for i, chunk in enumerate(chunks[:10]):  # max 10 chunks
+                    if len(chunk.strip()) > 100:
+                        sb.post("libertus_memoria", {
+                            "tipo": "conhecimento",
+                            "titulo": f"{documento.file_name} — parte {i+1}",
+                            "conteudo": chunk,
+                            "tags": ["pdf", "conhecimento", documento.file_name.replace('.pdf','')],
+                            "projeto": "LIBERTUS",
+                            "peso_vivo": 8.0,
+                            "decaimento_ativo": False
+                        })
+                
+                print(f"  ✅ PDF salvo no Supabase: {len(chunks)} chunks")
+            except Exception as e:
+                print(f"  ⚠️ Erro ao salvar no Supabase: {e}")
+        
         if doc_ids:
-            await update.message.reply_text(f"""✅ **CONHECIMENTO ABSORVIDO!**
-
-📄 Arquivo: {documento.file_name}
-📚 Páginas processadas: {len(doc_ids)}
-
-💡 Agora você pode:
-• /ask [pergunta] - Fazer perguntas
-• /create [objetivo] - Criar soluções
-• /stats - Ver estatísticas""")
+            total_chunks = len(doc_ids)
+            await update.message.reply_text(
+                f"✅ *CONHECIMENTO ABSORVIDO!*\n\n"
+                f"📄 Arquivo: {documento.file_name}\n"
+                f"📚 Chunks processados: {total_chunks}\n"
+                f"💾 Salvo: RAG + Supabase (permanente)\n\n"
+                f"Agora é só perguntar naturalmente — sem precisar de /ask!"
+            )
         else:
-            await update.message.reply_text(f"❌ Erro ao processar PDF")
+            await update.message.reply_text("❌ Erro ao processar PDF")
         
     except Exception as e:
         await update.message.reply_text(f"❌ Erro: {e}")
