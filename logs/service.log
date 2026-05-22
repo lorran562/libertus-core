@@ -1,0 +1,16 @@
+🚀 LIBERTUS iniciando em Fri May 22 14:15:24 -05 2026
+📥 Atualizando...
+From https://github.com/lorran562/libertus-core
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+🤖 Iniciando Bot...
+Bot PID: 8793
+💓 Iniciando Daemon...
+Daemon PID: 8822
+🐕 Iniciando Watchdog...
+Watchdog PID: 8834
+/home/libertus/LIBERTUS/libertus_start.sh: line 56:  8822 Killed                  nohup python3 core/libertus_daemon.py >> "$LOG_DIR/daemon.log" 2>&1
+🔄 Iniciando Loop Infinito...
+Loop PID: 8841
+✅ LIBERTUS VIVO — Fri May 22 14:15:33 -05 2026
+PIDs: Bot=8793 Daemon=8822 Watchdog=8834 Loop=8841
