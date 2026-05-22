@@ -405,3 +405,18 @@ LIBERTUS Daemon — iniciando em /root/LIBERTUS
 [2026-05-21 22:32:16] SECURITY_SCAN: Nenhum target configurado - pulando
 [2026-05-21 23:02:16] CONSOLIDACAO: Iniciando consolidação de memória
 [2026-05-21 23:02:16] CONSOLIDACAO: Consolidados 20 itens, 2 padrões
+[2026-05-21 23:32:17] CONSOLIDACAO: Iniciando consolidação de memória
+[2026-05-21 23:32:21] CONSOLIDACAO: Consolidados 20 itens, 2 padrões
+[2026-05-21 23:32:36] EVOLUCAO: Iniciando ciclo autônomo
+[2026-05-21 23:32:40] EVOLUCAO: Ciclo: 1 oportunidades detectadas
+[2026-05-22 13:27:12] ERRO: Falha ao carregar targets: No module named 'supabase'
+[2026-05-22 13:27:12] INICIO: Núcleo cognitivo iniciado
+[2026-05-22 13:27:12] LOOP: Entrando em loop cognitivo contínuo
+[2026-05-22 13:27:12] CONSOLIDACAO: Iniciando consolidação de memória
+[2026-05-22 13:27:12] CONSOLIDACAO: Consolidados 20 itens, 2 padrões
+[2026-05-22 13:27:27] REFLEXAO: Ciclo: 0 perguntas, 0 traços novos
+[2026-05-22 13:27:28] AUTONOMIA: Explorações: 0, Ferramentas: 0, Objetivos: 0
+[2026-05-22 13:27:28] PIPELINE: Processados: 0, Insights: 0
+[2026-05-22 13:27:29] SER_VIVO: Erro: 'SerVivo' object has no attribute 'ciclo'
+[2026-05-22 13:27:29] EVOLUCAO: Iniciando ciclo autônomo
+[2026-05-22 13:27:31] EVOLUCAO: Ciclo: 1 oportunidades detectadas
