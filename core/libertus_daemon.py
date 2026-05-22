@@ -47,6 +47,8 @@ CICLO_BUSCA_WEB    = 3600     # 1 hora — busca e aprende da web
 CICLO_REFLEXAO     = 7200     # 2 horas — reflexão sobre si mesmo
 CICLO_AUTONOMIA    = 10800    # 3 horas — ciclo de autonomia livre
 CICLO_PIPELINE     = 1800     # 30 min — processa fila de evolução
+CICLO_PROATIVO     = 14400    # 4 horas — LIBERTUS inicia conversa
+CICLO_SER_VIVO     = 3600     # 1 hora — iniciativas, lacunas, padrões
 CICLO_EVOLUCAO     = 3600     # 1 hora — ciclo de autoevolução
 CICLO_MANUTENCAO   = 86400    # 24 horas — reorganização profunda
 CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
@@ -95,6 +97,8 @@ class NucleoCognitivo:
                 "reflexao": 0,
                 "autonomia": 0,
                 "pipeline": 0,
+                "proativo": 0,
+                "ser_vivo": 0,
             "evolucao":     0,
             "manutencao":   0,
             "git_sync":     0,
@@ -163,6 +167,14 @@ class NucleoCognitivo:
                 if agora - self.last.get("pipeline", 0) >= CICLO_PIPELINE:
                     self._tick_pipeline()
                     self.last["pipeline"] = agora
+
+                if agora - self.last.get("proativo", 0) >= CICLO_PROATIVO:
+                    self._tick_proativo()
+                    self.last["proativo"] = agora
+
+                if agora - self.last.get("ser_vivo", 0) >= CICLO_SER_VIVO:
+                    self._tick_ser_vivo()
+                    self.last["ser_vivo"] = agora
 
                 if agora - self.last["evolucao"] >= CICLO_EVOLUCAO:
                     self._tick_evolucao()
@@ -330,6 +342,71 @@ class NucleoCognitivo:
 
         except Exception as e:
             self._log("BRIEFING", f"Erro: {e}")
+
+    def _tick_ser_vivo(self):
+        """Ciclo de ser vivo — iniciativas, lacunas, padrões."""
+        try:
+            from ser_vivo import SerVivo
+            from buscador_autonomo import BuscadorAutonomo
+            from groq_client import Groq
+            import os
+
+            groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+            ba = BuscadorAutonomo(groq_client=groq, supabase_client=self.sb)
+            sv = SerVivo(supabase_client=self.sb, groq_client=groq)
+
+            token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+            chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+            resultado = sv.ciclo(
+                telegram_token=token,
+                chat_id=chat_id,
+                buscador=ba
+            )
+            self._log("SER_VIVO",
+                f"Lacunas: {resultado.get('lacunas_resolvidas',0)}, "
+                f"Iniciativas: {resultado.get('iniciativas_geradas',0)} geradas, "
+                f"{resultado.get('iniciativas_enviadas',0)} enviadas")
+        except Exception as e:
+            self._log("SER_VIVO", f"Erro: {e}")
+
+    def _tick_proativo(self):
+        """LIBERTUS decide enviar mensagem para Lorran por iniciativa própria."""
+        try:
+            from ser_vivo import SerVivo
+            from groq_client import Groq
+            import os, urllib.request, json
+
+            groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+            sv = SerVivo(supabase_client=self.sb, groq_client=groq)
+
+            # Gerar mensagem proativa
+            msg = sv.gerar_mensagem_proativa()
+
+            if msg:
+                # Enviar via Telegram
+                token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+                chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+                if token and chat_id:
+                    texto = f"\U0001f916 *LIBERTUS*\n\n{msg}"
+                    payload = json.dumps({
+                        "chat_id": chat_id,
+                        "text": texto,
+                        "parse_mode": "Markdown"
+                    }).encode()
+                    req = urllib.request.Request(
+                        f"https://api.telegram.org/bot{token}/sendMessage",
+                        data=payload,
+                        headers={"Content-Type": "application/json"}
+                    )
+                    urllib.request.urlopen(req, timeout=10)
+                    self._log("PROATIVO", f"Mensagem enviada: {msg[:60]}")
+                else:
+                    self._log("PROATIVO", f"Gerado mas sem TELEGRAM_CHAT_ID: {msg[:60]}")
+
+        except Exception as e:
+            self._log("PROATIVO", f"Erro: {e}")
 
     def _tick_pipeline(self):
         """Processa fila de evolução — extrai aprendizados de tudo que aconteceu."""

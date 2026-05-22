@@ -53,6 +53,8 @@ from buscador_autonomo import BuscadorAutonomo
 from reflexao_propria import ReflexaoPropria
 from executor_livre import ExecutorLivre
 from pipeline_evolucao import PipelineEvolucao
+from ser_vivo import SerVivo
+from ser_vivo import SerVivo
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
@@ -202,6 +204,18 @@ class Orquestrador:
             self.pipeline = None
             log(f"Pipeline offline: {e}", "warn")
         try:
+            self.sv = SerVivo(supabase_client=self.sb, groq_client=None)
+            log("Ser Vivo ativo", "mem")
+        except Exception as e:
+            self.sv = None
+            log(f"Ser Vivo offline: {e}", "warn")
+        try:
+            self.sv = SerVivo(supabase_client=self.sb, groq_client=None)
+            log("Ser Vivo ativo", "mem")
+        except Exception as e:
+            self.sv = None
+            log(f"Ser Vivo offline: {e}", "warn")
+        try:
             self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
             log("Identidade Cognitiva ativa", "mem")
         except Exception as e:
@@ -240,6 +254,8 @@ class Orquestrador:
         if self.rp and self.groq: self.rp.groq = self.groq
         if self.el and self.groq: self.el.groq = self.groq
         if self.pipeline and self.groq: self.pipeline.groq = self.groq
+        if self.sv and self.groq: self.sv.groq = self.groq
+        if self.sv and self.groq: self.sv.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
             # Injetar identidade cognitiva no system prompt do Claude
@@ -268,28 +284,35 @@ class Orquestrador:
                         messages=[{"role":"user","content":prompt}]
                     ).content[0].text
                 })()
-                def _claude_pensar(inst, prompt, max_tokens):
+                ant_client = _claude_inst.c
+                ant_system = _claude_inst.SYSTEM
+                ant_model  = _claude_inst.model
+
+                def _pensar(prompt, max_tokens=4096):
                     import time
                     for tentativa in range(3):
                         try:
-                            r = inst.c.messages.create(
-                                model=inst.model, max_tokens=max_tokens,
-                                system=inst.SYSTEM,
-                                messages=[{"role": "user", "content": prompt}]
+                            r = ant_client.messages.create(
+                                model=ant_model,
+                                max_tokens=min(max_tokens, 1024),
+                                system=ant_system,
+                                messages=[{"role": "user", "content": str(prompt)[:6000]}]
                             )
                             return r.content[0].text
                         except Exception as e:
                             if "529" in str(e) or "overloaded" in str(e).lower():
-                                espera = (tentativa + 1) * 5
+                                espera = (tentativa + 1) * 8
                                 log(f"Claude overloaded — retry em {espera}s", "warn")
                                 time.sleep(espera)
                             elif "400" in str(e) and "credit" in str(e).lower():
-                                raise
+                                log("Sem crédito na API Claude", "warn")
+                                return ""
                             else:
-                                raise
+                                log(f"Claude erro: {e}", "warn")
+                                return ""
                     return ""
-                import types
-                _claude_inst.pensar = types.MethodType(_claude_pensar, _claude_inst)
+
+                _claude_inst.pensar = _pensar
                 self.claude = _claude_inst
                 log("Claude API OK", "ok")
             except Exception as e:
@@ -337,6 +360,33 @@ class Orquestrador:
                     log(f"Tensoes injetadas: {len(tensoes)}", "mem")
             except Exception as e:
                 log(f"Erro Detector: {e}", "warn")
+
+        # Memória episódica e padrões temporais
+        if self.sv:
+            try:
+                ep = self.sv.contexto_episodico()
+                if ep:
+                    ctx_local = (ctx_local or "") + f"\n\n{ep}"
+                pt = self.sv.padroes_para_contexto()
+                if pt:
+                    ctx_local = (ctx_local or "") + f"\n\n{pt}"
+                st = self.sv.status_estudos()
+                if st:
+                    ctx_local = (ctx_local or "") + f"\n\n{st}"
+            except Exception:
+                pass
+
+        # Ser Vivo — estado emocional e crescimento conjunto
+        if self.sv:
+            try:
+                estado = self.sv.estado_atual()
+                crescimento = self.sv.status_crescimento()
+                if estado:
+                    ctx_local = (ctx_local or "") + f"\n\n{estado}"
+                if crescimento:
+                    ctx_local = (ctx_local or "") + f"\n\n{crescimento}"
+            except Exception:
+                pass
 
         # Pipeline de evolução — o que aconteceu recentemente
         if self.pipeline:
@@ -560,6 +610,28 @@ class Orquestrador:
         # Salvar no histórico de sessão
         self._historico.append({"role": "user", "content": entrada})
         self._historico.append({"role": "assistant", "content": str(resultado)[:400]})
+
+        # Ser Vivo: registrar episódio emocional + detectar lacunas + padrões
+        if self.sv:
+            try:
+                ep_info = self.sv.registrar_episodio(entrada, str(resultado), score_val)
+                if ep_info.get("assuntos"):
+                    self.sv.detectar_padrao(ep_info["assuntos"], ep_info.get("tom","neutro"))
+                self.sv.detectar_lacuna(entrada, str(resultado))
+                # Detectar tópico de estudo
+                if ep_info.get("assuntos") and "estudo" in ep_info["assuntos"]:
+                    for ass in ep_info["assuntos"]:
+                        if ass in ["ejpt","oscp","estudo"]:
+                            self.sv.registrar_sessao_estudo(ass, entrada)
+            except Exception:
+                pass
+
+        # SerVivo: perceber e detectar padrões
+        if self.sv:
+            try:
+                self.sv.perceber(entrada, str(resultado), score_val)
+            except Exception:
+                pass
 
         # Pipeline: registrar conversa para evolução
         if self.pipeline:
