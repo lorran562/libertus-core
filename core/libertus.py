@@ -268,28 +268,35 @@ class Orquestrador:
                         messages=[{"role":"user","content":prompt}]
                     ).content[0].text
                 })()
-                def _claude_pensar(inst, prompt, max_tokens):
+                ant_client = _claude_inst.c
+                ant_system = _claude_inst.SYSTEM
+                ant_model  = _claude_inst.model
+
+                def _pensar(prompt, max_tokens=4096):
                     import time
                     for tentativa in range(3):
                         try:
-                            r = inst.c.messages.create(
-                                model=inst.model, max_tokens=max_tokens,
-                                system=inst.SYSTEM,
-                                messages=[{"role": "user", "content": prompt}]
+                            r = ant_client.messages.create(
+                                model=ant_model,
+                                max_tokens=min(max_tokens, 1024),
+                                system=ant_system,
+                                messages=[{"role": "user", "content": str(prompt)[:6000]}]
                             )
                             return r.content[0].text
                         except Exception as e:
                             if "529" in str(e) or "overloaded" in str(e).lower():
-                                espera = (tentativa + 1) * 5
+                                espera = (tentativa + 1) * 8
                                 log(f"Claude overloaded — retry em {espera}s", "warn")
                                 time.sleep(espera)
                             elif "400" in str(e) and "credit" in str(e).lower():
-                                raise
+                                log("Sem crédito na API Claude", "warn")
+                                return ""
                             else:
-                                raise
+                                log(f"Claude erro: {e}", "warn")
+                                return ""
                     return ""
-                import types
-                _claude_inst.pensar = types.MethodType(_claude_pensar, _claude_inst)
+
+                _claude_inst.pensar = _pensar
                 self.claude = _claude_inst
                 log("Claude API OK", "ok")
             except Exception as e:
