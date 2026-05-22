@@ -29,13 +29,12 @@ class PipelineEvolucao:
             return None
         try:
             row = self.sb.post("libertus_evolucao", {
-                "tipo": tipo,
-                "fonte": fonte or tipo,
-                "titulo": titulo[:300] if titulo else f"{tipo}: {conteudo[:60]}",
+                "tipo": tipo[:50],
+                "fonte": (fonte or tipo)[:100],
+                "titulo": (titulo[:300] if titulo else f"{tipo}: {conteudo[:60]}"),
                 "conteudo": conteudo[:3000],
-                "aprendizado": aprendizado[:500] if aprendizado else "",
-                "tags": tags or [tipo],
-                "peso": peso,
+                "aprendizado": (aprendizado[:500] if aprendizado else ""),
+                "peso": float(peso),
                 "processado": False
             })
             return row[0]["id"] if row else None
