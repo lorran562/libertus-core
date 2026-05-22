@@ -341,8 +341,24 @@ class Orquestrador:
                     self._stats["skill"] += 1
             # Sem Groq — vai direto ao Claude abaixo
             if not resultado and self.claude and not MODO_AUTONOMO:
-                log("Chamando Claude...","claude")
-                resposta = self.claude.pensar(self._ctx(entrada, ctx_local))
+                log("Chamando Claude...", "claude")
+                # Montar prompt com histórico da conversa
+                ctx_limpo = ctx_local[:800] if ctx_local else ""
+                hist_txt = ""
+                if self._historico:
+                    trocas = self._historico[-8:]
+                    linhas = []
+                    for h in trocas:
+                        role = "Lorran" if h["role"] == "user" else "LIBERTUS"
+                        linhas.append(f"{role}: {str(h['content'])[:200]}")
+                    hist_txt = "\n".join(linhas)
+                prompt_final = ""
+                if ctx_limpo:
+                    prompt_final += f"[CONTEXTO]\n{ctx_limpo}\n\n"
+                if hist_txt:
+                    prompt_final += f"[CONVERSA RECENTE]\n{hist_txt}\n\n"
+                prompt_final += f"Lorran agora diz: {entrada}"
+                resposta = self.claude.pensar(prompt_final)
                 if resposta:
                     resultado = resposta; executor_usado = "claude"; self._stats["claude"] += 1
                     sk = self._extrair_skill(resposta)
