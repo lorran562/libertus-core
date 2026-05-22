@@ -280,7 +280,8 @@ class Orquestrador:
                             else:
                                 raise
                     return ""
-                _claude_inst.pensar = _claude_pensar
+                import types
+                _claude_inst.pensar = types.MethodType(_claude_pensar, _claude_inst)
                 self.claude = _claude_inst
                 log("Claude API OK", "ok")
             except Exception as e:
