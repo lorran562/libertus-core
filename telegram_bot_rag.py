@@ -819,6 +819,82 @@ async def mensagem_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ==================== MAIN ====================
 
+async def bugbounty_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /bb [escopo] — executa bug bounty em alvo autorizado"""
+    args = context.args
+    if not args:
+        await update.message.reply_text(
+            "🎯 *Bug Bounty — LIBERTUS*\n\n"
+            "Uso: `/bb [dominio1] [dominio2] ...`\n\n"
+            "Exemplos:\n"
+            "  `/bb testphp.vulnweb.com` — treino\n"
+            "  `/bb empresa.com api.empresa.com` — programa real\n\n"
+            "⚠️ Use APENAS em alvos com autorização explícita!",
+            parse_mode="Markdown"
+        )
+        return
+
+    escopo = list(args)
+    await update.message.reply_text(
+        f"🎯 Iniciando bug bounty em {len(escopo)} alvo(s)...\n"
+        f"Escopo: {', '.join(escopo)}\n"
+        f"Isso pode demorar alguns minutos."
+    )
+
+    try:
+        import asyncio, sys
+        sys.path.insert(0, "./core")
+        from agente_bugbounty import AgenteBugBounty
+        from buscador_autonomo import BuscadorAutonomo
+        from supabase_client import Supabase
+        from groq_client import Groq
+        import os
+
+        sb   = Supabase()
+        groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+        ba   = BuscadorAutonomo(groq_client=groq, supabase_client=sb)
+        ag   = AgenteBugBounty(supabase_client=sb, groq_client=groq, buscador=ba)
+
+        loop = asyncio.get_event_loop()
+        resultado = await loop.run_in_executor(
+            None,
+            lambda: ag.executar_programa(escopo, "manual")
+        )
+
+        vulns = resultado.get("vulnerabilidades", [])
+        relatorio = resultado.get("relatorio", "")
+
+        if not vulns:
+            await update.message.reply_text("✅ Scan concluído — nenhuma vulnerabilidade encontrada.")
+            return
+
+        # Resumo das vulns
+        por_severidade = {}
+        for v in vulns:
+            sev = v.get("severidade", "baixa")
+            por_severidade[sev] = por_severidade.get(sev, 0) + 1
+
+        resumo = (
+            f"🎯 *RESULTADO BUG BOUNTY*\n\n"
+            f"Alvos testados: {resultado.get('alvos_testados',0)}\n"
+            f"Vulnerabilidades: {len(vulns)}\n\n"
+        )
+        for sev, count in sorted(por_severidade.items()):
+            emoji = "🔴" if sev == "alta" else "🟡" if sev == "media" else "🟢"
+            resumo += f"{emoji} {sev.upper()}: {count}\n"
+
+        await update.message.reply_text(resumo, parse_mode="Markdown")
+
+        if relatorio:
+            # Enviar relatório em partes se necessário
+            partes = [relatorio[i:i+4000] for i in range(0, len(relatorio), 4000)]
+            for parte in partes[:2]:
+                await update.message.reply_text(f"📋 *RELATÓRIO:*\n\n{parte}", parse_mode="Markdown")
+
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erro: {e}")
+
+
 async def scan_nmap_comando(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Comando /scan [alvo] — executa nmap real e salva resultado na memória"""
     args = context.args
@@ -1025,6 +1101,7 @@ def main():
     app.add_handler(CommandHandler("evolucao", evolucao_comando))
     app.add_handler(CommandHandler("limpar", limpar_comando))
     app.add_handler(CommandHandler("scan", scan_nmap_comando))
+    app.add_handler(CommandHandler("bb", bugbounty_comando))
     app.add_handler(CommandHandler("estudar", estudar_comando))
     app.add_handler(CommandHandler("sqli", sqli_comando))
     app.add_handler(CommandHandler("stats", stats_comando))

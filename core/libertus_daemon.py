@@ -48,6 +48,7 @@ CICLO_REFLEXAO     = 7200     # 2 horas — reflexão sobre si mesmo
 CICLO_AUTONOMIA    = 10800    # 3 horas — ciclo de autonomia livre
 CICLO_PIPELINE     = 1800     # 30 min — processa fila de evolução
 CICLO_PROATIVO     = 14400    # 4 horas — LIBERTUS inicia conversa
+CICLO_BUGBOUNTY    = 21600    # 6 horas — treino em bug bounty
 CICLO_SER_VIVO     = 3600     # 1 hora — iniciativas, lacunas, padrões
 CICLO_EVOLUCAO     = 3600     # 1 hora — ciclo de autoevolução
 CICLO_MANUTENCAO   = 86400    # 24 horas — reorganização profunda
@@ -98,6 +99,7 @@ class NucleoCognitivo:
                 "autonomia": 0,
                 "pipeline": 0,
                 "proativo": 0,
+                "bugbounty": 0,
                 "ser_vivo": 0,
             "evolucao":     0,
             "manutencao":   0,
@@ -171,6 +173,10 @@ class NucleoCognitivo:
                 if agora - self.last.get("proativo", 0) >= CICLO_PROATIVO:
                     self._tick_proativo()
                     self.last["proativo"] = agora
+
+                if agora - self.last.get("bugbounty", 0) >= CICLO_BUGBOUNTY:
+                    self._tick_bugbounty()
+                    self.last["bugbounty"] = agora
 
                 if agora - self.last.get("ser_vivo", 0) >= CICLO_SER_VIVO:
                     self._tick_ser_vivo()
@@ -369,6 +375,26 @@ class NucleoCognitivo:
                 f"{resultado.get('iniciativas_enviadas',0)} enviadas")
         except Exception as e:
             self._log("SER_VIVO", f"Erro: {e}")
+
+    def _tick_bugbounty(self):
+        """Treino autônomo em bug bounty — a cada 6 horas."""
+        try:
+            from agente_bugbounty import AgenteBugBounty
+            from buscador_autonomo import BuscadorAutonomo
+            from groq_client import Groq
+            import os
+
+            groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+            ba   = BuscadorAutonomo(groq_client=groq, supabase_client=self.sb)
+            ag   = AgenteBugBounty(supabase_client=self.sb, groq_client=groq, buscador=ba)
+
+            resultado = ag.ciclo_treino()
+            self._log("BUGBOUNTY",
+                f"Tópicos: {resultado.get('topicos_estudados',0)}, "
+                f"Scans: {resultado.get('scans_realizados',0)}, "
+                f"Vulns: {resultado.get('vulnerabilidades_encontradas',0)}")
+        except Exception as e:
+            self._log("BUGBOUNTY", f"Erro: {e}")
 
     def _tick_proativo(self):
         """LIBERTUS decide enviar mensagem para Lorran por iniciativa própria."""
