@@ -260,6 +260,27 @@ class Orquestrador:
                         messages=[{"role":"user","content":prompt}]
                     ).content[0].text
                 })()
+                def _claude_pensar(inst, prompt, max_tokens):
+                    import time
+                    for tentativa in range(3):
+                        try:
+                            r = inst.c.messages.create(
+                                model=inst.model, max_tokens=max_tokens,
+                                system=inst.SYSTEM,
+                                messages=[{"role": "user", "content": prompt}]
+                            )
+                            return r.content[0].text
+                        except Exception as e:
+                            if "529" in str(e) or "overloaded" in str(e).lower():
+                                espera = (tentativa + 1) * 5
+                                log(f"Claude overloaded — retry em {espera}s", "warn")
+                                time.sleep(espera)
+                            elif "400" in str(e) and "credit" in str(e).lower():
+                                raise
+                            else:
+                                raise
+                    return ""
+                _claude_inst.pensar = _claude_pensar
                 self.claude = _claude_inst
                 log("Claude API OK", "ok")
             except Exception as e:
