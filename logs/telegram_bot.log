@@ -280064,3 +280064,14 @@ Traceback (most recent call last):
   File "/home/libertus/.local/lib/python3.12/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
     raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
 telegram.error.NetworkError: httpx.ReadError: 
+✅ RAG + IA + Scanner carregados
+✅ Módulos de evolução carregados
+✅ RAG inicializado: 131 documentos
+✅ IA inicializada: claude-haiku-4-5-20251001 (Claude)
+✅ IA inicializada: llama-3.3-70b-versatile
+✅ RAG + IA + Scanner inicializados
+  🍂 Decaimento aplicado: 73 memórias afetadas
+✅ Memória Viva, Livro de Erros, Auto-Curiosidade, Identidade ativos
+🔥 Iniciando LIBERTUS RAG + IA Bot...
+✅ Bot RAG + IA rodando!
+📱 Comandos: /start, /upload, /ask, /create, /stats, /scan, /sqli, /evolucao, /limpar

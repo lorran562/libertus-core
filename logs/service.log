@@ -30,3 +30,19 @@ Watchdog PID: 2252
 Loop PID: 2259
 ✅ LIBERTUS VIVO — Fri May 22 17:19:12 -05 2026
 PIDs: Bot=2206 Daemon=2239 Watchdog=2252 Loop=2259
+🚀 LIBERTUS iniciando em Fri May 22 18:50:19 -05 2026
+📥 Atualizando...
+From https://github.com/lorran562/libertus-core
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+🤖 Iniciando Bot...
+Bot PID: 2220
+💓 Iniciando Daemon...
+Daemon PID: 2972
+🐕 Iniciando Watchdog...
+Watchdog PID: 3275
+/home/libertus/LIBERTUS/libertus_start.sh: line 56:  2972 Killed                  nohup python3 core/libertus_daemon.py >> "$LOG_DIR/daemon.log" 2>&1
+🔄 Iniciando Loop Infinito...
+Loop PID: 3298
+✅ LIBERTUS VIVO — Fri May 22 18:50:29 -05 2026
+PIDs: Bot=2220 Daemon=2972 Watchdog=3275 Loop=3298

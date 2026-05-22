@@ -480,3 +480,30 @@ LIBERTUS Daemon — iniciando em /root/LIBERTUS
 [2026-05-22 17:19:41] SER_VIVO: Erro: 'SerVivo' object has no attribute 'ciclo'
 [2026-05-22 17:19:41] EVOLUCAO: Iniciando ciclo autônomo
 [2026-05-22 17:19:43] EVOLUCAO: Ciclo: 2 oportunidades detectadas
+[2026-05-22 17:19:44] GIT: Commit automático: [main 8a88f40] chore(libertus): autocommit daemon — 2026-05-22 17:19
+ 12 files c
+[2026-05-22 17:19:46] MANUTENCAO: Manutenção profunda iniciada
+[2026-05-22 17:19:46] MANUTENCAO: Removidos 0 logs antigos
+[2026-05-22 17:19:47] AUTO_REFATORACAO: Iniciando ciclo de auto-correção
+[2026-05-22 17:19:47] AUTO_REFATORACAO: Bugs: 0, Patches: 0/0
+[2026-05-22 17:19:47] ABSORCAO_DOCLING: Iniciando absorção de conhecimento
+[2026-05-22 17:19:47] SECURITY_SCAN: Iniciando ciclo de scanning profissional
+[2026-05-22 17:19:47] SECURITY_SCAN: Nenhum target configurado - pulando
+[2026-05-22 17:20:19] SHUTDOWN: Sinal 15 recebido
+[2026-05-22 18:50:26] ERRO: Falha ao carregar targets: No module named 'supabase'
+[2026-05-22 18:50:26] INICIO: Núcleo cognitivo iniciado
+[2026-05-22 18:50:26] LOOP: Entrando em loop cognitivo contínuo
+[2026-05-22 18:50:26] CONSOLIDACAO: Iniciando consolidação de memória
+[2026-05-22 18:50:26] CONSOLIDACAO: Consolidados 20 itens, 7 padrões
+[2026-05-22 18:50:30] ERRO: Falha ao carregar targets: No module named 'supabase'
+[2026-05-22 18:50:30] INICIO: Núcleo cognitivo iniciado
+[2026-05-22 18:50:30] LOOP: Entrando em loop cognitivo contínuo
+[2026-05-22 18:50:30] CONSOLIDACAO: Iniciando consolidação de memória
+[2026-05-22 18:50:31] CONSOLIDACAO: Consolidados 20 itens, 7 padrões
+[2026-05-22 18:50:45] REFLEXAO: Ciclo: 0 perguntas, 0 traços novos
+[2026-05-22 18:50:46] AUTONOMIA: Explorações: 0, Ferramentas: 0, Objetivos: 0
+[2026-05-22 18:50:46] PIPELINE: Processados: 0, Insights: 0
+[2026-05-22 18:50:52] BUGBOUNTY: Tópicos: 1, Scans: 1, Vulns: 0
+[2026-05-22 18:50:52] SER_VIVO: Erro: 'SerVivo' object has no attribute 'ciclo'
+[2026-05-22 18:50:52] EVOLUCAO: Iniciando ciclo autônomo
+[2026-05-22 18:50:53] EVOLUCAO: Ciclo: 2 oportunidades detectadas
