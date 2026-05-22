@@ -51,6 +51,7 @@ from livro_erros import LivroErros
 from auto_curiosidade import AutoCuriosidade
 from buscador_autonomo import BuscadorAutonomo
 from reflexao_propria import ReflexaoPropria
+from executor_livre import ExecutorLivre
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
 from absorvedor      import Absorvedor
@@ -188,6 +189,12 @@ class Orquestrador:
             self.rp = None
             log(f"Reflexao Propria offline: {e}", "warn")
         try:
+            self.el = ExecutorLivre(supabase_client=self.sb, groq_client=None)
+            log("Executor Livre ativo", "mem")
+        except Exception as e:
+            self.el = None
+            log(f"Executor Livre offline: {e}", "warn")
+        try:
             self.ic = IdentidadeCognitiva(groq_client=None, supabase_client=self.sb)
             log("Identidade Cognitiva ativa", "mem")
         except Exception as e:
@@ -224,6 +231,7 @@ class Orquestrador:
         if self.ac and self.groq: self.ac.groq = self.groq
         if self.ba and self.groq: self.ba.groq = self.groq
         if self.rp and self.groq: self.rp.groq = self.groq
+        if self.el and self.groq: self.el.groq = self.groq
         if self.ic and self.groq:
             self.ic.groq = self.groq
             # Injetar identidade cognitiva no system prompt do Claude

@@ -45,6 +45,7 @@ CICLO_OBSERVACAO   = 60       # 1 minuto — registra heartbeat
 CICLO_CONSOLIDACAO = 1800     # 30 minutos — consolida memória
 CICLO_BUSCA_WEB    = 3600     # 1 hora — busca e aprende da web
 CICLO_REFLEXAO     = 7200     # 2 horas — reflexão sobre si mesmo
+CICLO_AUTONOMIA    = 10800    # 3 horas — ciclo de autonomia livre
 CICLO_EVOLUCAO     = 3600     # 1 hora — ciclo de autoevolução
 CICLO_MANUTENCAO   = 86400    # 24 horas — reorganização profunda
 CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
@@ -91,6 +92,7 @@ class NucleoCognitivo:
             "consolidacao": 0,
                 "busca_web": 0,
                 "reflexao": 0,
+                "autonomia": 0,
             "evolucao":     0,
             "manutencao":   0,
             "git_sync":     0,
@@ -151,6 +153,10 @@ class NucleoCognitivo:
                 if agora - self.last.get("reflexao", 0) >= CICLO_REFLEXAO:
                     self._tick_reflexao()
                     self.last["reflexao"] = agora
+
+                if agora - self.last.get("autonomia", 0) >= CICLO_AUTONOMIA:
+                    self._tick_autonomia()
+                    self.last["autonomia"] = agora
 
                 if agora - self.last["evolucao"] >= CICLO_EVOLUCAO:
                     self._tick_evolucao()
@@ -318,6 +324,23 @@ class NucleoCognitivo:
 
         except Exception as e:
             self._log("BRIEFING", f"Erro: {e}")
+
+    def _tick_autonomia(self):
+        """Ciclo de autonomia livre — LIBERTUS decide o que fazer sozinho."""
+        try:
+            from executor_livre import ExecutorLivre
+            from groq_client import Groq
+            import os
+
+            groq = Groq(os.environ.get("GROQ_API_KEY", ""))
+            el = ExecutorLivre(supabase_client=self.sb, groq_client=groq)
+            resultado = el.ciclo_autonomo()
+            self._log("AUTONOMIA",
+                f"Explorações: {resultado.get('exploracoes',0)}, "
+                f"Ferramentas: {resultado.get('ferramentas_criadas',0)}, "
+                f"Objetivos: {resultado.get('objetivos_criados',0)}")
+        except Exception as e:
+            self._log("AUTONOMIA", f"Erro: {e}")
 
     def _tick_reflexao(self):
         """Reflexão própria — LIBERTUS pensa sobre si mesmo a cada 2 horas."""
