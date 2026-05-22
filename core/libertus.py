@@ -54,6 +54,7 @@ from reflexao_propria import ReflexaoPropria
 from executor_livre import ExecutorLivre
 from pipeline_evolucao import PipelineEvolucao
 from ser_vivo import SerVivo
+from briefing_identidade import BriefingIdentidade
 from ser_vivo import SerVivo
 from identidade_cognitiva import IdentidadeCognitiva
 from seguranca       import Seguranca
@@ -209,6 +210,12 @@ class Orquestrador:
         except Exception as e:
             self.sv = None
             log(f"Ser Vivo offline: {e}", "warn")
+        try:
+            self.bi = BriefingIdentidade(supabase_client=self.sb)
+            log("Briefing Identidade ativo", "mem")
+        except Exception as e:
+            self.bi = None
+            log(f"Briefing offline: {e}", "warn")
         try:
             self.sv = SerVivo(supabase_client=self.sb, groq_client=None)
             log("Ser Vivo ativo", "mem")
@@ -472,6 +479,21 @@ class Orquestrador:
             # Sem Groq — vai direto ao Claude abaixo
             if not resultado and self.claude and not MODO_AUTONOMO:
                 log("Chamando Claude...", "claude")
+                # Atualizar SYSTEM do Claude com briefing de identidade completo
+                if self.bi:
+                    try:
+                        briefing = self.bi.montar(entrada)
+                        if briefing and len(briefing) > 100:
+                            ant_client = self.claude.c
+                            self.claude.SYSTEM = briefing
+                            # Atualizar o client também
+                            import anthropic as _ant
+                            key = os.environ.get("ANTHROPIC_API_KEY","")
+                            if key:
+                                self.claude.c = _ant.Anthropic(api_key=key)
+                    except Exception as _e:
+                        log(f"Briefing erro: {_e}", "warn")
+
                 # Montar prompt com histórico da conversa
                 ctx_limpo = ctx_local[:800] if ctx_local else ""
                 hist_txt = ""
