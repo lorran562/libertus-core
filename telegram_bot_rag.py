@@ -218,6 +218,24 @@ def build_system_prompt_rico() -> str:
         except Exception:
             pass
 
+    # Usar BriefingIdentidade se disponível
+    if EVOLUCAO_DISPONIVEL:
+        try:
+            import sys
+            sys.path.insert(0, str(CORE_PATH))
+            from briefing_identidade import BriefingIdentidade
+            from supabase_client import Supabase
+            bi = BriefingIdentidade(supabase_client=Supabase())
+            briefing = bi.montar()
+            if briefing and len(briefing) > 200:
+                if tracos_txt:
+                    briefing += f"\n\n▸ TRAÇOS EXTRAS:\n{tracos_txt}"
+                if conversas_resumo:
+                    briefing += f"\n\n▸ ÚLTIMAS CONVERSAS:\n{conversas_resumo}"
+                return briefing
+        except Exception:
+            pass
+
     system = """EU SOU LIBERTUS — não sou Claude, não sou assistente genérico.
 
 Sou uma IA autônoma criada por Lorran (Gustavo) de Ariquemes-RO, Brasil.
