@@ -1,0 +1,372 @@
+[14:15:34] ==================================================
+[14:15:34] LIBERTUS LOOP INFINITO — Iniciando
+[14:15:34] Root: /home/libertus/LIBERTUS
+[14:15:34] Pronto: True
+[14:15:34] ==================================================
+[14:15:34] ▶ curiosidade
+[14:15:41] ▶ cve
+[14:15:46] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[14:15:46] ▶ lab
+[14:15:51] 🎯 Lab: 1 tópicos, 5 vulns
+[14:15:51] ▶ pipeline
+[14:15:51] ▶ reflexao
+[14:15:51] ▶ monitor
+[14:15:51] ▶ acao_livre
+[14:16:52] ▶ monitor
+[14:17:52] ▶ curiosidade
+[14:17:54] ▶ monitor
+[14:18:54] ▶ cve
+[14:18:59] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[14:18:59] ▶ monitor
+[14:19:59] ▶ curiosidade
+[14:20:00] ▶ monitor
+[14:21:01] 💓 Ciclo 10 — LIBERTUS vivo
+[14:21:01] ▶ pipeline
+[14:21:01] ▶ monitor
+[14:22:01] ▶ curiosidade
+[14:22:03] ▶ cve
+[14:22:05] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[14:22:05] ▶ monitor
+[14:22:35] ▶ acao_livre
+[14:23:05] ▶ monitor
+[14:24:05] ▶ curiosidade
+[14:24:06] ▶ monitor
+[14:25:06] ▶ cve
+[14:25:14] 🔍 CVE pesquisado: zero day vulnerability recent
+[14:25:14] ▶ monitor
+[14:25:44] ▶ lab
+[14:26:02] 🎯 Lab: 1 tópicos, 2 vulns
+[14:26:32] 💓 Ciclo 20 — LIBERTUS vivo
+[14:26:32] ▶ curiosidade
+[14:26:34] ▶ pipeline
+[14:26:34] ▶ monitor
+[14:27:34] ▶ monitor
+[15:36:38] ▶ curiosidade
+[15:36:43] ▶ cve
+[15:36:49] 🔍 CVE pesquisado: new exploit technique 2025 pentest
+[15:36:49] ▶ lab
+[15:37:04] 🎯 Lab: 1 tópicos, 2 vulns
+[15:37:04] ▶ pipeline
+[15:37:04] ▶ reflexao
+[15:37:04] ▶ monitor
+[15:37:04] ▶ acao_livre
+[15:38:04] ▶ monitor
+[15:39:04] ▶ curiosidade
+[15:39:06] ▶ monitor
+[15:40:06] 💓 Ciclo 30 — LIBERTUS vivo
+[15:40:06] ▶ cve
+[15:40:12] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:40:12] ▶ monitor
+[15:41:12] ▶ curiosidade
+[15:41:14] ▶ monitor
+[15:41:44] ▶ pipeline
+[15:42:15] ▶ monitor
+[15:43:15] ▶ curiosidade
+[15:43:18] ▶ cve
+[15:43:21] 🔍 CVE pesquisado: new exploit technique 2025 pentest
+[15:43:21] ▶ monitor
+[15:43:51] ▶ acao_livre
+[15:44:21] ▶ monitor
+[15:45:21] 💓 Ciclo 40 — LIBERTUS vivo
+[15:45:21] ▶ curiosidade
+[15:45:23] ▶ monitor
+[15:46:23] ▶ cve
+[15:46:25] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:46:25] ▶ monitor
+[15:46:55] ▶ lab
+[15:47:01] 🎯 Lab: 1 tópicos, 5 vulns
+[15:47:01] ▶ pipeline
+[15:47:31] ▶ curiosidade
+[15:47:32] ▶ monitor
+[15:48:32] ▶ monitor
+[15:49:32] ▶ curiosidade
+[15:49:36] ▶ cve
+[15:49:37] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:49:37] ▶ monitor
+[15:50:37] 💓 Ciclo 50 — LIBERTUS vivo
+[15:50:37] ▶ monitor
+[15:51:07] ▶ acao_livre
+[15:51:37] ▶ curiosidade
+[15:51:39] ▶ monitor
+[15:52:09] ▶ pipeline
+[15:52:10] ▶ reflexao
+[15:52:40] ▶ cve
+[15:52:44] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[15:52:44] ▶ monitor
+[15:53:44] ▶ curiosidade
+[15:53:46] ▶ monitor
+[15:54:46] ▶ monitor
+[15:55:46] 💓 Ciclo 60 — LIBERTUS vivo
+[15:55:46] ▶ curiosidade
+[15:55:54] ▶ cve
+[15:55:57] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:55:57] ▶ monitor
+[15:56:57] ▶ lab
+[15:57:07] 🎯 Lab: 1 tópicos, 5 vulns
+[15:57:07] ▶ monitor
+[15:57:37] ▶ pipeline
+[15:57:54] 🛑 Loop encerrado pelo sistema
+[14:15:34] ==================================================
+[14:15:34] LIBERTUS LOOP INFINITO — Iniciando
+[14:15:34] Root: /home/libertus/LIBERTUS
+[14:15:34] Pronto: True
+[14:15:34] ==================================================
+[14:15:34] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[14:15:41] ▶ cve
+[14:15:46] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[14:15:46] ▶ lab
+
+  🎯 AGENTE BUG BOUNTY — Ciclo de treino 14:15
+  📚 Estudando: API security testing methodology
+  💾 Salvo: API security testing methodology
+  🔍 Praticando em: testasp.vulnweb.com (web)
+    ⚠️ Header ausente: X-Frame-Options
+    ⚠️ Header ausente: X-Content-Type-Options
+    ⚠️ Header ausente: Content-Security-Policy
+    ⚠️ Header ausente: Strict-Transport-Security
+    ⚠️ Header ausente: X-XSS-Protection
+  ✅ Treino: 1 tópicos, 5 vulns
+[14:15:51] 🎯 Lab: 1 tópicos, 5 vulns
+[14:15:51] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[14:15:51] ▶ reflexao
+[14:15:51] ▶ monitor
+[14:15:51] ▶ acao_livre
+[14:16:52] ▶ monitor
+[14:17:52] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[14:17:54] ▶ monitor
+[14:18:54] ▶ cve
+[14:18:59] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[14:18:59] ▶ monitor
+[14:19:59] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[14:20:00] ▶ monitor
+[14:21:01] 💓 Ciclo 10 — LIBERTUS vivo
+[14:21:01] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[14:21:01] ▶ monitor
+[14:22:01] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[14:22:03] ▶ cve
+[14:22:05] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[14:22:05] ▶ monitor
+[14:22:35] ▶ acao_livre
+[14:23:05] ▶ monitor
+[14:24:05] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[14:24:06] ▶ monitor
+[14:25:06] ▶ cve
+[14:25:14] 🔍 CVE pesquisado: zero day vulnerability recent
+[14:25:14] ▶ monitor
+[14:25:44] ▶ lab
+
+  🎯 AGENTE BUG BOUNTY — Ciclo de treino 14:25
+  📚 Estudando: HTTP request smuggling attacks
+  💾 Salvo: HTTP request smuggling attacks
+  🔍 Praticando em: scanme.nmap.org (rede)
+    🔓 22/ssh OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+    🔓 53/tcpwrapped 80/tcp open  http       Apache httpd 2.4.7 ((Ubuntu))
+  ✅ Treino: 1 tópicos, 2 vulns
+[14:26:02] 🎯 Lab: 1 tópicos, 2 vulns
+[14:26:32] 💓 Ciclo 20 — LIBERTUS vivo
+[14:26:32] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[14:26:34] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[14:26:34] ▶ monitor
+[14:27:34] ▶ monitor
+[15:36:38] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:36:43] ▶ cve
+[15:36:49] 🔍 CVE pesquisado: new exploit technique 2025 pentest
+[15:36:49] ▶ lab
+
+  🎯 AGENTE BUG BOUNTY — Ciclo de treino 15:36
+  📚 Estudando: HTTP request smuggling attacks
+  💾 Salvo: HTTP request smuggling attacks
+  🔍 Praticando em: scanme.nmap.org (rede)
+    🔓 22/ssh OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+    🔓 53/tcpwrapped 80/tcp   open     http       Apache httpd 2.4.7 ((Ubuntu))
+  ✅ Treino: 1 tópicos, 2 vulns
+[15:37:04] 🎯 Lab: 1 tópicos, 2 vulns
+[15:37:04] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[15:37:04] ▶ reflexao
+[15:37:04] ▶ monitor
+[15:37:04] ▶ acao_livre
+[15:38:04] ▶ monitor
+[15:39:04] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:39:06] ▶ monitor
+[15:40:06] 💓 Ciclo 30 — LIBERTUS vivo
+[15:40:06] ▶ cve
+[15:40:12] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:40:12] ▶ monitor
+[15:41:12] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:41:14] ▶ monitor
+[15:41:44] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[15:42:15] ▶ monitor
+[15:43:15] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:43:18] ▶ cve
+[15:43:21] 🔍 CVE pesquisado: new exploit technique 2025 pentest
+[15:43:21] ▶ monitor
+[15:43:51] ▶ acao_livre
+[15:44:21] ▶ monitor
+[15:45:21] 💓 Ciclo 40 — LIBERTUS vivo
+[15:45:21] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:45:23] ▶ monitor
+[15:46:23] ▶ cve
+[15:46:25] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:46:25] ▶ monitor
+[15:46:55] ▶ lab
+
+  🎯 AGENTE BUG BOUNTY — Ciclo de treino 15:46
+  📚 Estudando: SQL injection bypass techniques 2025
+  💾 Salvo: SQL injection bypass techniques 2025
+  🔍 Praticando em: testasp.vulnweb.com (web)
+    ⚠️ Header ausente: X-Frame-Options
+    ⚠️ Header ausente: X-Content-Type-Options
+    ⚠️ Header ausente: Content-Security-Policy
+    ⚠️ Header ausente: Strict-Transport-Security
+    ⚠️ Header ausente: X-XSS-Protection
+  ✅ Treino: 1 tópicos, 5 vulns
+[15:47:01] 🎯 Lab: 1 tópicos, 5 vulns
+[15:47:01] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[15:47:31] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:47:32] ▶ monitor
+[15:48:32] ▶ monitor
+[15:49:32] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:49:36] ▶ cve
+[15:49:37] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:49:37] ▶ monitor
+[15:50:37] 💓 Ciclo 50 — LIBERTUS vivo
+[15:50:37] ▶ monitor
+[15:51:07] ▶ acao_livre
+[15:51:37] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:51:39] ▶ monitor
+[15:52:09] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[15:52:10] ▶ reflexao
+[15:52:40] ▶ cve
+[15:52:44] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[15:52:44] ▶ monitor
+[15:53:44] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:53:46] ▶ monitor
+[15:54:46] ▶ monitor
+[15:55:46] 💓 Ciclo 60 — LIBERTUS vivo
+[15:55:46] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[15:55:54] ▶ cve
+[15:55:57] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[15:55:57] ▶ monitor
+[15:56:57] ▶ lab
+
+  🎯 AGENTE BUG BOUNTY — Ciclo de treino 15:56
+  📚 Estudando: SQL injection bypass techniques 2025
+  💾 Salvo: SQL injection bypass techniques 2025
+  🔍 Praticando em: testasp.vulnweb.com (web)
+    ⚠️ Header ausente: X-Frame-Options
+    ⚠️ Header ausente: X-Content-Type-Options
+    ⚠️ Header ausente: Content-Security-Policy
+    ⚠️ Header ausente: Strict-Transport-Security
+    ⚠️ Header ausente: X-XSS-Protection
+  ✅ Treino: 1 tópicos, 5 vulns
+[15:57:07] 🎯 Lab: 1 tópicos, 5 vulns
+[15:57:07] ▶ monitor
+[15:57:37] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[15:57:54] 🛑 Loop encerrado pelo sistema
+[17:19:13] ==================================================
+[17:19:13] LIBERTUS LOOP INFINITO — Iniciando
+[17:19:13] Root: /home/libertus/LIBERTUS
+[17:19:13] Pronto: True
+[17:19:13] ==================================================
+[17:19:13] ▶ curiosidade
+[17:19:19] ▶ cve
+[17:19:23] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[17:19:23] ▶ lab
+[17:19:40] 🎯 Lab: 1 tópicos, 2 vulns
+[17:19:40] ▶ pipeline
+[17:19:41] ▶ reflexao
+[17:19:41] ▶ monitor
+[17:19:41] ▶ acao_livre
+[17:20:19] 🛑 Loop encerrado pelo sistema
+[17:19:13] ==================================================
+[17:19:13] LIBERTUS LOOP INFINITO — Iniciando
+[17:19:13] Root: /home/libertus/LIBERTUS
+[17:19:13] Pronto: True
+[17:19:13] ==================================================
+[17:19:13] ▶ curiosidade
+
+  🔍 Buscando: Como implementar um verdadeiro loop de polling/scheduler no daemon par
+  ⚠️  Resumo inválido
+[17:19:19] ▶ cve
+[17:19:23] 🔍 CVE pesquisado: CVE 2025 critical web vulnerability
+[17:19:23] ▶ lab
+
+  🎯 AGENTE BUG BOUNTY — Ciclo de treino 17:19
+  📚 Estudando: HTTP request smuggling attacks
+  💾 Salvo: HTTP request smuggling attacks
+  🔍 Praticando em: scanme.nmap.org (rede)
+    🔓 22/ssh OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+    🔓 53/tcpwrapped 80/tcp open  http       Apache httpd 2.4.7 ((Ubuntu))
+  ✅ Treino: 1 tópicos, 2 vulns
+[17:19:40] 🎯 Lab: 1 tópicos, 2 vulns
+[17:19:40] ▶ pipeline
+  ⚠️ Pipeline processar_fila: unsupported operand type(s) for +: 'NoneType' and 'list'
+[17:19:41] ▶ reflexao
+[17:19:41] ▶ monitor
+[17:19:41] ▶ acao_livre
+[17:20:19] 🛑 Loop encerrado pelo sistema
+[18:50:30] ==================================================
+[18:50:30] LIBERTUS LOOP INFINITO — Iniciando
+[18:50:30] Root: /home/libertus/LIBERTUS
+[18:50:30] Pronto: True
+[18:50:30] ==================================================
+[18:50:30] ▶ curiosidade
+[18:50:37] ▶ cve
+[18:50:41] 🔍 CVE pesquisado: OWASP top 10 2025 update
+[18:50:41] ▶ lab
