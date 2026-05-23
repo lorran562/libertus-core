@@ -34,4 +34,4 @@ echo "🚀 Iniciando LIBERTUS + Hermes..."
 
 # Iniciar Hermes com identidade do LIBERTUS
 SYSTEM_PROMPT=$(cat /tmp/libertus_identity.md)
-exec hermes --system-prompt "$SYSTEM_PROMPT"
+exec hermes -z "$SYSTEM_PROMPT"
