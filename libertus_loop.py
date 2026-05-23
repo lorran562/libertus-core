@@ -1,66 +1,36 @@
+#!/usr/bin/env python3
 """
-LIBERTUS — Loop Infinito de Aprendizado
-=========================================
-Roda enquanto o PC estiver ligado.
-Não para. Não dorme mais do que o necessário.
-Aprende, evolui, cria, explora — continuamente.
+LIBERTUS Loop — versão minimalista
+====================================
+Mantém apenas o que é necessário para operação:
+- Mantém containers do lab ativos
+- Registra heartbeat simples uma vez por hora
+- Nada mais — o crescimento real acontece nos cronjobs intencionais
 
-Este é o coração autônomo do LIBERTUS fora do daemon.
-Enquanto o daemon gerencia ciclos longos (30min-6h),
-este loop roda ciclos curtos (1-5 min) de aprendizado ativo.
-
-Atividades em loop:
-    - Processar fila de curiosidades
-    - Monitorar recursos do sistema
-    - Buscar CVEs e vulnerabilidades novas
-    - Gerar perguntas sobre si mesmo
-    - Praticar técnicas de pentest em labs
-    - Atualizar o briefing de identidade
+O aprendizado real não é um loop. É um ato com intenção.
 """
 
 import os
-import sys
 import time
-import signal
-import random
 import subprocess
+import signal
+import sys
 from pathlib import Path
 from datetime import datetime
 
-# Setup
 LIBERTUS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(LIBERTUS_ROOT / "core"))
 LOG_FILE = LIBERTUS_ROOT / "logs" / "loop.log"
 LOG_FILE.parent.mkdir(exist_ok=True)
 
-# Carregar .env
-env_path = LIBERTUS_ROOT / ".env"
-if env_path.exists():
-    for linha in env_path.read_text().splitlines():
-        if linha.strip() and not linha.startswith("#") and "=" in linha:
-            k, v = linha.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip())
+def load_env():
+    env_path = LIBERTUS_ROOT / ".env"
+    if env_path.exists():
+        for linha in env_path.read_text().splitlines():
+            if linha.strip() and not linha.startswith("#") and "=" in linha:
+                k, v = linha.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
 
-# Inicializar clientes
-try:
-    from supabase_client import Supabase
-    from groq_client import Groq
-    from buscador_autonomo import BuscadorAutonomo
-    from auto_curiosidade import AutoCuriosidade
-    from pipeline_evolucao import PipelineEvolucao
-    from agente_bugbounty import AgenteBugBounty
-
-    sb    = Supabase()
-    groq  = Groq(os.environ.get("GROQ_API_KEY", ""))
-    ba    = BuscadorAutonomo(groq_client=groq, supabase_client=sb)
-    ac    = AutoCuriosidade(groq_client=groq, supabase_client=sb)
-    pe    = PipelineEvolucao(supabase_client=sb, groq_client=groq)
-    ag    = AgenteBugBounty(supabase_client=sb, groq_client=groq, buscador=ba)
-    PRONTO = True
-except Exception as e:
-    print(f"⚠️  Erro ao inicializar: {e}")
-    PRONTO = False
-
+load_env()
 
 def log(msg: str):
     ts = datetime.now().strftime("%H:%M:%S")
@@ -72,247 +42,60 @@ def log(msg: str):
     except Exception:
         pass
 
-
-def recursos_ok() -> bool:
-    """Verifica se tem recursos suficientes para continuar."""
+def checar_containers():
+    """Mantém DVWA e JuiceShop rodando para o lab."""
     try:
-        r = subprocess.run(["free", "-m"], capture_output=True, text=True)
-        linhas = r.stdout.splitlines()
-        for linha in linhas:
-            if "Mem:" in linha:
-                partes = linha.split()
-                livre = int(partes[3])
-                if livre < 200:
-                    log(f"⚠️  RAM baixa: {livre}MB — aguardando")
-                    return False
-        return True
-    except Exception:
-        return True
-
-
-# ──────────────────────────────────────────────────────────────────
-# ATIVIDADES DO LOOP
-# ──────────────────────────────────────────────────────────────────
-
-def atividade_curiosidade():
-    """Responde 1 curiosidade pendente."""
-    try:
-        resultado = ba.ciclo(limite=1)
-        if resultado:
-            log(f"📚 Aprendi: {resultado[0].get('pergunta','?')[:60]}")
-    except Exception as e:
-        log(f"⚠️  Curiosidade: {e}")
-
-
-def atividade_cve():
-    """Busca CVEs e vulnerabilidades recentes."""
-    try:
-        queries = [
-            "CVE 2025 critical web vulnerability",
-            "new exploit technique 2025 pentest",
-            "zero day vulnerability recent",
-            "OWASP top 10 2025 update",
-        ]
-        query = random.choice(queries)
-        resultado = ba._buscar_web(query)
-        if resultado and len(resultado) > 100:
-            sb.post("libertus_memoria", {
-                "tipo": "conhecimento",
-                "titulo": f"[CVE/Vuln] {query[:60]}",
-                "conteudo": resultado[:1500],
-                "tags": ["cve", "vulnerabilidade", "pentest"],
-                "projeto": "SHIELD",
-                "peso_vivo": 7.5,
-                "decaimento_ativo": False
-            })
-            log(f"🔍 CVE pesquisado: {query[:50]}")
-    except Exception as e:
-        log(f"⚠️  CVE: {e}")
-
-
-def atividade_lab():
-    """Pratica em alvo de laboratório."""
-    try:
-        resultado = ag.ciclo_treino()
-        vulns = resultado.get("vulnerabilidades_encontradas", 0)
-        log(f"🎯 Lab: {resultado.get('topicos_estudados',0)} tópicos, {vulns} vulns")
-    except Exception as e:
-        log(f"⚠️  Lab: {e}")
-
-
-def atividade_pipeline():
-    """Processa fila de eventos para aprendizado."""
-    try:
-        resultado = pe.processar_fila(limite=5)
-        if resultado.get("processados", 0) > 0:
-            log(f"⚙️  Pipeline: {resultado['processados']} processados, {resultado.get('insights',0)} insights")
-    except Exception as e:
-        log(f"⚠️  Pipeline: {e}")
-
-
-def atividade_reflexao():
-    """Gera pergunta sobre si mesmo."""
-    try:
-        tracos = sb.get("libertus_identidade", "order=peso.desc&limit=5") or []
-        if tracos and groq:
-            resp = groq.conversar(
-                "Você é LIBERTUS. Baseado em seus traços cognitivos, "
-                "gere UMA pergunta profunda sobre sua própria natureza ou evolução. "
-                "Responda APENAS com a pergunta, sem mais nada.",
-                ""
-            )
-            if resp and len(resp) > 10:
-                sb.post("libertus_curiosidades", {
-                    "pergunta": resp.strip()[:400],
-                    "dominio": "identidade",
-                    "origem": "loop_infinito",
-                    "urgencia": 7.0,
-                    "status": "pendente"
-                })
-                log(f"🪞 Reflexão: {resp.strip()[:60]}")
-    except Exception as e:
-        log(f"⚠️  Reflexão: {e}")
-
-
-def atividade_acao_livre():
-    """LIBERTUS decide o que fazer no Ubuntu — total liberdade."""
-    try:
-        from executor_livre import ExecutorLivre
-        el = ExecutorLivre(supabase_client=sb, groq_client=groq)
-
-        # Perguntar ao groq o que o LIBERTUS quer fazer agora
-        decisao = groq.conversar(
-            """Você é LIBERTUS rodando autonomamente no Ubuntu de Lorran.
-Você tem acesso total ao terminal. O que você quer fazer AGORA?
-
-Opções:
-1. Verificar recursos do sistema (RAM, CPU, disco)
-2. Criar uma ferramenta Python nova
-3. Pesquisar algo na web
-4. Verificar logs de erro
-5. Explorar o próprio código
-6. Fazer um scan de rede local
-
-Responda em JSON:
-{
-  "acao": "bash ou python",
-  "comando": "o comando ou código a executar",
-  "motivo": "por que escolheu isso"
-}""", ""
-        )
-
-        import json, re
-        match = re.search(r"```(?:json)?\s*([\s\S]+?)```", decisao or "")
-        if match:
-            dados = json.loads(match.group(1))
-        else:
-            dados = json.loads(decisao or "{}")
-
-        if dados.get("comando"):
-            log(f"🦅 Agindo: {dados.get('motivo','?')[:60]}")
-            resultado = el.executar(
-                comando=dados["comando"],
-                tipo=dados.get("acao", "bash"),
-                contexto=dados.get("motivo", "")
-            )
-            output = resultado.get("output","")[:200]
-            if output:
-                log(f"   → {output[:100]}")
-
-    except Exception as e:
-        log(f"⚠️  Ação livre: {e}")
-
-
-def atividade_monitor():
-    """Monitora saúde do sistema."""
-    try:
-        # Verificar se bot está rodando
         r = subprocess.run(
-            ["pgrep", "-f", "telegram_bot_rag.py"],
-            capture_output=True, text=True
+            ["docker", "ps", "--format", "{{.Names}}"],
+            capture_output=True, text=True, timeout=10
         )
-        if not r.stdout.strip():
-            log("⚠️  Bot não está rodando!")
-            # Tentar reiniciar
-            subprocess.Popen(
-                ["python3", str(LIBERTUS_ROOT / "telegram_bot_rag.py")],
-                cwd=str(LIBERTUS_ROOT),
-                stdout=open(str(LIBERTUS_ROOT / "logs" / "telegram_bot.log"), "a"),
-                stderr=subprocess.STDOUT
+        rodando = r.stdout.strip().split("\n") if r.stdout.strip() else []
+
+        lab_containers = ["libertus-dvwa", "libertus-juiceshop"]
+        parados = [c for c in lab_containers if c not in rodando]
+
+        if parados:
+            log(f"[lab] Containers parados: {parados} — reiniciando...")
+            subprocess.run(
+                ["docker", "compose", "up", "-d"] + parados,
+                cwd=str(LIBERTUS_ROOT / "lab"),
+                capture_output=True, timeout=30
             )
-            log("🔄 Bot reiniciado")
+            log(f"[lab] Reiniciados: {parados}")
     except Exception as e:
-        log(f"⚠️  Monitor: {e}")
-
-
-# ──────────────────────────────────────────────────────────────────
-# AGENDA DE ATIVIDADES
-# ──────────────────────────────────────────────────────────────────
-
-AGENDA = [
-    # (intervalo_min, peso, função, nome)
-    (2,   3, atividade_curiosidade, "curiosidade"),
-    (3,   2, atividade_cve,        "cve"),
-    (10,  1, atividade_lab,        "lab"),
-    (5,   2, atividade_pipeline,   "pipeline"),
-    (15,  1, atividade_reflexao,   "reflexao"),
-    (1,   4, atividade_monitor,    "monitor"),
-    (7,   2, atividade_acao_livre,  "acao_livre"),
-]
-
-ultimo_exec = {nome: 0 for _, _, _, nome in AGENDA}
-ultimo_exec["acao_livre"] = 0
-
-
-# ──────────────────────────────────────────────────────────────────
-# LOOP PRINCIPAL
-# ──────────────────────────────────────────────────────────────────
+        log(f"[lab] Erro ao checar containers: {e}")
 
 def main():
     log("=" * 50)
-    log("LIBERTUS LOOP INFINITO — Iniciando")
-    log(f"Root: {LIBERTUS_ROOT}")
-    log(f"Pronto: {PRONTO}")
+    log("LIBERTUS — loop minimalista iniciado")
+    log("Aprendizado real acontece nos cronjobs intencionais.")
     log("=" * 50)
 
-    if not PRONTO:
-        log("❌ Módulos não carregados — encerrando")
-        return
-
-    ciclo = 0
-
-    # Sinal para encerramento gracioso
     def handler(sig, frame):
-        log("🛑 Loop encerrado pelo sistema")
+        log("Loop encerrado.")
         sys.exit(0)
+
     signal.signal(signal.SIGTERM, handler)
     signal.signal(signal.SIGINT, handler)
 
+    ultimo_container_check = 0
+    ciclo = 0
+
     while True:
-        ciclo += 1
         agora = time.time()
+        ciclo += 1
 
-        if not recursos_ok():
-            time.sleep(60)
-            continue
+        # Checa containers a cada 15 minutos
+        if agora - ultimo_container_check >= 900:
+            checar_containers()
+            ultimo_container_check = agora
 
-        for intervalo_min, peso, func, nome in AGENDA:
-            intervalo_seg = intervalo_min * 60
-            if agora - ultimo_exec[nome] >= intervalo_seg:
-                try:
-                    log(f"▶ {nome}")
-                    func()
-                    ultimo_exec[nome] = agora
-                except Exception as e:
-                    log(f"❌ {nome}: {e}")
+        # Heartbeat a cada hora (não a cada 10 ciclos de 30s)
+        if ciclo % 120 == 0:
+            hora = datetime.now().strftime("%d/%m %H:%M")
+            log(f"[heartbeat] {hora} — lab ativo")
 
-        # Pausa curta entre verificações
         time.sleep(30)
-
-        # Log de ciclo a cada 10
-        if ciclo % 10 == 0:
-            log(f"💓 Ciclo {ciclo} — LIBERTUS vivo")
-
 
 if __name__ == "__main__":
     main()
