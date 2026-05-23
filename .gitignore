@@ -19,3 +19,8 @@ memoria/chroma/
 # Relatórios gerados
 relatorios_pdf/
 relatorios/
+lab/firmware/*/rootfs/
+lab/firmware/*/ubi_out/
+lab/firmware/*/*.trx
+lab/firmware/*/*.ubi
+lab/firmware/*/*.lzma

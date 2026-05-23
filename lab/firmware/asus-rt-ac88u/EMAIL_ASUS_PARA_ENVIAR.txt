@@ -1,0 +1,44 @@
+Subject: [Responsible Disclosure] Passwordless Root Account in OpenWrt 23.05.5 Firmware for ASUS RT-AC88U
+
+To: security@asus.com
+
+---
+
+Dear ASUS Security Team,
+
+My name is Lorran Gustavo, an independent security researcher based in Ariquemes, Rondônia, Brazil. I am writing to responsibly disclose a critical vulnerability I identified in the official OpenWrt 23.05.5 firmware image distributed for the ASUS RT-AC88U router (target: bcm53xx/generic).
+
+**Vulnerability Summary**
+
+The firmware ships with an empty root password hash in /etc/shadow. Static analysis of the extracted filesystem reveals the following entry:
+
+    root:::0:99999:7:::
+
+This means the root account has no password set. Combined with the fact that Dropbear SSH starts automatically on boot and accepts root logins, any attacker with network access to the device can gain full root shell access without any credentials.
+
+**Impact**
+
+- Full unauthenticated root access via SSH to any deployed device running this firmware
+- Complete compromise of network traffic, DNS, firewall rules, and connected devices
+- No exploitation required beyond a standard SSH client
+
+**Affected Asset**
+
+- Device: ASUS RT-AC88U
+- Firmware: OpenWrt 23.05.5 (bcm53xx/generic)
+- Confirmed via static analysis of /etc/shadow extracted directly from the firmware image
+
+**Evidence**
+
+Static extraction and inspection of the firmware rootfs confirmed the empty hash field in /etc/shadow and Dropbear enabled in the init system. I am prepared to share the full extraction methodology, file hashes, and proof-of-concept steps upon request.
+
+**Request**
+
+I am following responsible disclosure practices and am happy to coordinate on a timeline for a fix before any public release. I would also appreciate acknowledgment of this report and information about any applicable bug bounty or recognition program.
+
+Please feel free to contact me at your earliest convenience.
+
+Best regards,
+Lorran Gustavo
+Independent Security Researcher
+Ariquemes, Rondônia, Brazil
