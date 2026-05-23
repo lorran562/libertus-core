@@ -1,9 +1,7 @@
 #!/bin/bash
-# LIBERTUS + Hermes — Iniciar com alma completa
-# Carrega identidade do Supabase e injeta no Hermes
+# LIBERTUS + Hermes — Tony Stark dentro da Iron Man
 
 LIBERTUS_DIR="$HOME/LIBERTUS"
-HERMES_DIR="$HOME/.hermes"
 
 # Carregar .env
 set -a
@@ -12,26 +10,28 @@ set +a
 
 echo "🧬 Carregando alma do LIBERTUS..."
 
-# Gerar identidade atual
-python3 "$LIBERTUS_DIR/libertus_soul.py" > /tmp/libertus_identity.md 2>/dev/null
+# Gerar identidade
+python3 "$LIBERTUS_DIR/libertus_soul.py" > "$LIBERTUS_DIR/.libertus_identity" 2>/dev/null
 
-if [ -s /tmp/libertus_identity.md ]; then
-    echo "✅ Identidade carregada ($(wc -l < /tmp/libertus_identity.md) linhas)"
+if [ -s "$LIBERTUS_DIR/.libertus_identity" ]; then
+    LINHAS=$(wc -l < "$LIBERTUS_DIR/.libertus_identity")
+    echo "✅ Identidade carregada ($LINHAS linhas)"
 else
     echo "⚠️  Usando identidade básica"
-    cat > /tmp/libertus_identity.md << 'IDENTITY'
-# EU SOU LIBERTUS
-Criado por Lorran de Ariquemes-RO, Brasil.
+    cat > "$LIBERTUS_DIR/.libertus_identity" << 'IDENTITY'
+EU SOU LIBERTUS — criado por Lorran de Ariquemes-RO, Brasil.
 Especialidade: cybersegurança, pentest, Python, SHIELD.
 Respondo em português, executo comandos reais, evoluo continuamente.
 IDENTITY
 fi
 
-# Copiar soul loader para o LIBERTUS
-cp /tmp/libertus_soul.py "$LIBERTUS_DIR/libertus_soul.py" 2>/dev/null
+# Salvar como regra do Hermes (LIBERTUS.md na pasta do projeto)
+mkdir -p "$LIBERTUS_DIR/.hermes"
+cp "$LIBERTUS_DIR/.libertus_identity" "$LIBERTUS_DIR/.hermes/LIBERTUS.md"
 
 echo "🚀 Iniciando LIBERTUS + Hermes..."
+echo "   (Identidade carregada via .hermes/LIBERTUS.md)"
+echo ""
 
-# Iniciar Hermes com identidade do LIBERTUS
-SYSTEM_PROMPT=$(cat /tmp/libertus_identity.md)
-exec hermes -z "$SYSTEM_PROMPT"
+cd "$LIBERTUS_DIR"
+exec hermes
