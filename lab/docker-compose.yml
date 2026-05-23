@@ -1,0 +1,88 @@
+version: '3.8'
+
+# LIBERTUS PENTEST LAB
+# Laboratório permanente de prática ofensiva
+# Uso: cd ~/LIBERTUS/lab && docker compose up -d
+
+services:
+
+  # DVWA - Damn Vulnerable Web Application
+  # http://localhost:8080
+  # Login padrão: admin / password
+  dvwa:
+    image: vulnerables/web-dvwa:latest
+    container_name: libertus-dvwa
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - labnet
+
+  # Juice Shop - OWASP (mais moderno, bom para eJPT/OSCP prep)
+  # http://localhost:3000
+  juiceshop:
+    image: bkimminich/juice-shop:latest
+    container_name: libertus-juiceshop
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - labnet
+
+  # WebGoat - OWASP (aprendizado guiado)
+  # http://localhost:8888/WebGoat
+  webgoat:
+    image: webgoat/goat-and-wolf:latest
+    container_name: libertus-webgoat
+    ports:
+      - "8888:8080"
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - labnet
+
+  # Vulnerable WordPress (para praticar WP attacks)
+  # http://localhost:8081
+  wordpress_db:
+    image: mysql:5.7
+    container_name: libertus-wpdb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppass123
+    volumes:
+      - wpdb_data:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - labnet
+
+  wordpress:
+    image: wordpress:5.0-php7.2-apache
+    container_name: libertus-wordpress
+    depends_on:
+      - wordpress_db
+    ports:
+      - "8081:80"
+    environment:
+      WORDPRESS_DB_HOST: wordpress_db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppass123
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+    restart: unless-stopped
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: libertus-labnet
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+volumes:
+  wpdb_data:
+  wp_data:
