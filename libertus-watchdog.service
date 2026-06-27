@@ -1,0 +1,24 @@
+[Unit]
+Description=LIBERTUS Watchdog — mantém daemon cognitivo + loop vivos 24/7
+After=network-online.target hermes-gateway.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/libertus/LIBERTUS
+# Carrega segredos (.env tem GROQ_API_KEY, ANTHROPIC_API_KEY, SUPABASE_*)
+EnvironmentFile=/home/libertus/LIBERTUS/.env
+# Limpa órfãos de boot anterior antes de subir (NÃO apaga o lock — flock se auto-libera)
+ExecStartPre=-/usr/bin/pkill -9 -f libertus_daemon.py
+ExecStartPre=-/usr/bin/pkill -9 -f libertus_loop.py
+ExecStartPre=-/bin/rm -f /tmp/libertus_daemon.pid /tmp/libertus_loop.pid
+ExecStart=/usr/bin/python3 /home/libertus/LIBERTUS/watchdog.py
+# on-failure: reinicia se o watchdog crashar (exit!=0), mas NÃO quando ele sai
+# limpo por já existir outra instância (lock). Evita loop de restart eterno.
+Restart=on-failure
+RestartSec=10
+# Não derruba os filhos (daemon/loop usam start_new_session) ao reiniciar o watchdog
+KillMode=process
+
+[Install]
+WantedBy=default.target
