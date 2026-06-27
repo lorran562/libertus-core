@@ -263,6 +263,18 @@ class NucleoCognitivo:
         if padroes:
             self.stats["padroes_detectados"] += len(padroes)
 
+            # Assinatura dos padrões: só grava artefato se MUDOU desde a última
+            # consolidação. Sem isso, relê as mesmas 20 memórias a cada 30min e
+            # gera arquivos idênticos para sempre (barulho, não evolução).
+            assinatura = "|".join(
+                f"{t}:{c}" for t, c in sorted(padroes.items())
+            )
+            if assinatura == getattr(self, "_ultima_assinatura_padroes", None):
+                self._log("CONSOLIDACAO",
+                          f"Sem mudança nos padrões ({len(padroes)}), nada a gravar")
+                return
+            self._ultima_assinatura_padroes = assinatura
+
             # Salva síntese no Obsidian
             conteudo = (
                 f"## Padrões detectados em {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
@@ -808,10 +820,32 @@ class NucleoCognitivo:
             self._log("ERRO_DOCLING", f"{e}")
 
 
+def esperar_rede(timeout=120, intervalo=3):
+    """
+    Espera a rede subir antes de iniciar o núcleo (que depende do Supabase).
+    No boot, o daemon pode subir antes da rede estar pronta; sem isso ele morre
+    com 'Temporary failure in name resolution' e só o watchdog o ressuscita.
+    Retorna True se a rede subiu dentro do timeout, False caso contrário.
+    """
+    import socket
+    inicio = time.time()
+    while time.time() - inicio < timeout:
+        try:
+            socket.getaddrinfo("jkgrmlfqgprcwfooovkx.supabase.co", 443)
+            print(f"[BOOT] Rede disponível após {int(time.time()-inicio)}s")
+            return True
+        except OSError:
+            print(f"[BOOT] Aguardando rede... ({int(time.time()-inicio)}s)")
+            time.sleep(intervalo)
+    print(f"[BOOT] Timeout de {timeout}s esperando rede — seguindo mesmo assim")
+    return False
+
+
 def main():
     """Ponto de entrada do daemon."""
     try:
         print(f"LIBERTUS Daemon — iniciando em {LIBERTUS_ROOT}")
+        esperar_rede()
         nucleo = NucleoCognitivo()
         nucleo.rodar()
     except Exception as e:
