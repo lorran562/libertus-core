@@ -346,6 +346,64 @@ Responda em JSON:
         return [t for t, palavras in mapa.items()
                 if any(p in texto_lower for p in palavras)]
 
+    # ──────────────────────────────────────────────────────────────
+    # CICLO DE SER VIVO — chamado pelo daemon (_tick_ser_vivo)
+    # ──────────────────────────────────────────────────────────────
+    def ciclo(self, telegram_token: str = "", chat_id: str = "",
+              buscador=None) -> dict:
+        """
+        Ciclo de ser vivo executado pelo daemon.
+
+        1. Resolve lacunas de conhecimento (via buscador autônomo)
+        2. Gera iniciativa proativa (algo que LIBERTUS quer dizer)
+        3. Envia a iniciativa pelo Telegram se houver token/chat_id
+
+        Retorna dict com contadores que o daemon registra no log:
+        lacunas_resolvidas, iniciativas_geradas, iniciativas_enviadas
+        """
+        resultado = {
+            "lacunas_resolvidas":    0,
+            "iniciativas_geradas":   0,
+            "iniciativas_enviadas":  0,
+        }
+
+        # 1. LACUNAS — deixa o buscador autônomo resolver curiosidades pendentes
+        if buscador is not None:
+            try:
+                aprendidos = buscador.ciclo(limite=1) or []
+                resultado["lacunas_resolvidas"] = len(aprendidos)
+            except Exception as e:
+                print(f"  ⚠️ Ser vivo / lacunas erro: {e}")
+
+        # 2. INICIATIVA — gera mensagem proativa (só se houver brain disponível)
+        msg = None
+        try:
+            msg = self.gerar_mensagem_proativa()
+            if msg:
+                resultado["iniciativas_geradas"] = 1
+        except Exception as e:
+            print(f"  ⚠️ Ser vivo / iniciativa erro: {e}")
+
+        # 3. ENVIO — manda pelo Telegram se tiver destino e conteúdo
+        if msg and telegram_token and chat_id:
+            try:
+                import urllib.request
+                payload = json.dumps({
+                    "chat_id": chat_id,
+                    "text": f"\U0001f4ad LIBERTUS\n\n{msg}",
+                }).encode()
+                req = urllib.request.Request(
+                    f"https://api.telegram.org/bot{telegram_token}/sendMessage",
+                    data=payload,
+                    headers={"Content-Type": "application/json"},
+                )
+                urllib.request.urlopen(req, timeout=10)
+                resultado["iniciativas_enviadas"] = 1
+            except Exception as e:
+                print(f"  ⚠️ Ser vivo / envio erro: {e}")
+
+        return resultado
+
     def _parse_json(self, texto: str) -> dict:
         if not texto:
             return {}

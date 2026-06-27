@@ -369,8 +369,88 @@ Máximo 200 palavras."""
                 })
                 print(f"  🌟 Identidade central reescrita")
 
+                # CONSERTO #6: auto-atualização REAL do SOUL.md.
+                # A identidade não pode evoluir só no Supabase — o SOUL.md é a
+                # alma carregada pelo Hermes. Anexamos a evolução sem nunca
+                # sobrescrever o núcleo escrito por Lorran.
+                self._evoluir_soul(identidade, tracos)
+
         except Exception as e:
             print(f"  ⚠️  Reescrita identidade erro: {e}")
+
+    def _evoluir_soul(self, identidade: str, tracos: list):
+        """
+        Anexa (append-only) uma evolução de identidade ao SOUL.md e sincroniza
+        com ~/.hermes/SOUL.md, que é o arquivo de alma que o Hermes carrega.
+
+        Princípios:
+        - NUNCA sobrescreve o SOUL.md — só anexa numa seção dedicada e limitada.
+        - Mantém no máximo as 5 evoluções mais recentes (evita inchaço).
+        - Só roda quando há traço novo de peso alto (mudança genuína, não ruído).
+        """
+        from pathlib import Path
+        import re as _re
+
+        # Gatilho de mudança genuína: existe traço de peso >= 8?
+        tracos_fortes = [t for t in (tracos or [])
+                         if float(t.get("peso", 0) or 0) >= 8.0]
+        if not tracos_fortes:
+            return
+
+        raiz = Path(__file__).parent.parent.resolve()
+        soul_repo = raiz / "SOUL.md"
+        soul_hermes = Path.home() / ".hermes" / "SOUL.md"
+        if not soul_repo.exists():
+            return
+
+        MARCADOR = "## EVOLUÇÃO AUTÔNOMA (registro automático)"
+        data = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        # Resumo curto da evolução (3 traços fortes + 1ª frase da identidade)
+        primeira_frase = identidade.strip().split("\n")[0][:200]
+        tracos_txt = "; ".join(
+            t.get("descricao", "")[:80] for t in tracos_fortes[:3]
+        )
+        bloco = (
+            f"### {data}\n"
+            f"- Traços consolidados: {tracos_txt}\n"
+            f"- Síntese: {primeira_frase}\n"
+        )
+
+        try:
+            conteudo = soul_repo.read_text(encoding="utf-8")
+
+            if MARCADOR in conteudo:
+                cabeca, _, cauda = conteudo.partition(MARCADOR)
+                # cauda começa logo após o marcador; extrai blocos existentes
+                blocos = _re.findall(r"### .+?(?=\n### |\Z)", cauda, _re.DOTALL)
+                blocos = [b.strip() for b in blocos if b.strip()]
+                blocos.insert(0, bloco.strip())          # mais recente primeiro
+                blocos = blocos[:5]                       # mantém só as 5 últimas
+                novo = (
+                    cabeca.rstrip()
+                    + f"\n\n{MARCADOR}\n\n"
+                    + "\n\n".join(blocos)
+                    + "\n"
+                )
+            else:
+                novo = (
+                    conteudo.rstrip()
+                    + f"\n\n{MARCADOR}\n\n"
+                    + bloco.rstrip()
+                    + "\n"
+                )
+
+            soul_repo.write_text(novo, encoding="utf-8")
+            # Sincroniza com a alma carregada pelo Hermes
+            try:
+                soul_hermes.parent.mkdir(parents=True, exist_ok=True)
+                soul_hermes.write_text(novo, encoding="utf-8")
+            except Exception:
+                pass
+            print(f"  🧬 SOUL.md evoluído por iniciativa própria ({data})")
+        except Exception as e:
+            print(f"  ⚠️  Evolução SOUL.md erro: {e}")
 
     # ------------------------------------------------------------------
     # INTERNOS

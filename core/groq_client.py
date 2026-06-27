@@ -34,6 +34,11 @@ IDENTIDADE:
         }
         self._disponivel: Optional[bool] = None
         self._erros_consecutivos: int = 0
+        # Fallback: quando a chave Groq morre (401), usa Anthropic se disponível.
+        import os
+        self._anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        self._usar_fallback = False
+        self._avisou_brain_morto = False
 
     def disponivel(self) -> bool:
         if self._disponivel is None:
@@ -51,7 +56,12 @@ IDENTIDADE:
         Histórico é lista de {"role": "user/assistant", "content": "..."}.
         """
         if not self.disponivel():
-            return ""
+            # Groq indisponível por chave — tenta Anthropic direto.
+            return self._conversar_anthropic(mensagem, contexto, historico)
+
+        # Se já caímos para fallback antes, não insiste no Groq morto.
+        if self._usar_fallback:
+            return self._conversar_anthropic(mensagem, contexto, historico)
 
         system = self.SYSTEM
         if contexto:
@@ -76,18 +86,67 @@ IDENTIDADE:
                 self._erros_consecutivos = 0
                 return r.json()["choices"][0]["message"]["content"].strip()
             elif r.status_code == 401:
+                # Chave Groq morta — ativa fallback Anthropic permanentemente nesta sessão.
                 self._erros_consecutivos += 1
-                if self._erros_consecutivos >= 3:
-                    self._disponivel = False
-                return ""
+                self._disponivel = False
+                self._usar_fallback = True
+                if not self._avisou_brain_morto:
+                    print("  ⚠️ [BRAIN] Chave Groq inválida (401). "
+                          "Ativando fallback Anthropic.")
+                    self._avisou_brain_morto = True
+                return self._conversar_anthropic(mensagem, contexto, historico)
             elif r.status_code == 429:  # rate limit — não desabilita
                 import time; time.sleep(2)
-                return ""
+                return self._conversar_anthropic(mensagem, contexto, historico)
             else:
                 self._erros_consecutivos += 1
-                return ""
+                return self._conversar_anthropic(mensagem, contexto, historico)
         except Exception:
             self._erros_consecutivos += 1
+            return self._conversar_anthropic(mensagem, contexto, historico)
+
+    def _conversar_anthropic(self, mensagem: str, contexto: str = "",
+                             historico: Optional[list] = None) -> str:
+        """
+        Fallback de cérebro via Anthropic (Claude Haiku).
+        Usado quando a chave Groq está morta. Mesma assinatura de saída: str.
+        """
+        if not self._anthropic_key:
+            return ""
+
+        system = self.SYSTEM
+        if contexto:
+            system += f"\n\nCONTEXTO DO VAULT:\n{contexto[:800]}"
+
+        messages = []
+        if historico:
+            for h in historico[-20:]:
+                role = h.get("role", "user")
+                if role not in ("user", "assistant"):
+                    role = "user"
+                messages.append({"role": role, "content": h.get("content", "")})
+        messages.append({"role": "user", "content": mensagem})
+
+        payload = {
+            "model": "claude-haiku-4-5",
+            "max_tokens": 1024,
+            "system": system,
+            "messages": messages,
+        }
+        try:
+            r = httpx.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": self._anthropic_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json=payload, timeout=30,
+            )
+            if r.status_code == 200:
+                return r.json()["content"][0]["text"].strip()
+            return ""
+        except Exception:
             return ""
 
     def gerar_skill(self, tarefa: str, contexto: str = "") -> str:

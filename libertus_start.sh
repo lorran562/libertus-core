@@ -31,11 +31,15 @@ echo "📥 Atualizando..." | tee -a "$LOG_DIR/startup.log"
 git config pull.rebase false
 git pull origin main 2>&1 | tee -a "$LOG_DIR/startup.log"
 
-# Iniciar bot Telegram em background
-echo "🤖 Iniciando Bot..." | tee -a "$LOG_DIR/startup.log"
-nohup python3 telegram_bot_rag.py >> "$LOG_DIR/telegram_bot.log" 2>&1 &
-BOT_PID=$!
-echo "Bot PID: $BOT_PID" | tee -a "$LOG_DIR/startup.log"
+# Bot Telegram: APOSENTADO. O canal oficial agora é o gateway Hermes
+# (hermes gateway run), que faz long-polling no mesmo token. Rodar os dois
+# causava 'telegram.error.Conflict: terminated by other getUpdates request'.
+# Comandos de pentest (/scan /bb /sqli) agora são feitos via terminal/Hermes.
+# echo "🤖 Iniciando Bot..." | tee -a "$LOG_DIR/startup.log"
+# nohup python3 telegram_bot_rag.py >> "$LOG_DIR/telegram_bot.log" 2>&1 &
+# BOT_PID=$!
+# echo "Bot PID: $BOT_PID" | tee -a "$LOG_DIR/startup.log"
+BOT_PID="aposentado(gateway-hermes)"
 
 sleep 3
 

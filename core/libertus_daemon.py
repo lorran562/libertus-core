@@ -695,24 +695,16 @@ class NucleoCognitivo:
     def _carregar_targets_scan(self) -> list:
         """
         Carrega targets de scan do Supabase.
+        Usa o cliente httpx local (self.sb) — sem dependência do pacote PyPI 'supabase'.
         """
         try:
-            from supabase import create_client
-            import os
-            
-            supabase_url = os.getenv("SUPABASE_URL")
-            supabase_key = os.getenv("SUPABASE_KEY")
-            
-            if not supabase_url or not supabase_key:
-                return []
-            
-            client = create_client(supabase_url, supabase_key)
-            response = client.table("libertus_scan_targets").select("url").eq("ativo", True).execute()
-            
-            targets = [row["url"] for row in response.data]
+            rows = self.sb.get(
+                "libertus_scan_targets",
+                "ativo=eq.true&select=url"
+            ) or []
+            targets = [row["url"] for row in rows if row.get("url")]
             self._log("INIT", f"Carregados {len(targets)} targets de scan")
             return targets
-            
         except Exception as e:
             self._log("ERRO", f"Falha ao carregar targets: {e}")
             return []
