@@ -733,29 +733,62 @@ class NucleoCognitivo:
             return
         
         try:
-            from libertus_professional_scanner import LibertusProfessionalScanner
-            import asyncio
+            # Usa o Scanner real (wrapper nmap + scan web), não o fantasma
+            # 'libertus_professional_scanner' que nunca existiu no projeto.
+            from scanner import Scanner
             from datetime import datetime
-            
+
+            scanner = Scanner(self.root)
+            if not scanner.nmap_ok:
+                self._log("SECURITY_SCAN", "nmap indisponível - pulando")
+                return
+
             for target_url in self.scan_targets:
                 self._log("SECURITY_SCAN", f"Scanning: {target_url}")
-                
-                # Executa scanner profissional v5.0
-                scanner = LibertusProfessionalScanner(target_url)
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                report = loop.run_until_complete(scanner.full_scan())
-                loop.close()
-                
+
+                # Alvo de rede (host) para nmap; URL para o scan web
+                host = (target_url.replace("https://", "").replace("http://", "")
+                        .split("/")[0])
+
+                rede = scanner.scan_completo(host)
+                cves = rede.get("cves", []) if isinstance(rede, dict) else []
+                vetores = rede.get("vetores", []) if isinstance(rede, dict) else []
+
+                web = {}
+                if target_url.startswith("http"):
+                    web = scanner.scan_web(target_url)
+                riscos_web = web.get("riscos", []) if isinstance(web, dict) else []
+
+                total_vulns = len(cves) + len(riscos_web)
+                if total_vulns == 0:
+                    risk_level = "info"
+                elif len(cves) > 0:
+                    risk_level = "high"
+                else:
+                    risk_level = "medium"
+
+                report = {
+                    "target": target_url,
+                    "timestamp": datetime.now().isoformat(),
+                    "rede": rede,
+                    "web": web,
+                    "summary": {
+                        "total_vulnerabilities": total_vulns,
+                        "cves": cves,
+                        "vetores": vetores,
+                        "risk_level": risk_level,
+                    },
+                }
+
                 # Salva relatório
                 report_path = self.root / "reports" / f"scan_{datetime.now():%Y%m%d_%H%M%S}.json"
                 report_path.parent.mkdir(exist_ok=True)
                 report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False))
-                
+
                 # Atualiza estatísticas
                 self.stats["scans_realizados"] += 1
-                self.stats["vulnerabilidades_encontradas"] += report["summary"]["total_vulnerabilities"]
-                
+                self.stats["vulnerabilidades_encontradas"] += total_vulns
+
                 # Atualiza Supabase
                 try:
                     self.sb.patch(
@@ -763,17 +796,17 @@ class NucleoCognitivo:
                         f"url=eq.{target_url}",
                         {
                             "ultima_scan": datetime.now().isoformat(),
-                            "vulnerabilidades_encontradas": report["summary"]["total_vulnerabilities"],
-                            "severidade_maxima": report["summary"]["risk_level"]
+                            "vulnerabilidades_encontradas": total_vulns,
+                            "severidade_maxima": risk_level
                         }
                     )
                 except Exception as e:
                     self._log("ERRO", f"Falha ao atualizar Supabase: {e}")
-                
-                self._log("SECURITY_SCAN", 
-                          f"✅ Scan completo: {report['summary']['total_vulnerabilities']} vulns, "
-                          f"risk score {report['summary']['risk_score']}/100")
-                
+
+                self._log("SECURITY_SCAN",
+                          f"Scan completo: {total_vulns} achados "
+                          f"({len(cves)} CVEs, {len(riscos_web)} riscos web), nível {risk_level}")
+
         except Exception as e:
             self._log("ERRO_SECURITY_SCAN", f"{e}")
             self.stats["erros"] += 1
