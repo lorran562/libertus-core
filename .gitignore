@@ -15,6 +15,14 @@ memoria/chroma/
 
 # Ambiente
 .env
+.env.abacate
+
+# Backups — segredos cifrados NUNCA vao pro git (guardar fora do repo).
+# A alma (.tar.gz sem segredos) PODE ir, mas por padrao ignoramos os grandes.
+backups/alma/segredos_*.tar.gz.gpg
+backups/alma/segredos_*.tar.gz
+backups/supabase/*/
+!backups/supabase/.gitkeep
 
 # Relatórios gerados
 relatorios_pdf/
@@ -24,3 +32,4 @@ lab/firmware/*/ubi_out/
 lab/firmware/*/*.trx
 lab/firmware/*/*.ubi
 lab/firmware/*/*.lzma
+.env.abacate
