@@ -25,30 +25,12 @@ Cara, olhando o cont
 
 ## O QUE SEI
 
-- LINUX_COMPLETO — parte 13/17: Command (:)
-# i → entra no modo insert
-# Esc → volta ao modo normal
-# :w → salva
-# :q → sai
-# :wq → salva e sai
-# :q! → sai sem salvar
-# dd → deleta l
-- KALI_LINUX_COMPLETO — parte 2/21: 
-
-### Primeiros passos após instalação
-```bash
-# Atualiza o sistema
-sudo apt update && sudo apt full-upgrade -y
-
-# Instala pacotes essenciais
-sudo apt
-- LINUX_COMPLETO — parte 4/17: (leitura + escrita + execução)
-# 6 = rw- (leitura + escrita)
-# 5 = r-x (leitura + execução)
-# 4 = r-- (somente leitura)
-# 0 = --- (nenhuma)
-
-# Exemplo
+- [BugBounty] SSRF exploitation cloud environments: [TAVILY WEB]
+RESPOSTA: Server-side request forgery (SSRF) in cloud environments can expose internal credentials and metadata, leading to full account 
+- [BugBounty] CVE 2025 critical RCE vulnerabilities: [TAVILY WEB]
+RESPOSTA: CVE-2025-15467 is a critical OpenSSL vulnerability allowing remote code execution. CVE-2025-55182 is a severe React Server Comp
+- [BugBounty] API security testing methodology: [TAVILY WEB]
+RESPOSTA: API security testing methodology includes static, dynamic, and runtime testing, as well as software composition analysis to ide
 
 ## OBJETIVOS COM LORRAN
 
