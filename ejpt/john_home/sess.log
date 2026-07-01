@@ -1,0 +1,18 @@
+0:00:00:00 Starting a new session
+0:00:00:00 Loaded a total of 1 password hash
+0:00:00:00 Command line: /usr/local/bin/john --config=/home/libertus/LIBERTUS/ejpt/john_home/john_clean.conf --pot=/home/libertus/LIBERTUS/ejpt/john_home/john.pot --session=/home/libertus/LIBERTUS/ejpt/john_home/sess --wordlist=/usr/share/wordlists/rockyou.txt /tmp/real.hash --format=md5crypt 
+0:00:00:00 - UTF-8 input encoding enabled
+0:00:00:00 - Passwords will be stored UTF-8 encoded in .pot file
+0:00:00:00 - Hash type: md5crypt, crypt(3) $1$ (and variants) (min-len 0, max-len 5 [worst case UTF-8] to 15 [ASCII])
+0:00:00:00 - Algorithm: MD5 512/512 AVX-512 16x3
+0:00:00:00 - Will reject candidates longer than 15 bytes
+0:00:00:00 - Candidate passwords will be buffered and tried in chunks of 768
+0:00:00:00 Proceeding with wordlist mode
+0:00:00:00 - Wordlist file: /usr/share/wordlists/rockyou.txt
+0:00:00:00 - Memory mapping wordlist (139921497 bytes)
+0:00:00:00 - No word mangling rules
+0:00:00:00 - No stacked rules
+0:00:00:00 + Cracked user
+0:00:00:00 Passwords tested: 768 (all time)
+0:00:00:00  dupe suppressor: 0 accepted, 0 rejected out of total 0 (while active during this run)
+0:00:00:00 Session completed

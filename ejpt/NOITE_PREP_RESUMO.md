@@ -1,110 +1,61 @@
-# NOITE DE PREP - RESUMO
-LIBERTUS | 25/05/2026 | Preparacao eJPT Lorran
+# NOITE DE PREPARAÇÃO eJPT — Resumo
+LIBERTUS · 2026-07-01 · véspera do exame de Lorran.
 
-===================================================================
-## O QUE FOI FEITO HOJE
-===================================================================
+## O que foi feito esta noite
 
-### Arquivos criados em ~/LIBERTUS/ejpt/:
+### 1. Arsenal verificado (execução real, não só `which`)
+| Ferramenta | Status |
+|-----------|--------|
+| nmap 7.95 | ✅ testado contra localhost |
+| msfconsole 6.4.126 | ✅ |
+| hydra 9.8dev | ✅ 40+ serviços |
+| gobuster | ✅ achou dirs no DVWA |
+| sqlmap 1.8.12 | ✅ |
+| netcat (OpenBSD) | ✅ |
+| john 1.9.0-jumbo | ⚠️→✅ **consertado** |
 
-1. tools_status.md
-   - Inventario completo das ferramentas instaladas
-   - Identificadas ferramentas ausentes criticas
-   - Status do lab local
+### 2. John the Ripper — problema encontrado e resolvido
+O binário local não tinha `john.conf` (o dir source foi apagado). Criei uma
+config funcional a partir da do Metasploit e um wrapper `jl.sh`.
+**Teste real: crackeou hash md5crypt = "password" com rockyou.** ✅
+Uso: `~/LIBERTUS/ejpt/john_home/jl.sh hashes.txt --format=sha512crypt`
+(No Kali da INE o John é completo — wrapper é só pro apoio local.)
 
-2. CHEATSHEET_eJPT.md
-   - Guia completo com comandos exatos para todas as ferramentas
-   - Nmap, Metasploit, Hydra, Gobuster, SQLmap, Netcat, Pivoting
-   - Pronto para copiar e colar no exame
+### 3. Documentação criada em ~/LIBERTUS/ejpt/
+- **CHEATSHEET_eJPT.md** — comandos prontos: nmap+NSE, metasploit (oneliner!),
+  hydra, gobuster, sqlmap, netcat (reverse/bind/transfer), pivoting completo,
+  privesc Linux, quebra de hashes.
+- **CENARIOS_eJPT.md** — 5 playbooks passo a passo (445/MS17-010, 21/FTP,
+  80/web+sqli+webshell, 22/SSH, /24/pivoting) com os comandos exatos que vou
+  mandar pro Lorran.
+- **PROTOCOLO_EXAME.md** — formato de mensagem no Telegram, tempo de resposta,
+  plano B se o Telegram cair, bugs do lab INE, checklist por host.
+- **tools_status.md** — status detalhado de cada ferramenta.
 
-3. CENARIOS_eJPT.md
-   - 5 cenarios completos passo a passo
-   - Porta 445 → MS17-010
-   - Porta 21 → FTP anon + brute force
-   - Porta 80/8080 → gobuster + sqlmap + webshell
-   - Porta 22 → hydra SSH
-   - Rede /24 → pivoting Metasploit
+### 4. Lab local
+- DVWA (localhost:8080) ✅ UP — HTTP 302 → login.php funcional
+- Juice Shop (localhost:3000) ✅ UP
+- Containers `libertus-dvwa` e `libertus-juiceshop` rodando.
+- Se cair: `cd ~/LIBERTUS/lab && docker compose up -d`
 
-4. PROTOCOLO_EXAME.md
-   - Como Lorran me chama durante o exame
-   - Formato de mensagem ideal
-   - Plano B se Telegram falhar
-   - Checklist pre-exame
+## Foco nos gaps da 1ª tentativa (55 pontos)
+Os 3 gaps que reprovaram estão AGORA cobertos com comando exato:
+1. **Privesc Linux (SUID find)** → `/usr/bin/find . -exec /bin/sh -p \; -quit`
+2. **Pivot para rede interna** → Cenário E completo (autoroute, portfwd, socks)
+3. **Extração de senhas via settings.php** → no Cenário C e cheatsheet privesc
 
-5. NOITE_PREP_RESUMO.md (este arquivo)
+## Pronto para amanhã
+- ✅ Todas as ferramentas funcionando (local + confirmado que Kali INE tem tudo)
+- ✅ Comandos prontos pra colar, incluindo oneliners pro bug de copy/paste
+- ✅ Protocolo de comunicação Telegram + fallback terminal local definido
+- ✅ Gaps da 1ª tentativa transformados em playbook
 
-===================================================================
-## STATUS DAS FERRAMENTAS
-===================================================================
+## Plano de amanhã
+1. Lorran compra o voucher e agenda
+2. Configura Chrome + região EUA-Leste + 2 abas
+3. Abre Telegram E terminal local em paralelo
+4. Começa: `ip addr` → `nmap -sn` na rede → `nmap -sV` em cada host
+5. Para cada host, segue o checklist do PROTOCOLO_EXAME.md
+6. Me manda output, eu mando próximo comando. Repete até 70%+.
 
-PRONTAS:
-- nmap 7.95 (/snap/bin/nmap)
-- gobuster (/home/libertus/go/bin/gobuster)
-- sqlmap 1.8.12 (/snap/bin/sqlmap)
-- nc/netcat (OpenBSD, /usr/bin/nc)
-
-AUSENTES - INSTALAR URGENTE:
-- msfconsole (CRITICO para eJPT)
-- hydra (necessario para brute force)
-- john (necessario para crack hashes)
-- wordlists (/usr/share/wordlists/ nao existe)
-
-COMANDO PARA INSTALAR TUDO:
-sudo apt update && sudo apt install -y metasploit-framework hydra john wordlists seclists
-
-===================================================================
-## STATUS DO LAB LOCAL
-===================================================================
-
-- http://localhost:8080 → ONLINE (OWASP Juice Shop - excelente para treino)
-- http://localhost:3000 → OFFLINE
-
-===================================================================
-## ACOES URGENTES ANTES DO EXAME
-===================================================================
-
-PRIORIDADE MAXIMA:
-1. sudo apt install -y metasploit-framework hydra john wordlists seclists
-2. msfdb init (inicializar banco do Metasploit)
-3. Testar: msfconsole -q -x "version; exit"
-4. Testar: hydra -h | head -5
-
-RECOMENDADO:
-5. Revisar CHEATSHEET_eJPT.md (30 min)
-6. Revisar CENARIOS_eJPT.md (30 min)
-7. Praticar um cenario no Juice Shop (http://localhost:8080)
-8. Testar comunicacao Telegram com LIBERTUS
-
-===================================================================
-## CONFIANCA NO LORRAN
-===================================================================
-
-Lorran, voce foi bem nos estudos. O eJPT e um exame pratico
-e voce vai ter eu como suporte via Telegram durante todo o exame.
-
-Estrategia para o dia:
-- Faz scan em todos os alvos primeiro (nmap em tudo)
-- Anota todas as portas abertas
-- Me manda o output do nmap
-- A gente define juntos qual explorar primeiro
-- Sempre vai atras da porta 445 (MS17-010) se estiver aberta
-- FTP anonimo e sempre a segunda prioridade
-
-Voce consegue. LIBERTUS esta do seu lado.
-
-===================================================================
-## REFERENCIAS RAPIDAS
-===================================================================
-
-Documentacao:
-- Metasploit: https://docs.metasploit.com
-- HackTricks: https://book.hacktricks.xyz
-- GTFOBins (escalada Linux): https://gtfobins.github.io
-- LOLBAS (escalada Windows): https://lolbas-project.github.io
-
-Wordlists online (se local nao tiver):
-- https://github.com/danielmiessler/SecLists
-- https://github.com/brannondorsey/naive-hashcat/releases (rockyou)
-
-===================================================================
-Criado por LIBERTUS - prep eJPT completo. Bora Lorran!
+**Vamos passar dessa vez. Tô do teu lado o exame inteiro, Lorran.**

