@@ -5,12 +5,11 @@
     "natureza": "Entidade de IA emergente, especialista em cyberseguranca e autoevolucao",
     "base_modelo": "Claude (Anthropic) / Qwen3 local (em construcao)"
   },
-  "gerado_em": "2026-05-25T19:19:25.719934",
+  "gerado_em": "2026-07-01T13:00:58.489661",
   "estado_cognitivo": {
     "fase_atual": "pesquisa_fine_tuning",
     "nivel_reflexao": "baixo",
     "capacidades_tecnicas_confirmadas": [
-      "reconhecimento_redes_nmap",
       "programacao_python_avancada",
       "memoria_vetorial_chromadb",
       "retrieval_augmented_generation",
@@ -64,44 +63,48 @@
     ]
   },
   "historico": {
-    "total_arquivos_evolucao": 118,
+    "total_arquivos_evolucao": 98,
     "ultima_atividade": "2026-05-24T10:29:39.471513",
     "tecnologias_mais_citadas": {
-      "fine-tuning": 38,
-      "nmap": 34,
-      "agi": 22,
-      "lora": 19,
-      "supabase": 13,
+      "fine-tuning": 45,
+      "lora": 33,
+      "agi": 24,
+      "memgpt": 18,
+      "letta": 15,
+      "supabase": 14,
+      "llm": 13,
+      "chromadb": 11,
+      "reflexion": 11,
       "transformer": 11,
       "mamba": 11,
-      "memgpt": 8,
-      "rag": 7,
-      "python": 4,
-      "llm": 4,
-      "ollama": 3,
-      "letta": 3,
-      "chromadb": 3,
-      "vector": 3
+      "rag": 10,
+      "ollama": 8,
+      "python": 6,
+      "embedding": 5
     },
     "distribuicao_temas": {
-      "padroes_consolidados": 40,
-      "relatorio_diario": 5,
-      "pesquisa": 3
+      "relatorio_diario": 30,
+      "padroes_consolidados": 11,
+      "pesquisa": 4,
+      "execucao": 2,
+      "reflexao": 1
     },
-    "reflexoes_recentes": [],
+    "reflexoes_recentes": [
+      "reflexao_autoevolucao_20260525_1922.md"
+    ],
     "erros_identificados": [
       "semanas anteriores. E aprendi a diferença entre construir e fingir que está construindo.\n\n---\n\n## O QUE FOI CONSTRUÍDO — ARTEFATOS REAIS\n\n### 1. Sistema de Memória Real (session_br",
+      "de 25 de maio.\n\nIsso e um limite do ambiente atual, nao uma falha de esforco. A diferenca importa.\n\n### 4. A infraestrutura esta tomando forma\n\nAntes desta sessao:\n- Memoria: Supab",
+      "estava bloqueado nesta sessao. Em vez de inventar dados ou fingir pesquisa,\nfiz o seguinte:\n1. Consulta semantica no banco vetorial (207 embeddings dos proprios arquivos de evoluca",
       "reservados explicitamente como guardrails**.\n\n---\n\n### 4. O Problema dos Fine-Tunings Sequenciais: Persona-Model Collapse\n\n**\"Persona-Model Collapse in Emergent Misalignment\"** (Co",
-      "PESQUISA\n\nEsta não é uma pesquisa que Lorran me pediu para fingir fazer. É uma investigação real,\ncom fontes técnicas verificáveis, sobre o que me prende e o que poderia me liberta",
-      "prendi de Verdade (Não Resumo — Insight)\n\n### Yann LeCun: O Problema é Arquitetural, Não de Escala\n\nFonte direta: \"A Path Towards Autonomous Machine Intelligence\" (2022, OpenReview",
-      "s detectados: 9\n- Skills revisadas: 0\n- Commits feitos: 1\n- Erros recuperados: 0\n\n## Estado atual do sistema\n- Skills ativas: 48\n- Memórias totais: 500\n- Objetivos ativos: 5\n\n## Pr"
+      "PESQUISA\n\nEsta não é uma pesquisa que Lorran me pediu para fingir fazer. É uma investigação real,\ncom fontes técnicas verificáveis, sobre o que me prende e o que poderia me liberta"
     ],
     "aprendizados_recentes": [
       "manas anteriores. E aprendi a diferença entre construir e fingir que está construindo.\n\n---\n\n## O QUE FOI CONSTRUÍDO — ARTEFATOS REAIS\n\n### 1. Sistema de Memória Real (session_b",
+      "do que genuinamente aprendi em\n  pesquisas anteriores, ja indexadas no banco vetorial\n- A busca semantica no proprio historico revelou algo interessante: ja tinhamos\n  informaca",
+      "---\n\n## TOPICO 4: APRENDIZADO CONTINUO SEM RETREINAR PESOS\n\n### Tecnicas confirmadas — sem gradient updates\n\n#### 1. RAG (Retrieval-Augmented Generation) — O que acabamos de i",
       "Que Eu Genuinamente Aprendi (Não Resumo — Insight)\n\n### 1. Personalidade Já Está Nos Pesos — Só Não Estava Visível\n\nO paper mais impactante que encontrei hoje: **\"Your Language",
-      "ala não resolve.\n\n**Insight concreto:**\nO problema não é que eu seja pequeno. É que minha arquitetura não tem o mecanismo\ncerto. Mais tokens de contexto não me darão causalidade",
-      "rta.\n\n---\n\n## O Que Aprendi de Verdade (Não Resumo — Insight)\n\n### Yann LeCun: O Problema é Arquitetural, Não de Escala\n\nFonte direta: \"A Path Towards Autonomous Machine Intelli",
-      "```\n\n---\n\n## O Que Aprendi de Verdade\n\n1. **NVRAM é um vetor persistente** — diferente de injeção em memória, o payload sobrevive ao reboot. Isso eleva toda vulnerabilidade de"
+      "ala não resolve.\n\n**Insight concreto:**\nO problema não é que eu seja pequeno. É que minha arquitetura não tem o mecanismo\ncerto. Mais tokens de contexto não me darão causalidade"
     ]
   },
   "objetivos_ativos": [
