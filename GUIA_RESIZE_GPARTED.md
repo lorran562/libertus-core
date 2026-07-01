@@ -1,7 +1,7 @@
 # GUIA DE RESIZE — GParted Live (LIBERTUS + Lorran)
 
 Escrito em 01/Jul/2026. Ler ISTO na tela do GParted, passo a passo.
-Objetivo: Windows mínimo (~100 GB), Ubuntu leva o resto (~139 GB).
+Objetivo: Windows mínimo (~100 GB), Ubuntu leva o resto (~122 GB).
 
 ## ⚠️ ANTES DE COMEÇAR — CHECKLIST OBRIGATÓRIO
 
@@ -57,11 +57,11 @@ Ordem na tela (esquerda→direita): EFI | MSR | Windows | Ubuntu | Recovery
    - No campo **"New size (MiB)"** coloca o MAIOR valor que ele deixar
      (ele preenche o máximo automático quando você zera o "preceding")
 4. Clica **Resize/Move**.
-5. O Ubuntu agora aparece com ~139 GB, colado no Windows.
+5. O Ubuntu agora aparece com ~122 GB, colado no Windows.
 
 ### APLICAR (ponto de não-retorno)
 
-1. Confere na tela: Windows ~100 GB, Ubuntu ~139 GB, sem espaço cinza sobrando.
+1. Confere na tela: Windows ~100 GB, Ubuntu ~122 GB, sem espaço cinza sobrando.
 2. Clica no botão verde **"Apply All Operations"** (✓ no topo).
 3. Confirma. AGORA NÃO DESLIGA POR NADA.
    - O PASSO B (mover borda esquerda do ext4) é o lento: pode levar 30-60 min.
@@ -78,7 +78,7 @@ Ordem na tela (esquerda→direita): EFI | MSR | Windows | Ubuntu | Recovery
        df -h /
        lsblk
 
-   Tem que mostrar / com ~139 GB e bastante espaço livre.
+   Tem que mostrar / com ~122 GB e bastante espaço livre.
 
 ## SE DER ALGO ERRADO
 
