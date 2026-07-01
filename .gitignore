@@ -33,3 +33,5 @@ lab/firmware/*/*.trx
 lab/firmware/*/*.ubi
 lab/firmware/*/*.lzma
 .env.abacate
+ejpt/john_home/sess*
+ejpt/john_home/john.pot
