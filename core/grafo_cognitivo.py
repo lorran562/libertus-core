@@ -291,7 +291,80 @@ class GrafoCognitivo:
             "total_nos": self.g.number_of_nodes(),
         }
 
-    # ── Métricas ──────────────────────────────────────────────────────────────
+    # ── Fusão com a extração semântica do graphify ───────────────────────────
+
+    def importar_graphify(self, graph_json_path: Any) -> Dict[str, int]:
+        """Funde o graph.json do graphify (conexões por SIGNIFICADO) na rede viva.
+
+        O graphify extrai relações semânticas via LLM — MUITO melhores que as
+        ligações por-tag do bootstrap. Este método traz essas conexões pro
+        cérebro vivo, mapeando a confiança do graphify pro peso Hebbiano inicial:
+          EXTRACTED (achado no texto) -> peso alto (0.60), confiança 0.85
+          INFERRED  (deduzido pelo LLM) -> peso médio (0.35), confiança 0.60
+          AMBIGUOUS -> peso baixo (0.20), confiança 0.40
+
+        Os nós ganham rótulo e comunidade do graphify. Ligações que já existem
+        (do bootstrap) são reforçadas, não duplicadas."""
+        data = json.loads(Path(graph_json_path).read_text())
+        nodes = data.get("nodes", [])
+        edges = data.get("links", data.get("edges", []))
+
+        conf_map = {
+            "EXTRACTED": (0.60, 0.85),
+            "INFERRED": (0.35, 0.60),
+            "AMBIGUOUS": (0.20, 0.40),
+        }
+
+        # id do graphify -> chave normalizada no nosso grafo (pelo label)
+        id2key: Dict[str, str] = {}
+        nos_antes = self.g.number_of_nodes()
+        for n in nodes:
+            nid = n.get("id")
+            label = (n.get("label") or nid or "").strip()
+            if not label:
+                continue
+            tipo = n.get("file_type") or "conceito"
+            comunidade = n.get("community_name") or ""
+            k = self.add_conceito(
+                label, tipo=tipo, confianca=0.7, origem="graphify",
+                meta={"comunidade": comunidade, "gid": nid},
+            )
+            id2key[nid] = k
+
+        arestas_novas = 0
+        arestas_reforcadas = 0
+        for e in edges:
+            src = id2key.get(e.get("source"))
+            dst = id2key.get(e.get("target"))
+            if not src or not dst or src == dst:
+                continue
+            conf = str(e.get("confidence", "INFERRED")).upper()
+            peso0, conf_val = conf_map.get(conf, (0.30, 0.5))
+            relacao = e.get("relation", "relaciona")
+            if self.g.has_edge(src, dst):
+                self.reforcar(src, dst)
+                arestas_reforcadas += 1
+            else:
+                self.g.add_edge(
+                    src, dst,
+                    tipo=relacao,
+                    peso=peso0,
+                    confianca=conf_val,
+                    origem="graphify",
+                    freq_uso=1,
+                    created_at=_agora(),
+                    last_used=_agora(),
+                )
+                arestas_novas += 1
+
+        return {
+            "nos_novos": self.g.number_of_nodes() - nos_antes,
+            "arestas_novas": arestas_novas,
+            "arestas_reforcadas": arestas_reforcadas,
+            "total_nos": self.g.number_of_nodes(),
+            "total_arestas": self.g.number_of_edges(),
+        }
+
 
     def god_nodes(self, n: int = 10) -> List[Tuple[str, int]]:
         """Conceitos de maior grau — por onde tudo se conecta."""
