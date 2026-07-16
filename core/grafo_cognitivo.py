@@ -46,8 +46,8 @@ TAXA_APRENDIZADO = 0.15   # quanto uma ligação se fortalece por uso (0..1)
 TAXA_DECAIMENTO = 0.02    # quanto TODAS as ligações enfraquecem por consolidação
 PESO_MIN_ARESTA = 0.05    # abaixo disso a aresta é podada na consolidação
 PESO_INICIAL_ARESTA = 0.30
-DECAIMENTO_POR_HOP = 0.55  # ativação perde força a cada salto na cascata
-LIMIAR_ATIVACAO = 0.05     # nós abaixo disso não entram no contexto
+DECAIMENTO_POR_HOP = 0.70  # ativação perde força a cada salto na cascata
+LIMIAR_ATIVACAO = 0.01     # nós abaixo disso não entram no contexto
 
 
 def _agora() -> str:
@@ -208,6 +208,13 @@ class GrafoCognitivo:
             if self.g.has_node(k):
                 self.g.nodes[k]["last_used"] = _agora()
 
+        # âncora: sementes existentes permanecem em 1.0 (o feedback da cascata
+        # não deve inflar a origem acima do máximo — mantém a saída previsível)
+        for s in sementes:
+            k = self._norm(s)
+            if k in ativacao:
+                ativacao[k] = 1.0
+
         ranked = sorted(
             ((k, v) for k, v in ativacao.items() if v >= limiar),
             key=lambda kv: kv[1],
@@ -307,7 +314,7 @@ class GrafoCognitivo:
             "meta": {"salvo_em": _agora(), "versao": 1},
             "nos": [{"id": k, **v} for k, v in self.g.nodes(data=True)],
             "arestas": [
-                {"origem": u, "destino": v, **e}
+                {"_src": u, "_dst": v, **e}
                 for u, v, e in self.g.edges(data=True)
             ],
         }
@@ -322,8 +329,8 @@ class GrafoCognitivo:
             k = n.pop("id")
             self.g.add_node(k, **n)
         for e in data.get("arestas", []):
-            u = e.pop("origem")
-            v = e.pop("destino")
+            u = e.pop("_src")
+            v = e.pop("_dst")
             self.g.add_edge(u, v, **e)
 
     def snapshot_supabase(self) -> bool:
