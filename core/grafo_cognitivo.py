@@ -48,6 +48,7 @@ PESO_MIN_ARESTA = 0.05    # abaixo disso a aresta é podada na consolidação
 PESO_INICIAL_ARESTA = 0.30
 DECAIMENTO_POR_HOP = 0.70  # ativação perde força a cada salto na cascata
 LIMIAR_ATIVACAO = 0.01     # nós abaixo disso não entram no contexto
+GRAU_HUB = 40              # a partir deste grau um nó é "hub" e amortece a propagação
 
 
 def _agora() -> str:
@@ -192,9 +193,17 @@ class GrafoCognitivo:
             for no, ativ in fronteira.items():
                 # espalha para vizinhos (saída e entrada — associação nos dois sentidos)
                 vizinhos = set(self.g.successors(no)) | set(self.g.predecessors(no))
+                # amortecimento de hub: um nó com muitas conexões (tag genérica
+                # tipo 'web'/'conversa') transmite ativação DILUÍDA — senão ele
+                # abafa os conceitos específicos. Foco > popularidade.
+                # Penalização quadrática suave para hubs gigantes.
+                grau = len(vizinhos)
+                fator_hub = 1.0
+                if grau > GRAU_HUB:
+                    fator_hub = (GRAU_HUB / grau) ** 1.5
                 for viz in vizinhos:
                     peso = self._peso_ligacao(no, viz)
-                    passa = ativ * peso * DECAIMENTO_POR_HOP
+                    passa = ativ * peso * DECAIMENTO_POR_HOP * fator_hub
                     if passa <= 0:
                         continue
                     ativacao[viz] = ativacao.get(viz, 0.0) + passa
