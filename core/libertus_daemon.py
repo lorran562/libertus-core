@@ -37,6 +37,12 @@ try:
 except Exception:
     BUSCADOR_OK = False
 
+try:
+    from sistema_nervoso import diagnostico as sn_diagnostico, salvar_estado as sn_salvar_estado
+    SISTEMA_NERVOSO_OK = True
+except Exception:
+    SISTEMA_NERVOSO_OK = False
+
 
 
 
@@ -57,6 +63,7 @@ CICLO_GIT_SYNC     = 14400    # 4 horas — commit automático
 CICLO_AUTO_REFATORACAO = 43200   # 12 horas — auto-correção de bugs
 CICLO_ABSORCAO_DOCLING = 21600   # 6 horas — aprendizado via Docling
 CICLO_SECURITY_SCAN    = 10800   # 3 horas — security scanning automático
+CICLO_CONSCIENCIA      = 1800    # 30 min — sistema nervoso: saude do corpo
 
 HEARTBEAT = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 DAEMON_LOG = LIBERTUS_ROOT / "evolution_logs" / "daemon.log"
@@ -107,6 +114,7 @@ class NucleoCognitivo:
             "auto_refatoracao": 0,
             "absorcao_docling": 0,
             "security_scan": 0,
+            "consciencia": 0,
         }
 
         # Estatísticas da sessão do daemon
@@ -121,6 +129,7 @@ class NucleoCognitivo:
             "scans_realizados":      0,
             "vulnerabilidades_encontradas": 0,
             "erros":                 0,
+            "problemas_corpo_detectados": 0,
         }
 
         # Garante pastas
@@ -207,6 +216,10 @@ class NucleoCognitivo:
                     self._tick_security_scan()
                     self.last["security_scan"] = agora
 
+                if agora - self.last["consciencia"] >= CICLO_CONSCIENCIA:
+                    self._tick_consciencia()
+                    self.last["consciencia"] = agora
+
                 # Dorme pelo menor intervalo
                 time.sleep(30)
 
@@ -218,6 +231,30 @@ class NucleoCognitivo:
         self._log("FIM", f"Encerrando após {self.ticks_total} ticks")
 
     # ── Ciclos ────────────────────────────────────────────────────────────
+
+    def _tick_consciencia(self):
+        """
+        Sistema Nervoso Central — consulta o mesmo diagnóstico que qualquer
+        outra parte do corpo LIBERTUS pode consultar (core/sistema_nervoso.py).
+        Antes disso, o daemon decidia sozinho, sem nunca olhar pra rede
+        cognitiva viva (grafo_cognitivo). Agora ele checa saúde real do corpo
+        (processos, imports) a cada 30min e loga problemas de verdade —
+        sem inventar diagnóstico, sem "tudo ok" falso.
+        """
+        if not SISTEMA_NERVOSO_OK:
+            self._log("CONSCIENCIA", "sistema_nervoso indisponível (import falhou)")
+            return
+        try:
+            estado = sn_diagnostico("")  # health-only, sem gastar LLM
+            sn_salvar_estado(estado)
+            if estado["problemas_detectados"]:
+                self.stats["problemas_corpo_detectados"] += len(estado["problemas_detectados"])
+                for p in estado["problemas_detectados"]:
+                    self._log("CONSCIENCIA_ALERTA", p)
+            else:
+                self._log("CONSCIENCIA", "corpo saudável — todos os processos e módulos ok")
+        except Exception as e:
+            self._log("ERRO", f"_tick_consciencia falhou: {e}")
 
     def _tick_observacao(self):
         """
