@@ -63,25 +63,63 @@ class MotorConversa:
 
     # ── 1. extrair sementes da fala ──────────────────────────────────────────
 
+    # nº máximo de nós que UMA palavra pode acender por substring (regra 3),
+    # pra uma palavra curta comum não inundar as sementes com ruído
+    MAX_POR_PALAVRA_SUBSTRING = 3
+    # tamanho mínimo de palavra pra entrar na busca por substring (regra 3):
+    # abaixo disso o substring casa lixo demais ("ia" dentro de "familia" etc.)
+    MIN_CHARS_SUBSTRING = 4
+
     def extrair_sementes(self, fala: str, max_sementes: int = 8) -> List[str]:
         """Casa palavras/expressões da fala com nós existentes na rede.
-        Prioriza rótulos de nós que aparecem na fala; senão, palavras-chave."""
+
+        Três regras, da mais forte pra mais fraca:
+          3. rótulo COMPLETO de um nó aparece dentro da fala (match mais forte)
+          2. nó cujo nome é EXATAMENTE uma palavra da fala
+          1. palavra da fala aparece como SUBSTRING dentro do rótulo de um nó
+             maior — a "lupa do WhatsApp" pedida pelo Lorran: buscar 'escopo'
+             acha 'escopo_ampliado_abacatepay' mesmo o nó nunca casando inteiro.
+        """
         fala_norm = self.gc._norm(fala)
         palavras = [w for w in re.findall(r"\w+", fala_norm)
                     if len(w) > 2 and w not in _STOP]
         sementes: List[Tuple[str, int]] = []  # (chave, prioridade)
 
-        # match direto: rótulo de nó contido na fala (mais forte)
-        for k in self.gc.g.nodes():
-            rot = self.gc._norm(self.gc.g.nodes[k].get("rotulo", k))
+        # pré-computa o rótulo normalizado de cada nó UMA vez (evita renormalizar
+        # o grafo inteiro dentro de loops aninhados por palavra)
+        rot_por_no = {
+            k: self.gc._norm(self.gc.g.nodes[k].get("rotulo", k))
+            for k in self.gc.g.nodes()
+        }
+
+        # regra 3: rótulo de nó contido na fala (mais forte)
+        for k, rot in rot_por_no.items():
             if len(rot) > 3 and rot in fala_norm:
                 sementes.append((k, 3))
 
-        # match por palavra: nó cujo nome é exatamente uma palavra da fala
+        # regra 2: nó cujo nome é exatamente uma palavra da fala
         pset = set(palavras)
         for k in self.gc.g.nodes():
             if k in pset:
                 sementes.append((k, 2))
+
+        # regra 1: palavra da fala como substring dentro do rótulo de um nó maior
+        # (a "lupa do WhatsApp") — prioridade menor, e limitada por palavra pra
+        # palavra curta comum não inundar as sementes de ruído.
+        ja_como_semente = {k for k, _ in sementes}
+        for w in palavras:
+            if len(w) < self.MIN_CHARS_SUBSTRING:
+                continue
+            achados = 0
+            for k, rot in rot_por_no.items():
+                if k in ja_como_semente:
+                    continue  # já entrou por regra mais forte; não rebaixa
+                if w in rot:
+                    sementes.append((k, 1))
+                    ja_como_semente.add(k)
+                    achados += 1
+                    if achados >= self.MAX_POR_PALAVRA_SUBSTRING:
+                        break
 
         # dedup preservando maior prioridade
         vistos = {}
