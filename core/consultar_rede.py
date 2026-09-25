@@ -39,9 +39,15 @@ MAX_NOS_CONTEXTO = 12
 PROFUNDIDADE = 2
 
 
-def consultar(fala: str) -> dict:
+def consultar(fala: str, indexar: bool = False) -> dict:
     """Ativa a rede a partir da fala. Retorna dict com sementes, conceitos e
-    o bloco de contexto pronto. Nunca levanta exceção — captura tudo."""
+    o bloco de contexto pronto. Nunca levanta exceção — captura tudo.
+
+    Se indexar=True (Passo 4 do grapify), além de acender a rede, cria como
+    nós os termos NOVOS da fala e os liga aos conceitos que acenderam — fechando
+    o ciclo aprender→lembrar: o que o Lorran fala hoje acende sozinho amanhã.
+    A indexação é best-effort: se falhar, o reflexo (leitura) continua valendo.
+    """
     if not fala or not fala.strip():
         return {"ok": True, "vazio": True, "sementes": [], "conceitos": [],
                 "contexto": "", "motivo": "fala vazia"}
@@ -53,8 +59,17 @@ def consultar(fala: str) -> dict:
         mc = MotorConversa(grafo=gc)
         sementes = mc.extrair_sementes(fala)
         if not sementes:
+            # nada acendeu: ainda assim indexamos (é justo o caso 'abacatepay'
+            # que motivou o Passo 4 — termo inédito que precisa virar nó).
+            idx = {"novos": [], "ligacoes": 0}
+            if indexar:
+                try:
+                    idx = mc.indexar_fala(fala, sementes=[], persistir=True)
+                except Exception as e:  # noqa: BLE001
+                    idx = {"novos": [], "ligacoes": 0, "erro_index": str(e)}
             return {"ok": True, "vazio": True, "sementes": [], "conceitos": [],
                     "contexto": "", "motivo": "nenhum conceito acendeu",
+                    "indexado": idx,
                     "total_nos_rede": gc.g.number_of_nodes()}
         contexto = gc.contexto_para_llm(
             sementes, max_nos=MAX_NOS_CONTEXTO, profundidade=PROFUNDIDADE
@@ -64,12 +79,19 @@ def consultar(fala: str) -> dict:
             {"conceito": gc.g.nodes[k].get("rotulo", k), "ativacao": round(v, 3)}
             for k, v in ativados
         ]
+        idx = {"novos": [], "ligacoes": 0}
+        if indexar:
+            try:
+                idx = mc.indexar_fala(fala, sementes=sementes, persistir=True)
+            except Exception as e:  # noqa: BLE001
+                idx = {"novos": [], "ligacoes": 0, "erro_index": str(e)}
         return {
             "ok": True,
             "vazio": False,
             "sementes": sementes,
             "conceitos": conceitos,
             "contexto": contexto,
+            "indexado": idx,
             "total_nos_rede": gc.g.number_of_nodes(),
             "total_arestas_rede": gc.g.number_of_edges(),
         }
@@ -81,12 +103,17 @@ def consultar(fala: str) -> dict:
 def main():
     args = sys.argv[1:]
     como_json = False
-    if args and args[0] == "--json":
-        como_json = True
+    indexar = False
+    # flags podem vir em qualquer ordem antes da fala
+    while args and args[0] in ("--json", "--indexar"):
+        if args[0] == "--json":
+            como_json = True
+        elif args[0] == "--indexar":
+            indexar = True
         args = args[1:]
     fala = " ".join(args)
 
-    resultado = consultar(fala)
+    resultado = consultar(fala, indexar=indexar)
 
     if como_json:
         print(json.dumps(resultado, ensure_ascii=False, indent=2))

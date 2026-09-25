@@ -155,6 +155,8 @@ class MotorConversa:
 
         # ── 4. aprender: reforça ligações entre as sementes ativadas ──────────
         self._aprender(sementes, fala)
+        # ── 5. indexar: termos novos da fala viram nós (fecha aprender→lembrar)
+        self.indexar_fala(fala, sementes=sementes, persistir=True)
         return resposta
 
     def _aprender(self, sementes: List[str], fala: str):
@@ -172,6 +174,97 @@ class MotorConversa:
                         tipo="co_ocorre", origem="conversa",
                     )
         self.gc.salvar()
+
+    # ── 5. indexação automática: fala nova vira nós do grafo (Passo 4) ────────
+
+    # teto de conceitos NOVOS que uma única fala pode criar (anti-inundação)
+    MAX_CONCEITOS_NOVOS = 5
+    # tamanho mínimo de palavra pra virar conceito novo
+    MIN_CHARS_CONCEITO = 4
+    # confiança inicial de um conceito recém-ouvido: hipótese, não consolidado.
+    # baixa de propósito — se nunca for reusado, a consolidação o enfraquece.
+    CONF_CONCEITO_NOVO = 0.3
+    # palavras conversacionais genéricas que NÃO devem virar conceito (ruído).
+    # separado de _STOP (que serve p/ extração de sementes) porque aqui o alvo
+    # é diferente: evitar que "coisa/vamos/inclusive" entrem como nós do cérebro.
+    _STOP_INDEX = set(
+        "coisa coisas vamos continuar inclusive lembrado lembra ainda tambem "
+        "então entao assim cada toda todo alguma algum outro outra mesmo mesma "
+        "aqui ali fazendo feito deixa deixar quero queria gente nossa poder "
+        "sempre nunca talvez acho achei achar deve devia preciso precisa "
+        "testar testando testei olhar olha ver vendo saber sabendo dizer "
+        "falar falando pegar pegando usar usando dar dando ficar ficando".split()
+    )
+
+    def indexar_fala(self, fala: str, sementes: Optional[List[str]] = None,
+                     persistir: bool = True) -> dict:
+        """Passo 4 do grapify — fecha o ciclo aprender→lembrar.
+
+        Extrai da fala do Lorran os termos que AINDA NÃO são nós do grafo e os
+        cria como conceitos novos (baixa confiança = hipótese), ligando cada um
+        aos conceitos que já acenderam nesta conversa (co-ocorrência real). Assim
+        o que ele fala hoje vira memória que ACENDE sozinha amanhã — que era o
+        gap descoberto no Passo 1 ('abacatepay'/'escopo' nunca foram nós).
+
+        Anti-ruído: só palavras >= MIN_CHARS_CONCEITO, fora de _STOP e _STOP_INDEX,
+        sem número puro, teto de MAX_CONCEITOS_NOVOS por fala. Nascem com tipo
+        'termo_conversa' e confiança baixa; se nunca reusados, o decaimento
+        Hebbiano (consolidar) os enfraquece naturalmente.
+
+        Retorna {'novos': [...], 'ligacoes': N}. Best-effort: não levanta.
+        """
+        if sementes is None:
+            sementes = self.extrair_sementes(fala)
+
+        fala_norm = self.gc._norm(fala)
+        palavras = [
+            w for w in re.findall(r"\w+", fala_norm)
+            if len(w) >= self.MIN_CHARS_CONCEITO
+            and w not in _STOP
+            and w not in self._STOP_INDEX
+            and not w.isdigit()
+        ]
+
+        # candidato é NOVO se ainda não é nó do grafo (chave já normalizada)
+        novos: List[str] = []
+        vistos = set()
+        for w in palavras:
+            if w in vistos:
+                continue
+            vistos.add(w)
+            if not self.gc.g.has_node(w):
+                novos.append(w)
+            if len(novos) >= self.MAX_CONCEITOS_NOVOS:
+                break
+
+        if not novos:
+            return {"novos": [], "ligacoes": 0}
+
+        for w in novos:
+            self.gc.add_conceito(
+                w, tipo="termo_conversa",
+                confianca=self.CONF_CONCEITO_NOVO, origem="conversa_auto",
+            )
+
+        # liga cada conceito novo às sementes que acenderam (associação real
+        # desta conversa). se nada acendeu, liga os novos entre si — eles
+        # co-ocorreram na mesma fala, então formam um cluster mínimo.
+        ligacoes = 0
+        alvos = sementes if sementes else novos
+        for w in novos:
+            for alvo in alvos:
+                ka = self.gc._norm(alvo)
+                if ka == w:
+                    continue
+                rot_alvo = (self.gc.g.nodes[alvo].get("rotulo", alvo)
+                            if self.gc.g.has_node(alvo) else alvo)
+                self.gc.conectar(w, rot_alvo, tipo="co_ocorre",
+                                 origem="conversa_auto")
+                ligacoes += 1
+
+        if persistir:
+            self.gc.salvar()
+        return {"novos": novos, "ligacoes": ligacoes}
 
     def explicar_ativacao(self) -> str:
         """Diagnóstico: mostra o que acendeu na última fala (pra debug/demonstração)."""
