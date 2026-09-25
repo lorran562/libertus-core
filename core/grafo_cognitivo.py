@@ -49,10 +49,31 @@ PESO_INICIAL_ARESTA = 0.30
 DECAIMENTO_POR_HOP = 0.70  # ativação perde força a cada salto na cascata
 LIMIAR_ATIVACAO = 0.01     # nós abaixo disso não entram no contexto
 GRAU_HUB = 40              # a partir deste grau um nó é "hub" e amortece a propagação
+# carência: nó órfão criado há menos de N dias NÃO é podado, mesmo com freq_uso
+# baixa. Protege o aprendizado recém-nascido (Passo 4) de ser esquecido antes
+# de ter chance de ser reusado — sem isso, consolidar à noite daria amnésia da
+# véspera. Só poda hipótese que sobreviveu a carência sem ninguém reencontrar.
+DIAS_CARENCIA_ORFAO = 3
 
 
 def _agora() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _idade_dias(iso: Optional[str]) -> float:
+    """Idade em dias a partir de um timestamp ISO. Falha para o lado SEGURO:
+    se a data faltar ou for inválida, retorna 0.0 (trata como recém-nascido =
+    protegido pela carência), pra consolidação nunca apagar por engano."""
+    if not iso:
+        return 0.0
+    try:
+        dt = datetime.fromisoformat(iso)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        delta = datetime.now(timezone.utc) - dt
+        return max(0.0, delta.total_seconds() / 86400.0)
+    except Exception:  # noqa: BLE001
+        return 0.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -149,23 +170,36 @@ class GrafoCognitivo:
 
     # ── Consolidação (o "Aprendizado Profundo" do doc do Lorran) ─────────────
 
-    def consolidar(self, taxa: float = TAXA_DECAIMENTO, podar: bool = True) -> Dict[str, int]:
+    def consolidar(self, taxa: float = TAXA_DECAIMENTO, podar: bool = True,
+                   dias_carencia: float = DIAS_CARENCIA_ORFAO) -> Dict[str, int]:
         """Roda em baixa utilização: decai ligações fracas, poda o inútil.
-        Este é o gancho onde o graphify (offline) também entraria depois."""
+        Este é o gancho onde o graphify (offline) também entraria depois.
+
+        Carência (Passo 4): nó órfão criado há menos de `dias_carencia` dias é
+        PRESERVADO mesmo com freq_uso baixa — protege o aprendizado recém-nascido
+        de ser esquecido antes de ter chance de ser reusado. Só some a hipótese
+        que sobreviveu a carência sem ninguém reencontrar."""
         podadas = 0
         for u, v, e in list(self.g.edges(data=True)):
             e["peso"] *= (1.0 - taxa)
             if podar and e["peso"] < PESO_MIN_ARESTA:
                 self.g.remove_edge(u, v)
                 podadas += 1
-        # nós órfãos (sem nenhuma ligação e pouco usados) somem
+        # nós órfãos (sem nenhuma ligação e pouco usados) somem — mas só depois
+        # da carência, pra não apagar o que foi aprendido nos últimos dias.
         orfaos = 0
+        protegidos = 0
         if podar:
             for n in list(self.g.nodes()):
                 if self.g.degree(n) == 0 and self.g.nodes[n].get("freq_uso", 0) <= 1:
+                    idade = _idade_dias(self.g.nodes[n].get("created_at"))
+                    if idade < dias_carencia:
+                        protegidos += 1
+                        continue
                     self.g.remove_node(n)
                     orfaos += 1
-        return {"arestas_podadas": podadas, "nos_orfaos_removidos": orfaos}
+        return {"arestas_podadas": podadas, "nos_orfaos_removidos": orfaos,
+                "nos_protegidos_carencia": protegidos}
 
     # ── Ativação em cascata (memória associativa) ────────────────────────────
 
