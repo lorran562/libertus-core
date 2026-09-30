@@ -1,0 +1,30 @@
+{
+  "create_ok": true,
+  "check id=REAL&id=FAKE": {
+    "status": 400,
+    "tem_data": false
+  },
+  "check id=FAKE&id=REAL": {
+    "status": 200,
+    "tem_data": true
+  },
+  "check id=REAL (baseline)": {
+    "status": 200,
+    "tem_data": true
+  },
+  "check id=FAKE (baseline)": {
+    "status": 400,
+    "tem_data": false
+  },
+  "sim id=REAL&id=FAKE": {
+    "status": 400,
+    "success": false
+  },
+  "sim id=FAKE&id=REAL": {
+    "status": 200,
+    "success": true
+  },
+  "preco_negativo/checkouts/create": false,
+  "qtd_negativa/checkouts/create": false,
+  "url_file_passwd/checkouts/create": false
+}

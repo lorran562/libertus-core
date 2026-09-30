@@ -20,6 +20,7 @@ A própria documentação da AbacatePay já orienta corretamente ("use os dois m
 | 1b | `ecosystem/adapters` exporta `verify` HMAC-só (nome enganoso); secret só no README | Média | ecosystem/adapters |
 | 2 | Logs em nível `debug` incluem dados pessoais (CPF/taxId, nome, email) | Baixa-Média | Python SDK |
 | 3 | `webhookSecret` transmitido em query string (exposição em logs/histórico) | Baixa | Design de webhook / docs |
+| 4 | HTTP Parameter Pollution (last-wins) em `/transparents/check` e `/simulate-payment` — confirmado ao vivo, devMode | Baixa/Info | API v2 (dinâmico) |
 
 ---
 
@@ -128,6 +129,43 @@ Query strings costumam ser registradas em logs de servidor web, proxies, CDNs e 
 - Nenhum secret real/credencial de produção hardcoded encontrado (só placeholders em exemplos).
 - Nenhum `verify=false` / SSL desabilitado nos SDKs.
 - SDKs em Go/Kotlin/PHP usam interpolação de URL, mas em campos controlados (IDs gerados) — o vetor de HTTP Parameter Pollution histórico deve ser reconfirmado dinamicamente na própria conta (Fase 3, pendente).
+
+---
+
+## Re-teste Dinâmico (Fase 3) — conta própria, devMode
+
+Executado em 29/09/2026 usando **exclusivamente a chave de dev do próprio pesquisador**, em **devMode (sandbox)**, **sem mover nenhum valor real**. Script reproduzível: `scripts/fase3_reteste_dinamico.py`.
+
+### Confirmado corrigido (boa-fé da equipe demonstrada)
+
+As 3 findings reportadas em 26/06/2026 estão **corrigidas** — a API agora rejeita (HTTP 422):
+- preço ≤ 0 → rejeitado
+- quantidade ≤ 0 → rejeitado
+- URL de callback perigosa (`file:///etc/passwd`) → rejeitado
+
+### Finding 4 — HTTP Parameter Pollution ainda presente (last-wins) em `/transparents`
+
+**Severidade:** Baixa / Informativa (nesta demonstração; ver ressalva de impacto)
+**Tipo:** CWE-235 (Improper Handling of Extra Parameters)
+
+Os endpoints `GET /v2/transparents/check` e `POST /v2/transparents/simulate-payment` **não rejeitam** um parâmetro `id` duplicado na query string; em vez disso processam **apenas o último valor** (last-wins), ignorando silenciosamente o primeiro.
+
+**Evidência reproduzível (2 execuções idênticas, na minha conta, devMode):**
+
+| Requisição | Status | Resultado |
+|-----------|--------|-----------|
+| `check?id=REAL` (baseline) | 200 | encontra a cobrança |
+| `check?id=FAKE` (baseline) | 400 | não encontra |
+| `check?id=REAL&id=FAKE` | **400** | processou o **último** (FAKE) → ignorou o REAL |
+| `check?id=FAKE&id=REAL` | **200** | processou o **último** (REAL) → ignorou o FAKE |
+| `simulate-payment?id=REAL&id=FAKE` | 400 | idem (last-wins) |
+| `simulate-payment?id=FAKE&id=REAL` | 200 | idem (last-wins) |
+
+**Ressalva de impacto (honesta, sem inflar):** por si só, em devMode e na própria conta, este comportamento **não demonstra roubo de dinheiro nem acesso a dados de terceiros**. O IDOR continua protegido (não consegui acessar cobrança de outra conta). O risco real do last-wins é de **bypass de camadas de segurança que inspecionem o primeiro parâmetro** (ex.: um WAF, um log de auditoria ou um controle de acesso que leia `id[0]` enquanto o backend age sobre `id[1]`) — cenário que não é testável sem conhecimento da arquitetura interna deles. Reporto como higiene de parsing, não como exploração comprovada.
+
+**Recomendação:** rejeitar requisições com parâmetros de query duplicados (HTTP 400), ou normalizar explicitamente para o primeiro valor e documentar o comportamento. Consistência de parsing entre eventuais camadas (WAF/proxy/backend) elimina a classe de bypass.
+
+> Nota histórica: este mesmo padrão de last-wins nesses dois endpoints já havia sido observado em 02/09/2026. O re-teste de 29/09 confirma que **permanece presente** — enquanto as findings de validação de entrada de junho foram corrigidas, esta específica ainda não.
 
 ---
 
