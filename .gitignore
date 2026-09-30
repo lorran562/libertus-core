@@ -35,3 +35,6 @@ lab/firmware/*/*.lzma
 .env.abacate
 ejpt/john_home/sess*
 ejpt/john_home/john.pot
+
+# SDKs de terceiros clonados para auditoria (nao versionar)
+abacatepay-audit/sdks/
