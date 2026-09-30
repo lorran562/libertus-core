@@ -10,13 +10,14 @@
 
 ## Sumário Executivo
 
-O achado principal (Finding 1) é uma **inconsistência de segurança entre os SDKs oficiais** no modo como validam webhooks. Dois SDKs oficiais (Elixir e o pacote `ecosystem/adapters`) expõem uma função de verificação que checa **apenas a assinatura HMAC** — que é calculada com uma **chave pública e global**, publicada tanto no código-fonte quanto na documentação. Como essa chave é conhecida, qualquer pessoa consegue gerar uma assinatura HMAC válida. A proteção real (o `webhookSecret` per-merchant) **não é verificada** por esses dois SDKs. Um integrador que confie neles fica exposto a **forja de webhooks de pagamento** (ex.: creditar um `billing.paid` que nunca ocorreu).
+O achado principal (Finding 1) é uma **falha de verificação de webhook no SDK Elixir oficial**, com uma variante mais branda no pacote `ecosystem/adapters`. Os webhooks da AbacatePay são assinados com HMAC usando uma **chave pública e global**, publicada tanto no código-fonte (5+ repositórios) quanto na documentação. Como a chave é conhecida, qualquer um gera uma assinatura HMAC válida. A proteção real que autentica a origem é o `webhookSecret` per-merchant. O **SDK Elixir só oferece a verificação HMAC** e **não tem nenhuma função** para checar o `webhookSecret` — nem no código, nem na doc. Um integrador Elixir que confie no SDK oficial fica exposto a **forja de webhooks de pagamento** (ex.: creditar um `billing.paid` que nunca ocorreu). No `ecosystem/adapters`, o código também é HMAC-só, porém o README ensina o passo do secret — o risco ali é a função `verify` ter nome que sugere autenticação completa e ser usada isoladamente.
 
 A própria documentação da AbacatePay já orienta corretamente ("use os dois mecanismos"). O problema não é o design do produto — é que **dois SDKs oficiais implementam só metade da verificação**, com nomes de função (`verify_signature`, `verify`) que sugerem autenticação completa. O SDK Ruby, em contraste, implementa isso de forma exemplar e serve de referência para a correção.
 
 | # | Finding | Severidade | Local |
 |---|---------|-----------|-------|
-| 1 | SDKs validam webhook só pela HMAC pública → forja de evento de pagamento | **Alta** | Elixir SDK, ecosystem/adapters |
+| 1 | SDK Elixir só valida webhook pela HMAC pública, sem opção de checar o `webhookSecret` → forja de evento de pagamento | **Alta** | Elixir SDK |
+| 1b | `ecosystem/adapters` exporta `verify` HMAC-só (nome enganoso); secret só no README | Média | ecosystem/adapters |
 | 2 | Logs em nível `debug` incluem dados pessoais (CPF/taxId, nome, email) | Baixa-Média | Python SDK |
 | 3 | `webhookSecret` transmitido em query string (exposição em logs/histórico) | Baixa | Design de webhook / docs |
 
@@ -44,12 +45,12 @@ Por ser HMAC (chave simétrica) e ser pública, **a assinatura só prova integri
 
 > "Sem validação, qualquer pessoa que descobrir sua URL de webhook pode forjar eventos e acionar lógica de negócio (ex: liberar acesso sem pagar). [...] Use ambos."
 
-**O problema:** dois SDKs oficiais expõem apenas a metade HMAC:
+**O problema:** os SDKs oficiais oferecem a verificação HMAC de forma que pode ser usada isoladamente, e num caso não oferecem alternativa:
 
-- **Elixir SDK** — `AbacatePay.Util.verify_signature/2` valida só a HMAC. Não existe nenhuma função `verify_secret` / checagem de `webhookSecret` em todo o repositório (confirmado por grep).
-- **ecosystem/adapters** — `verify(raw, signature)` valida só a HMAC. Idem, sem verificação de secret.
+- **Elixir SDK (caso central):** `AbacatePay.Util.verify_signature/2` valida só a HMAC. **Não existe nenhuma** função de verificação de `webhookSecret` em todo o repositório — nem no código, nem na documentação (confirmado por grep: 0 ocorrências). Um desenvolvedor de Elixir não tem, no SDK oficial, nenhuma ferramenta pronta para autenticar a origem. `verify_signature` retornando `true` num evento forjado é o único sinal que ele tem, e esse sinal é insuficiente.
+- **ecosystem/adapters (caso secundário, mais brando):** o código exporta apenas `verify(raw, signature)` — HMAC-só. A verificação do `webhookSecret` **não está no código**, mas o README do pacote **mostra** o desenvolvedor fazendo a checagem manual do secret antes. Ou seja: quem seguir o README fica seguro; o risco é que a função exportada `verify` tem nome que sugere autenticação completa e pode ser usada isoladamente, sem o passo do secret que só o README ensina.
 
-Um desenvolvedor que chame `verify_signature` (nome que sugere autenticação completa) e prossiga com a lógica de negócio ao receber `true` está aceitando qualquer evento forjado.
+Confirmação por verificação independente (script `/tmp/hermes-verify-abacate-finding1.py`): ocorrências de verificação de secret — **Elixir = 0**, ecosystem/adapters = 2 (ambas no README, nenhuma no código), Ruby = 18 (implementação completa no código).
 
 ### Prova de Conceito (cálculo 100% local — nenhuma requisição à AbacatePay)
 
