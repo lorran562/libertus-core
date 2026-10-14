@@ -85,13 +85,14 @@ def separador(titulo, char='='):
     print(f"  {titulo}")
     print(f"{char*60}")
 
-def atualizar_memoria_vetorial(tempo_max=180):
+def atualizar_memoria_vetorial(tempo_max=300):
     """Mantém a memória vetorial local em dia antes de começar a sessão.
 
     Motivo: entre 15/07 e 14/10/2026 a indexação ficou órfã e 3 meses de
     trabalho viraram memória invisível. Não adianta ter briefing se a busca
     semântica não alcança o que eu fiz ontem. Silencioso e com teto de tempo:
-    nunca deve travar o briefing.
+    nunca deve travar o briefing. Atualiza também a memória do Supabase (no
+    máximo a cada 6h) para memória nova gravada entre sessões entrar no recall.
     """
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     script = os.path.join(base, 'memoria', 'auto_indexar.py')
@@ -100,7 +101,7 @@ def atualizar_memoria_vetorial(tempo_max=180):
         return
     try:
         r = subprocess.run(
-            [venv_py, script, '--quiet', '--supabase'],
+            [venv_py, script, '--quiet', '--supabase', '--baixar-supabase'],
             cwd=base, capture_output=True, text=True, timeout=tempo_max)
     except Exception:
         return

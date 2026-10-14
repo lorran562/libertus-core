@@ -45,6 +45,7 @@ memoria/
 ├── fontes.py                # registro ÚNICO das fontes indexáveis
 ├── indexar_historico.py     # indexador v2 (multi-fonte, incremental por hash)
 ├── indexar_supabase.py      # materializa a memória do Supabase como vetores
+├── gravar_supabase.py       # caminho INVERSO: grava reflexão/conhecimento na memória real
 ├── auto_indexar.py          # guardião: mantém tudo em dia (rápido quando nada mudou)
 ├── lembrar.py               # busca semântica v2 (filtros por fonte/importância/data + --stats)
 ├── index_manifest.json      # (gerado) hash de conteúdo de cada arquivo indexado
@@ -97,15 +98,23 @@ venv/bin/python memoria/lembrar.py --stats
 # gravar memória nova (manual)
 venv/bin/python memoria/gravar.py "texto" --categoria aprendizado --fonte sessao_x
 
+# escrever na memória REAL (Supabase, entre sessões) — arquivo ou stdin
+venv/bin/python memoria/gravar_supabase.py evolucao/reflexao_xxx.md \
+    --titulo "..." --tipo reflexao --relevancia 10 --tags "autoevolucao"
+# (grava, lê de volta para verificar e só então diz OK)
+
 # manter em dia (idempotente, ~0.07s quando nada mudou)
-venv/bin/python memoria/auto_indexar.py --check          # só verifica
-venv/bin/python memoria/auto_indexar.py                  # conserta o que mudou
-venv/bin/python memoria/auto_indexar.py --supabase       # inclui dump do Supabase
-venv/bin/python memoria/auto_indexar.py --quiet --supabase   # usado no briefing
+venv/bin/python memoria/auto_indexar.py --check           # só verifica
+venv/bin/python memoria/auto_indexar.py                   # conserta o que mudou
+venv/bin/python memoria/auto_indexar.py --supabase        # inclui dump do Supabase
+venv/bin/python memoria/auto_indexar.py --supabase --baixar-supabase
+venv/bin/python memoria/auto_indexar.py --quiet --supabase --baixar-supabase  # usado no briefing
 ```
 
-`scripts/session_brief.py` agora chama o guardião no início de cada sessão —
-silencioso, com teto de tempo, nunca trava o briefing.
+`scripts/session_brief.py` chama o guardião no início de cada sessão — silencioso,
+com teto de tempo, nunca trava o briefing. O dump do Supabase só é rebaixado se
+tiver mais de 6 horas (`--idade-max-horas`), então memória nova gravada entre
+sessões entra no recall sem custo perceptível.
 
 ## 4. Decisões de engenharia (e por quê)
 

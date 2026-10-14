@@ -103,6 +103,16 @@ def pendencias(fontes_txt: str = "all") -> dict:
             "total_manifesto": sum(len(v) for v in man.values())}
 
 
+def _dump_idade_horas():
+    """Idade do dump mais recente, em horas (None se não existe)."""
+    if not SUPA_DUMP.exists():
+        return None
+    try:
+        return (time.time() - SUPA_DUMP.resolve().stat().st_mtime) / 3600.0
+    except OSError:
+        return None
+
+
 def _supabase_pendente() -> bool:
     """O dump do Supabase é mais novo que a última indexação dele?"""
     if not SUPA_DUMP.exists() or not SUPA_STATE.exists():
@@ -125,12 +135,23 @@ def main() -> int:
                     help="Inclui a memória do Supabase (usa o dump local)")
     ap.add_argument("--baixar-supabase", action="store_true",
                     help="Atualiza o dump do Supabase antes de indexar (usa rede)")
+    ap.add_argument("--idade-max-horas", type=float, default=6.0,
+                    help="Com --baixar-supabase: só baixa se o dump for mais velho que isso")
     args = ap.parse_args()
 
     t0 = time.time()
     pend = pendencias(args.fontes)
 
     supa_pend = _supabase_pendente() if args.supabase or args.baixar_supabase else False
+
+    # Decidir o download do dump ANTES do early-return: senão o briefing com
+    # --baixar-supabase sairia em 0.07s concluindo "nada a fazer" com dump velho.
+    baixar_supa = False
+    if args.baixar_supabase:
+        idade = _dump_idade_horas()
+        baixar_supa = idade is None or idade >= args.idade_max_horas
+        if not baixar_supa and not args.quiet:
+            print(f"[memoria] dump do Supabase recente ({idade:.1f}h) — sem download")
 
     if pend["sem_manifest"]:
         situacao = "sem manifest — memória nunca indexada por este script"
@@ -149,7 +170,7 @@ def main() -> int:
             print(f"    - {a}")
         return 0 if not trabalho and not supa_pend else 1
 
-    if not trabalho and not supa_pend:
+    if not trabalho and not supa_pend and not baixar_supa:
         if not args.quiet:
             print(f"[memoria] {situacao} — nada a indexar ({time.time()-t0:.2f}s)")
         return 0
@@ -163,9 +184,9 @@ def main() -> int:
         import indexar_historico
         indexar_historico._executar(args.fontes, "", False, False)
 
-    if supa_pend or args.baixar_supabase:
+    if supa_pend or baixar_supa or args.supabase:
         import indexar_supabase
-        indexar_supabase.indexar(baixar=args.baixar_supabase, dry_run=False)
+        indexar_supabase.indexar(baixar=baixar_supa, dry_run=False)
 
     if not args.quiet:
         print(f"[memoria] memória atualizada em {time.time()-t0:.1f}s")
