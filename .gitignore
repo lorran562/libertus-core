@@ -12,6 +12,15 @@ plans/
 
 # ChromaDB local
 memoria/chroma/
+memoria/chroma_db/
+# Banco vetorial e estado gerados — artefatos derivados (reconstroem com
+# memoria/auto_indexar.py + memoria/indexar_supabase.py). 14/10/2026: estavam
+# rastreados (~39MB) e cresciam a cada sessao.
+memoria/chroma_store/
+memoria/index_manifest.json
+memoria/ultimo_index.json
+memoria/ultimo_index_supabase.json
+memoria/log_buscas.jsonl
 
 # Ambiente
 .env
