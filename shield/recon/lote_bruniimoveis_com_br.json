@@ -1,0 +1,88 @@
+{
+ "empresa": "Bruni Imóveis",
+ "dominio": "bruniimoveis.com.br",
+ "coletado_em": "2026-10-14T01:27:25.243041+00:00",
+ "responde": true,
+ "base": "https://bruniimoveis.com.br/",
+ "http": {
+  "status": 200,
+  "final": "https://bruniimoveis.com.br/",
+  "server": "cloudflare",
+  "powered_by": null,
+  "generator": null,
+  "title": "Imobiliária em ariquemes - Imobiliária Bruni Imóveis"
+ },
+ "headers_faltando": [
+  "Strict-Transport-Security",
+  "Content-Security-Policy",
+  "X-Frame-Options",
+  "X-Content-Type-Options",
+  "Referrer-Policy",
+  "Permissions-Policy"
+ ],
+ "csp": {
+  "presente": false,
+  "permite_unsafe_inline": false,
+  "permite_unsafe_eval": false,
+  "origens_internas_vazadas": []
+ },
+ "tls": {
+  "protocolo": "TLSv1.3",
+  "emissor": "Google Trust Services",
+  "ate": "Dec  3 14:42:37 2026 GMT"
+ },
+ "redireciona_https": false,
+ "robots": {
+  "status": 200,
+  "disallows": [
+   "/wp-content/uploads/wpo/wpo-plugins-tables-list.json",
+   "Sitemap:"
+  ]
+ },
+ "caminhos": [
+  {
+   "p": "/.env",
+   "status": 406
+  },
+  {
+   "p": "/.git/HEAD",
+   "status": 404
+  },
+  {
+   "p": "/.git/config",
+   "status": 404
+  },
+  {
+   "p": "/config",
+   "status": 404
+  },
+  {
+   "p": "/backup.sql",
+   "status": 406
+  },
+  {
+   "p": "/wp-config.php.bak",
+   "status": 403
+  },
+  {
+   "p": "/.DS_Store",
+   "status": 404
+  },
+  {
+   "p": "/admin/",
+   "status": 404
+  },
+  {
+   "p": "/wp-login.php",
+   "status": 404
+  },
+  {
+   "p": "/server-status",
+   "status": 403
+  },
+  {
+   "p": "/phpinfo.php",
+   "status": 404
+  }
+ ]
+}

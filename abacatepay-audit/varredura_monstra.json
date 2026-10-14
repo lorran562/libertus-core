@@ -1,0 +1,3254 @@
+{
+ "achados": {
+  "SECRET_HARDCODED": [
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/internal/webhook/base_listener_test.go",
+    "linha": 13,
+    "trecho": "Token: \"session-token-123\","
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/README.md",
+    "linha": 42,
+    "trecho": "api_key: \"abc_dev_pWxM5GhSROzeerqmdkfu6mNN\""
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/spec/spec_helper.rb",
+    "linha": 39,
+    "trecho": "c.api_token = \"test_api_token_123\""
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/spec/clients/resilience_spec.rb",
+    "linha": 11,
+    "trecho": "config.api_token = \"test_api_token_123\""
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/spec/clients/logging_spec.rb",
+    "linha": 15,
+    "trecho": "config.api_token = \"abc_live_supersecrettoken\""
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/spec/clients/request_contract_spec.rb",
+    "linha": 16,
+    "trecho": "config.api_token = \"test_api_token_123\""
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/eslint-plugin/README.md",
+    "linha": 99,
+    "trecho": "<Component apiKey=\"abc_dev_xxxxxxxxxxxxxxxxxxxxxxx\" />"
+   },
+   {
+    "repo": "go-rest",
+    "arquivo": "go-rest/README.md",
+    "linha": 28,
+    "trecho": "Secret: \"ABACATEPAY_SECRET\","
+   }
+  ],
+  "WEBHOOK_VERIFY_FRACA": [
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/lib/abacatepay/util.ex",
+    "linha": 18,
+    "trecho": "def verify_signature(payload, signature) do"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 24,
+    "trecho": "describe \"verify_signature/2\" do"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 32,
+    "trecho": "assert Util.verify_signature(payload, expected_signature) == true"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 41,
+    "trecho": "assert Util.verify_signature(payload, invalid_signature) == false"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 52,
+    "trecho": "assert Util.verify_signature(payload2, signature_for_payload1) == false"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 64,
+    "trecho": "assert Util.verify_signature(webhook_payload, signature) == true"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 79,
+    "trecho": "result = Util.verify_signature(payload, modified_signature)"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 91,
+    "trecho": "assert Util.verify_signature(payload, signature) == true"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 101,
+    "trecho": "assert Util.verify_signature(payload, signature) == true"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 236,
+    "trecho": "assert Util.verify_signature(webhook_body, signature) == true"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 247,
+    "trecho": "assert Util.verify_signature(tampered_body, signature) == false"
+   },
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/test/abacatepay/util_test.exs",
+    "linha": 267,
+    "trecho": "Util.verify_signature(payload, sig)"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/lib/abacate_pay/webhooks.rb",
+    "linha": 46,
+    "trecho": "expected = base64_hmac(secret.to_s, payload.to_s)"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/lib/abacate_pay/webhooks.rb",
+    "linha": 127,
+    "trecho": "def self.base64_hmac(secret, payload)"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/hono/test/index.test.ts",
+    "linha": 7,
+    "trecho": "createHmac('sha256', ABACATEPAY_SHARED_KEY).update(raw).digest('base64');"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/supabase/test/index.test.ts",
+    "linha": 7,
+    "trecho": "createHmac('sha256', ABACATEPAY_SHARED_KEY).update(raw).digest('base64');"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/CHANGELOG.md",
+    "linha": 35,
+    "trecho": "- Webhooks: the `subscription.plan_changed` and `subscription.payment_failed` events, `StandardWebhookEvent` (the body of Standard Webhooks deliveries), `WebhookV1EventName` (v1 ev"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/README.md",
+    "linha": 142,
+    "trecho": "verifyStandardWebhookSignature,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/README.md",
+    "linha": 143,
+    "trecho": "verifyWebhookSignature,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/README.md",
+    "linha": 147,
+    "trecho": "const valid = verifyWebhookSignature(rawBody, headers['x-webhook-signature']);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/README.md",
+    "linha": 150,
+    "trecho": "const validStandard = verifyStandardWebhookSignature("
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 40,
+    "trecho": "const expectedSig = createHmac('sha256', ABACATEPAY_SHARED_KEY)"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 100,
+    "trecho": "createHmac('sha256', key)"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 29,
+    "trecho": "* `webhook-signature` headers) must use {@link verifyStandardWebhookSignature} instead."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 37,
+    "trecho": "export const verifyWebhookSignature = (raw: string, signature: string) => {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 83,
+    "trecho": "export const verifyStandardWebhookSignature = ("
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 86,
+    "trecho": "const signature = createHmac('sha256', ABACATEPAY_SHARED_KEY)"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 109,
+    "trecho": "return `v1,${createHmac('sha256', key).update(`${id}.${timestamp}.${body}`).digest('base64')}`;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 5,
+    "trecho": "verifyStandardWebhookSignature,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 6,
+    "trecho": "verifyWebhookSignature,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 83,
+    "trecho": "describe('verifyWebhookSignature (legacy)', () => {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 90,
+    "trecho": "expect(verifyWebhookSignature(raw, signature)).toBe(true);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 91,
+    "trecho": "expect(verifyWebhookSignature(`${raw} `, signature)).toBe(false);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 95,
+    "trecho": "describe('verifyStandardWebhookSignature', () => {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 122,
+    "trecho": "verifyStandardWebhookSignature("
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 139,
+    "trecho": "verifyStandardWebhookSignature("
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 158,
+    "trecho": "verifyStandardWebhookSignature("
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 165,
+    "trecho": "verifyStandardWebhookSignature(raw, { ...headers, id: 'log_2' }, secret),"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 171,
+    "trecho": "verifyStandardWebhookSignature("
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/adapters/src/webhooks/signature.ts",
+    "linha": 9,
+    "trecho": "const expectedSig = createHmac('sha256', ABACATEPAY_SHARED_KEY)"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/typebox/src/v2/webhook.ts",
+    "linha": 1113,
+    "trecho": "* Verify it with `verifyStandardWebhookSignature` from `@abacatepay/types`."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/elysia/test/index.test.ts",
+    "linha": 7,
+    "trecho": "createHmac('sha256', ABACATEPAY_SHARED_KEY).update(raw).digest('base64');"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/fastify/test/index.test.ts",
+    "linha": 7,
+    "trecho": "createHmac('sha256', ABACATEPAY_SHARED_KEY).update(raw).digest('base64');"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/express/test/index.test.ts",
+    "linha": 7,
+    "trecho": "createHmac('sha256', ABACATEPAY_SHARED_KEY).update(raw).digest('base64');"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/zod/src/v2/webhook.ts",
+    "linha": 1100,
+    "trecho": "* Verify it with `verifyStandardWebhookSignature` from `@abacatepay/types`."
+   },
+   {
+    "repo": "go-types",
+    "arquivo": "go-types/v2/webhook.go",
+    "linha": 12,
+    "trecho": "// VerifyWebhookSignature verifies whether the webhook signature is valid."
+   },
+   {
+    "repo": "go-types",
+    "arquivo": "go-types/v2/webhook.go",
+    "linha": 13,
+    "trecho": "func VerifyWebhookSignature(rawBody string, signature string) bool {"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/SKILL-CONSOLIDATED.md",
+    "linha": 1854,
+    "trecho": "const hmac = crypto.createHmac('sha256', WEBHOOK_SECRET as string);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/ts/webhook.test.ts",
+    "linha": 28,
+    "trecho": "const hmac = crypto.createHmac('sha256', secret);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/ts/webhook.test.ts",
+    "linha": 50,
+    "trecho": "const hmac = crypto.createHmac('sha256', secret);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/examples/ts/webhook.ts",
+    "linha": 36,
+    "trecho": "const hmac = crypto.createHmac('sha256', WEBHOOK_SECRET as string);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tools/sdks/go.md",
+    "linha": 130,
+    "trecho": "func VerifyWebhook(rawBody, signature, secret string) error {"
+   }
+  ],
+  "COMPARE_NAO_CONSTANTE": [],
+  "URL_SEM_ENCODE": [
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/src/index.ts",
+    "linha": 24,
+    "trecho": "console.log(`⚡️[server]: Server is running at http://localhost:${port}`);"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/src/config/env.ts",
+    "linha": 4,
+    "trecho": "throw new Error(`Required environment variable ${key} is missing`);"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 200,
+    "trecho": "Authorization: `Bearer ${apiKey}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 202,
+    "trecho": "'User-Agent': `NodeJS SDK (${ABACATE_PAY_VERSION})`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 221,
+    "trecho": "`Abacate Pay Error: ${message}\\n\\nPlease, refer to the documentation at: ${ABACATE_PAY_DOCS}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 497,
+    "trecho": "const response = await fetch(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1018,
+    "trecho": "Authorization: `Bearer ${apiKey}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1020,
+    "trecho": "\"User-Agent\": `NodeJS SDK (${ABACATE_PAY_VERSION})`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1045,
+    "trecho": "`Abacate Pay Error: ${errorMessage}\\n\\nPlease, refer to the documentation at: ${ABACATE_PAY_DOCS}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1056,
+    "trecho": "message: `Abacate Pay Error: ${errorMessage}\\n\\nPlease, refer to the documentation at: ${ABACATE_PAY_DOCS}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1323,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1339,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/docs/lovable-platform-guide.txt",
+    "linha": 43,
+    "trecho": "'Authorization': `Bearer ${process.env.ABACATEPAY_API_KEY}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/layout.tsx",
+    "linha": 82,
+    "trecho": "<body className={`${fustat.className} antialiased`}>"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/sitemap.ts",
+    "linha": 16,
+    "trecho": "url: `${baseUrl}/academy`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/sitemap.ts",
+    "linha": 24,
+    "trecho": "url: `${baseUrl}/academy/${video.id}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/components/video-card.tsx",
+    "linha": 12,
+    "trecho": "return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/components/video-card.tsx",
+    "linha": 18,
+    "trecho": "href={`/academy/${video.id}`}"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/components/video-card.tsx",
+    "linha": 28,
+    "trecho": "target.src = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/structured-data.tsx",
+    "linha": 21,
+    "trecho": "thumbnailUrl: `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/structured-data.tsx",
+    "linha": 23,
+    "trecho": "contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/structured-data.tsx",
+    "linha": 24,
+    "trecho": "embedUrl: `https://www.youtube.com/embed/${video.youtubeId}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 40,
+    "trecho": "description: `Aprenda ${categories} com AbacatePay. ${video.title}${"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 54,
+    "trecho": "description: `Aprenda ${categories} com AbacatePay. Tutorial completo em vídeo.`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 55,
+    "trecho": "url: `https://chat.abacatepay.com/academy/${video.id}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 61,
+    "trecho": "url: `https://www.youtube.com/watch?v=${video.youtubeId}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 68,
+    "trecho": "url: `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 78,
+    "trecho": "description: `Aprenda ${categories} com AbacatePay.`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 80,
+    "trecho": "`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 85,
+    "trecho": "playerUrl: `https://www.youtube.com/embed/${video.youtubeId}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 86,
+    "trecho": "streamUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/layout.tsx",
+    "linha": 93,
+    "trecho": "canonical: `https://chat.abacatepay.com/academy/${video.id}`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/academy/[slug]/page.tsx",
+    "linha": 49,
+    "trecho": "src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1`}"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 108,
+    "trecho": "const blurFilter = `<filter id=\"blur\"><feGaussianBlur stdDeviation=\"${blur}\" /></filter>`;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 110,
+    "trecho": "return `url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-50 -50 100 100\"><defs>${blurFilter}</defs><circle cx=\"0\" cy=\"0\" r=\"${circleRadius}\" fill=\"white\" f"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 227,
+    "trecho": "animation-duration: ${duration}ms;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 228,
+    "trecho": "animation-timing-function: ${timingFunction};"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 236,
+    "trecho": "mask-position: ${x}px ${y}px;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 237,
+    "trecho": "animation: maskScale ${duration}ms ${easing};"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 238,
+    "trecho": "transform-origin: ${x}px ${y}px;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 244,
+    "trecho": "animation: maskScale ${duration}ms ${easing};"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 245,
+    "trecho": "transform-origin: ${x}px ${y}px;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 253,
+    "trecho": "mask-position: ${x}px ${y}px;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 256,
+    "trecho": "mask-size: ${finalMaskSize}px;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 277,
+    "trecho": "`circle(0px at ${x}px ${y}px)`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 278,
+    "trecho": "`circle(${maxRadius}px at ${x}px ${y}px)`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-mode-animation.ts",
+    "linha": 296,
+    "trecho": "`polygon(0% 0%, ${scanLineWidth}px 0%, ${scanLineWidth}px 100%, 0% 100%)`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/services/chatApi.ts",
+    "linha": 85,
+    "trecho": "const response = await fetch(`${this.baseUrl}/chat/${route}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/services/chatApi.ts",
+    "linha": 97,
+    "trecho": "throw new Error(`HTTP error! status: ${response.status}`);"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/SocialIcons.tsx",
+    "linha": 19,
+    "trecho": "<div className={`flex items-center justify-center gap-x-2 ${className}`}>"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/videos-section.tsx",
+    "linha": 65,
+    "trecho": "return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/videos-section.tsx",
+    "linha": 113,
+    "trecho": "src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}?autoplay=1`}"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/videos-section.tsx",
+    "linha": 171,
+    "trecho": "target.src = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/VideoCarousel.tsx",
+    "linha": 128,
+    "trecho": "new window.YT.Player(`youtube-player-${video.id}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/VideoCarousel.tsx",
+    "linha": 173,
+    "trecho": "id={`youtube-player-${video.id}`}"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/MainInput.tsx",
+    "linha": 43,
+    "trecho": "? `${window.location.pathname}?${params.toString()}`"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/ui/segmented-control.tsx",
+    "linha": 50,
+    "trecho": "transform: `translate3d(${lineStyle.left}px, 0, 0)`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/components/ui/segmented-control.tsx",
+    "linha": 51,
+    "trecho": "width: `${lineStyle.width}px`,"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/.cursor/rules/2000-react.mdc",
+    "linha": 80,
+    "trecho": "post(\"/product/\" + productId + \"/buy\");"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 37,
+    "trecho": "echo \"  https://github.com/${REPO}/releases/latest\" >&2"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 42,
+    "trecho": "ASSET=\"${BIN_NAME}_${OS}_${ARCH}.tar.gz\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 43,
+    "trecho": "BASE_URL=\"https://github.com/${REPO}/releases/latest/download\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 48,
+    "trecho": "echo \"Downloading ${ASSET}...\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 49,
+    "trecho": "curl -fsSL \"${BASE_URL}/${ASSET}\" -o \"${TMP_DIR}/${ASSET}\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 51,
+    "trecho": "if curl -fsSL \"${BASE_URL}/checksums.txt\" -o \"${TMP_DIR}/checksums.txt\" 2>/dev/null; then"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 52,
+    "trecho": "EXPECTED=\"$(grep \" ${ASSET}\\$\" \"${TMP_DIR}/checksums.txt\" | awk '{print $1}')\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 53,
+    "trecho": "if [ -n \"${EXPECTED}\" ]; then"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 55,
+    "trecho": "ACTUAL=\"$(sha256sum \"${TMP_DIR}/${ASSET}\" | awk '{print $1}')\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 57,
+    "trecho": "ACTUAL=\"$(shasum -a 256 \"${TMP_DIR}/${ASSET}\" | awk '{print $1}')\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 59,
+    "trecho": "if [ \"${EXPECTED}\" != \"${ACTUAL}\" ]; then"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 60,
+    "trecho": "echo \"Checksum mismatch for ${ASSET} (expected ${EXPECTED}, got ${ACTUAL})\" >&2"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 69,
+    "trecho": "tar -xzf \"${TMP_DIR}/${ASSET}\" -C \"${TMP_DIR}\" \"${BIN_NAME}\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 71,
+    "trecho": "if [ -w \"${INSTALL_DIR}\" ]; then"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 72,
+    "trecho": "mv \"${TMP_DIR}/${BIN_NAME}\" \"${INSTALL_DIR}/${BIN_NAME}\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 74,
+    "trecho": "echo \"Installing to ${INSTALL_DIR} requires sudo...\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 75,
+    "trecho": "sudo mv \"${TMP_DIR}/${BIN_NAME}\" \"${INSTALL_DIR}/${BIN_NAME}\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 77,
+    "trecho": "chmod +x \"${INSTALL_DIR}/${BIN_NAME}\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 79,
+    "trecho": "echo \"Installed ${BIN_NAME} to ${INSTALL_DIR}\""
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/install.sh",
+    "linha": 80,
+    "trecho": "\"${INSTALL_DIR}/${BIN_NAME}\" --version 2>/dev/null || true"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/internal/style/style.go",
+    "linha": 155,
+    "trecho": "return line + \" \" + lipgloss.NewStyle().Foreground(Palette.Gray).Render(\"[\"+id+\"]\")"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/internal/auth/login.go",
+    "linha": 89,
+    "trecho": "approvalURL := params.Config.AppBaseURL + \"/oauth/cli?id=\" + result.Data.PublicID"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/internal/auth/login.go",
+    "linha": 89,
+    "trecho": "approvalURL := params.Config.AppBaseURL + \"/oauth/cli?id=\" + result.Data.PublicID"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v1/pix/simulate.go",
+    "linha": 13,
+    "trecho": "if err := p.http.Post(ctx, v1.RouteSimulatePayment+\"?\"+\"id\"+id, metadata, &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v1/pix/status.go",
+    "linha": 13,
+    "trecho": "if err := p.http.Get(ctx, v1.RouteCheckQRCodePIX+\"?\"+\"id\"+id, &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/gradlew",
+    "linha": 37,
+    "trecho": "#         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/gradlew",
+    "linha": 210,
+    "trecho": "#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/gradlew",
+    "linha": 211,
+    "trecho": "#     treated as '${Hostname}' itself on the command line."
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/client/AbacatePayOptions.kt",
+    "linha": 37,
+    "trecho": "val baseUrl: String = \"${Constants.ABACATEPAY_API_HOST}/$apiVersion\""
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/command-line/gradlew",
+    "linha": 37,
+    "trecho": "#         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/command-line/gradlew",
+    "linha": 210,
+    "trecho": "#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/command-line/gradlew",
+    "linha": 211,
+    "trecho": "#     treated as '${Hostname}' itself on the command line."
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/spring-demo/spring-demo/gradlew",
+    "linha": 37,
+    "trecho": "#         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/spring-demo/spring-demo/gradlew",
+    "linha": 210,
+    "trecho": "#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/spring-demo/spring-demo/gradlew",
+    "linha": 211,
+    "trecho": "#     treated as '${Hostname}' itself on the command line."
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/spring-demo/spring-demo/src/main/resources/application.properties",
+    "linha": 2,
+    "trecho": "abacatepay.api.key=${ABACATEPAY_API_KEY}"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/samples/spring-demo/spring-demo/src/main/kotlin/com/abacatepay/spring_demo/bean/BeanConfig.kt",
+    "linha": 11,
+    "trecho": "@Value(\"\\${abacatepay.api.key}\") private val apiKey: String"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/buildSrc/src/main/kotlin/dokka.gradle.kts",
+    "linha": 13,
+    "trecho": "remoteUrl(\"$REPO_URL/blob/main/${project.name}/src/$name/kotlin\")"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/docker-compose.yml",
+    "linha": 11,
+    "trecho": "- ABACATE_PAY_API_KEY=${ABACATE_PAY_API_KEY}"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http-server.ts",
+    "linha": 153,
+    "trecho": "console.error(`🚀 Abacate Pay MCP Server rodando em http://localhost:${port}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http-server.ts",
+    "linha": 154,
+    "trecho": "console.error(`📡 Endpoint: http://localhost:${port}/mcp`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http-server.ts",
+    "linha": 155,
+    "trecho": "console.error(`📖 Documentação: http://localhost:${port}/mcp/schema`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http/middleware.ts",
+    "linha": 15,
+    "trecho": "`Bearer realm=\"abacatepay-mcp\"${error}, resource_metadata=\"${resourceMetadataUrl}\"`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http/api.ts",
+    "linha": 5,
+    "trecho": "return path.startsWith(\"/\") ? path : `/${path}`;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http/api.ts",
+    "linha": 18,
+    "trecho": "return `HTTP ${status}: ${detail}`;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http/api.ts",
+    "linha": 40,
+    "trecho": "const url = `${ABACATE_PAY_API_BASE}${normalizePath(path)}`;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http/api.ts",
+    "linha": 49,
+    "trecho": "Authorization: `Bearer ${authKey}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/security.ts",
+    "linha": 114,
+    "trecho": "`${CSRF_COOKIE}=${token}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/security.ts",
+    "linha": 116,
+    "trecho": "`Max-Age=${CSRF_MAX_AGE_SECONDS}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/security.ts",
+    "linha": 182,
+    "trecho": "return `invalid redirect_uri: ${raw}`;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/security.ts",
+    "linha": 188,
+    "trecho": "if (url.protocol === \"https:\") return url.hostname ? null : `invalid redirect_uri: ${raw}`;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/security.ts",
+    "linha": 192,
+    "trecho": "if (FORBIDDEN_SCHEMES.has(url.protocol)) return `redirect_uri scheme not allowed: ${url.protocol}`;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/security.ts",
+    "linha": 205,
+    "trecho": "return url.protocol === \"https:\" || url.protocol === \"http:\" ? url.host : `${url.protocol}//${url.host}`;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/crypto.ts",
+    "linha": 41,
+    "trecho": "throw new Error(`Encryption key file ${keyPath} does not contain a valid 32-byte hex key.`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/crypto.ts",
+    "linha": 53,
+    "trecho": "console.error(`🔑 OAuth encryption key auto-generated → ${keyPath}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/crypto.ts",
+    "linha": 55,
+    "trecho": "console.error(`   To export: export OAUTH_ENCRYPTION_KEY=$(cat ${keyPath})`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/store.ts",
+    "linha": 68,
+    "trecho": "try { db.run(`ALTER TABLE oauth_codes ADD COLUMN ${col}`); } catch { /* already exists */ }"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 59,
+    "trecho": "resource: `${base}/mcp`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 74,
+    "trecho": "authorization_endpoint: `${base}/authorize`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 75,
+    "trecho": "token_endpoint: `${base}/token`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 76,
+    "trecho": "registration_endpoint: `${base}/register`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 82,
+    "trecho": "revocation_endpoint: `${base}/revoke`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 104,
+    "trecho": "error_description: `at most ${MAX_REDIRECT_URIS} redirect_uris are allowed`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 320,
+    "trecho": "const resp = await fetch(`${ABACATE_PAY_API_BASE}/stores/get`, {"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 323,
+    "trecho": "Authorization: `Bearer ${apiKey}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 458,
+    "trecho": "${nameHtml}"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/oauth/routes.ts",
+    "linha": 466,
+    "trecho": "${errorHtml}"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/payment-links.ts",
+    "linha": 73,
+    "trecho": "content: [{ type: \"text\", text: `Link: ${d.id}\\n${d.url}\\nstatus: ${d.status}` }],"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/payment-links.ts",
+    "linha": 120,
+    "trecho": "res.data?.map((b: any, i: number) => `${i + 1}. ${b.id} — ${b.status}`).join(\"\\n\") || \"Nenhum link.\";"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/payment-links.ts",
+    "linha": 121,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/shared.ts",
+    "linha": 21,
+    "trecho": "parts.push(`Próxima página: use after=\"${pagination.next}\".`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/shared.ts",
+    "linha": 24,
+    "trecho": "parts.push(`Anterior: before=\"${pagination.before}\".`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/shared.ts",
+    "linha": 38,
+    "trecho": "return s ? `?${s}` : \"\";"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/payouts.ts",
+    "linha": 46,
+    "trecho": "text: `Payout ${d.id} — ${d.status} — ${d.amount} centavos — ext ${d.externalId ?? \"—\"}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/payouts.ts",
+    "linha": 109,
+    "trecho": "res.data?.map((t: any, i: number) => `${i + 1}. ${t.id} — ${t.status} — ${t.externalId ?? \"—\"}`).join(\"\\n\") ||"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/payouts.ts",
+    "linha": 111,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/reports.ts",
+    "linha": 65,
+    "trecho": "lines.push(`# ${payload.title}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/reports.ts",
+    "linha": 67,
+    "trecho": "`Período: ${payload.period.start} a ${payload.period.end} (${payload.period.timezone})`"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/reports.ts",
+    "linha": 79,
+    "trecho": "lines.push(`- ${totalLabel(payload.columns, key)}: ${value}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/reports.ts",
+    "linha": 95,
+    "trecho": "`_${payload.rowsOmitted} linha(s) a mais não couberam. Os totais acima consideram o período inteiro; para ver o resto, peça um recorte menor._`"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/reports.ts",
+    "linha": 103,
+    "trecho": "for (const note of payload.notes) lines.push(`- ${note}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/reports.ts",
+    "linha": 108,
+    "trecho": "`_Fonte: ${payload.provenance.sources.join(\", \")} · ${payload.provenance.documentsScanned} registro(s) · gerado em ${payload.provenance.generatedAt}_`"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/coupons.ts",
+    "linha": 45,
+    "trecho": "content: [{ type: \"text\", text: `Cupom: ${d.id} — ${d.discountKind} ${d.discount} — ${d.status}` }],"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/coupons.ts",
+    "linha": 84,
+    "trecho": "res.data?.map((c: any, i: number) => `${i + 1}. ${c.id} — ${c.discountKind} — ${c.status}`).join(\"\\n\") ||"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/coupons.ts",
+    "linha": 86,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/store.ts",
+    "linha": 60,
+    "trecho": "res.data?.map((s: any, i: number) => `${i + 1}. ${s.id} — ${s.name}`).join(\"\\n\") || \"Nenhuma loja.\";"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/store.ts",
+    "linha": 61,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/products.ts",
+    "linha": 56,
+    "trecho": "content: [{ type: \"text\", text: `Produto ${d.id} — ${d.name} — ${d.price} centavos — ciclo: ${d.cycle ?? \"avulso\"}` }],"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/products.ts",
+    "linha": 103,
+    "trecho": "res.data?.map((x: any, i: number) => `${i + 1}. ${x.id} — ${x.name} — ${x.status}`).join(\"\\n\") ||"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/products.ts",
+    "linha": 105,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/transparents.ts",
+    "linha": 87,
+    "trecho": "`PIX transparente ${d.id}\\nstatus: ${d.status}\\nbrCode:\\n${d.brCode}\\n` +"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/transparents.ts",
+    "linha": 137,
+    "trecho": "text: `Boleto ${d.id}\\nstatus: ${d.status}\\nurl: ${d.url}\\ncódigo de barras: ${d.barCode}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/transparents.ts",
+    "linha": 191,
+    "trecho": "text: `id: ${d.id}\\nstatus: ${d.status}\\nexpira: ${d.expiresAt}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/transparents.ts",
+    "linha": 261,
+    "trecho": "res.data?.map((x: any, i: number) => `${i + 1}. ${x.id} — ${x.status} — ${x.amount}c`).join(\"\\n\") ||"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/transparents.ts",
+    "linha": 263,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/subscriptions.ts",
+    "linha": 84,
+    "trecho": "content: [{ type: \"text\", text: `Assinatura criada: ${d.id}\\n${d.url}\\nstatus: ${d.status}` }],"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/subscriptions.ts",
+    "linha": 121,
+    "trecho": "res.data?.map((b: any, i: number) => `${i + 1}. ${b.id} — ${b.status}`).join(\"\\n\") || \"Nenhuma.\";"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/subscriptions.ts",
+    "linha": 122,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/customers.ts",
+    "linha": 41,
+    "trecho": "text: `Cliente criado: ${d.id}\\nemail: ${d.email}\\nnome: ${d.name ?? \"—\"}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/customers.ts",
+    "linha": 88,
+    "trecho": "res.data?.map((c: any, i: number) => `${i + 1}. ${c.id} — ${c.email} — ${c.name ?? \"\"}`).join(\"\\n\") ||"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/customers.ts",
+    "linha": 94,
+    "trecho": "text: `${rows}${paginationHint(res.pagination)}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/pix-send.ts",
+    "linha": 90,
+    "trecho": "res.data?.map((t: any, i: number) => `${i + 1}. ${t.id} — ${t.status}`).join(\"\\n\") || \"Nenhuma.\";"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/checkouts.ts",
+    "linha": 76,
+    "trecho": "text: `Checkout criado\\nID: ${d.id}\\nURL: ${d.url}\\nStatus: ${d.status}\\nValor (centavos): ${d.amount}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/checkouts.ts",
+    "linha": 125,
+    "trecho": "res.data?.map((b: any, i: number) => `${i + 1}. ${b.id} — ${b.status} — R$ ${(b.amount / 100).toFixed(2)}`).join("
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/checkouts.ts",
+    "linha": 128,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/webhooks.ts",
+    "linha": 94,
+    "trecho": "res.data?.map((w: any, i: number) => `${i + 1}. ${w.id} — ${w.name} — ${w.endpoint}`).join(\"\\n\") ||"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/tools/webhooks.ts",
+    "linha": 96,
+    "trecho": "return { content: [{ type: \"text\", text: `${rows}${paginationHint(res.pagination)}` }] };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/scripts/inspector.js",
+    "linha": 65,
+    "trecho": "console.log(`\\n❌ MCP Inspector encerrado com código ${code}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 27,
+    "trecho": "const status = auth === `Bearer ${VICTIM_KEY}` ? apiStatus : 401;"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 61,
+    "trecho": "return fetch(`${base}/register`, {"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 83,
+    "trecho": "const res = await fetch(`${base}/authorize?${qs}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 94,
+    "trecho": "return fetch(`${base}/authorize`, {"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 105,
+    "trecho": "const as = await (await fetch(`${base}/.well-known/oauth-authorization-server`, { headers })).json();"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 107,
+    "trecho": "expect(as.authorization_endpoint).toBe(`${PUBLIC_BASE_URL}/authorize`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 108,
+    "trecho": "expect(as.registration_endpoint).toBe(`${PUBLIC_BASE_URL}/register`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 110,
+    "trecho": "const pr = await (await fetch(`${base}/.well-known/oauth-protected-resource`, { headers })).json();"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 111,
+    "trecho": "expect(pr.resource).toBe(`${PUBLIC_BASE_URL}/mcp`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 116,
+    "trecho": "const res = await fetch(`${base}/mcp`, { headers: { \"X-Forwarded-Host\": \"evil.example\" } });"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 118,
+    "trecho": "expect(res.headers.get(\"www-authenticate\")).toContain(`${PUBLIC_BASE_URL}/.well-known/oauth-protected-resource`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 137,
+    "trecho": "const uris = Array.from({ length: security.MAX_REDIRECT_URIS + 1 }, (_, i) => `https://a.example/${i}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 166,
+    "trecho": "expect(cookie).toBe(`${security.CSRF_COOKIE}=${csrf}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 212,
+    "trecho": "const tokenRes = await fetch(`${base}/token`, {"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 229,
+    "trecho": "const mcp = await fetch(`${base}/mcp`, { headers: { Authorization: `Bearer ${access_token}` } });"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 232,
+    "trecho": "await fetch(`${base}/revoke`, {"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 237,
+    "trecho": "const revoked = await fetch(`${base}/mcp`, { headers: { Authorization: `Bearer ${access_token}` } });"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 243,
+    "trecho": "const res = await fetch(`${base}/mcp`, { headers: { Authorization: `Bearer ${VICTIM_KEY}` } });"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 250,
+    "trecho": "const res = await submitConsent({ client_id: \"nope\" }, { \"X-Forwarded-For\": `198.51.100.${i}` });"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 281,
+    "trecho": "for (let i = 0; i < security.RATE_LIMIT_MAX_ENTRIES + 500; i++) security.isRateLimited(`ip-${i}`, now);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/api.test.ts",
+    "linha": 19,
+    "trecho": "expect(headers.Authorization).toBe(`Bearer ${KEY}`);"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/investigate/transparents-list-flakiness.test.ts",
+    "linha": 26,
+    "trecho": "const res = await fetch(`${BASE}${path}`, {"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/investigate/transparents-list-flakiness.test.ts",
+    "linha": 29,
+    "trecho": "Authorization: `Bearer ${KEY}`,"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/investigate/transparents-list-flakiness.test.ts",
+    "linha": 51,
+    "trecho": "`\\n=== ${label} ===\\n${successes}/${n} succeeded` +"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/index.ts",
+    "linha": 245,
+    "trecho": "return request(`/pixQrCode/check?id=${data.id}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/index.ts",
+    "linha": 267,
+    "trecho": "return request(`/pixQrCode/simulate-payment?id=${data.id}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/index.ts",
+    "linha": 324,
+    "trecho": "return request(`/withdrawal/get?id=${id}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/constants.ts",
+    "linha": 7,
+    "trecho": "Authorization: `Bearer ${apiKey}`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/constants.ts",
+    "linha": 9,
+    "trecho": "\"User-Agent\": `NodeJS SDK (${ABACATE_PAY_VERSION})`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/exceptions.ts",
+    "linha": 11,
+    "trecho": "`Abacate Pay Error: ${message}\\n\\nPlease, refer to the documentation at: ${ABACATE_PAY_DOCS}`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/requests.ts",
+    "linha": 16,
+    "trecho": "const response = await fetch(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/constants.test.ts",
+    "linha": 24,
+    "trecho": "Authorization: `Bearer ${apiKey}`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/constants.test.ts",
+    "linha": 26,
+    "trecho": "\"User-Agent\": `NodeJS SDK (${ABACATE_PAY_VERSION})`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/exceptions.test.ts",
+    "linha": 15,
+    "trecho": "`Abacate Pay Error: ${errorMessage}\\n\\nPlease, refer to the documentation at: ${ABACATE_PAY_DOCS}`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/exceptions.test.ts",
+    "linha": 26,
+    "trecho": "message: `Abacate Pay Error: ${errorMessage}\\n\\nPlease, refer to the documentation at: ${ABACATE_PAY_DOCS}`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/requests.test.ts",
+    "linha": 30,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/requests.test.ts",
+    "linha": 46,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/index.test.ts",
+    "linha": 273,
+    "trecho": "`/withdrawal/get?id=${withdrawalId}`,"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/.github/workflows/release.yml",
+    "linha": 35,
+    "trecho": "echo \"//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}\" > ~/.npmrc"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/.github/workflows/release.yml",
+    "linha": 38,
+    "trecho": "echo \"::error::Tag ${GITHUB_REF_NAME} does not match AbacatePay::VERSION (${gem_version})\""
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/.github/workflows/release.yml",
+    "linha": 41,
+    "trecho": "echo \"Releasing ${gem_version}\""
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/.github/workflows/release.yml",
+    "linha": 122,
+    "trecho": "echo \"::error::No CHANGELOG.md section found for ${version}\""
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/.github/workflows/release.yml",
+    "linha": 125,
+    "trecho": "echo \"Release notes for ${version}:\""
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/hono/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/hono/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/supabase/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/supabase/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 71,
+    "trecho": "* an HMAC-SHA256 of `${id}.${timestamp}.${raw}` keyed with the secret of the webhook"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 101,
+    "trecho": ".update(`${headers.id}.${headers.timestamp}.${raw}`)"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v1/routes.ts",
+    "linha": 40,
+    "trecho": "return `/pixQrCode/simulate-payment?id=${id}` as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v1/routes.ts",
+    "linha": 47,
+    "trecho": "return `/pixQrCode/check?id=${id}` as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v1/routes.ts",
+    "linha": 71,
+    "trecho": "return `/withdraw/get?externalId=${externalId}` as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v2/routes.ts",
+    "linha": 34,
+    "trecho": "if (value !== undefined && value !== null) query.append(key, `${value}`);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v2/routes.ts",
+    "linha": 36,
+    "trecho": "const search = `${query}`;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v2/routes.ts",
+    "linha": 38,
+    "trecho": "return (search ? `${path}?${search}` : path) as Path | `${Path}?${string}`;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 91,
+    "trecho": "expect(verifyWebhookSignature(`${raw} `, signature)).toBe(false);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 109,
+    "trecho": "return `v1,${createHmac('sha256', key).update(`${id}.${timestamp}.${body}`).digest('base64')}`;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 126,
+    "trecho": "timestamp: `${timestamp}`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 143,
+    "trecho": "timestamp: `${timestamp}`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 155,
+    "trecho": "const headers = { id: 'log_1', timestamp: `${timestamp}`, signature };"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/test/index.test.ts",
+    "linha": 175,
+    "trecho": "timestamp: `${old}`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 43,
+    "trecho": "const base = `${options.base ?? 'https://api.abacatepay.com/v'}${options.version ?? 2}${route}`;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 48,
+    "trecho": "return `${base}${base.includes('?') ? '&' : '?'}${search}`;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 60,
+    "trecho": "Authorization: `Bearer ${secret}`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 84,
+    "trecho": "`${method} ${route} timed out after ${timeout}ms and was not retried: it may still have been processed by AbacatePay, so check its status before trying again`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 88,
+    "trecho": "return asFailure<R>(`${retry.max} attempts were performed, all failed`);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 117,
+    "trecho": "`Request to ${route} failed with status ${response.status}`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 124,
+    "trecho": "return asFailure<R>(`${retry.max} attempts were performed, all failed`);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 184,
+    "trecho": "return asFailure<R>(`${err}`);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/adapters/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/adapters/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/typebox/src/v2/webhook.ts",
+    "linha": 112,
+    "trecho": "t.String({ description: `${description} (ISO 8601).` });"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/typebox/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/typebox/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/typebox/test/index.test.ts",
+    "linha": 155,
+    "trecho": "(error) => `${error.path}: ${error.message}`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/typebox/test/index.test.ts",
+    "linha": 159,
+    "trecho": "test(`WebhookEvent accepts a real ${name} body`, () => {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/elysia/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/elysia/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/eslint-plugin/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/eslint-plugin/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/src/v1/index.ts",
+    "linha": 270,
+    "trecho": "}>(`${Routes.mrr.revenue}?startDate=${start}&endDate=${end}`);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 81,
+    "trecho": "url: `${BASE}/customers/get?id=cust_123`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 90,
+    "trecho": "url: `${BASE}/customers/get?email=a%2Bb%40x.com`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 98,
+    "trecho": "{ url: `${BASE}/customers/list`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 111,
+    "trecho": "url: `${BASE}/customers/list?after=cust_9&limit=50&startDate=2026-01-01&email=maria`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 120,
+    "trecho": "url: `${BASE}/customers/delete?id=cust_123`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 129,
+    "trecho": "url: `${BASE}/customers/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 144,
+    "trecho": "url: `${BASE}/checkouts/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 159,
+    "trecho": "url: `${BASE}/checkouts/list?before=bill_1&status=PAID`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 167,
+    "trecho": "{ url: `${BASE}/checkouts/get?id=bill_1`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 177,
+    "trecho": "url: `${BASE}/checkouts/get?externalId=order+%231&method=CARD`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 186,
+    "trecho": "url: `${BASE}/checkouts/delete?id=bill_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 195,
+    "trecho": "url: `${BASE}/checkouts/refund`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 205,
+    "trecho": "url: `${BASE}/payment-links/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 214,
+    "trecho": "url: `${BASE}/payment-links/list?limit=10`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 223,
+    "trecho": "url: `${BASE}/payment-links/get?id=bill_2`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 232,
+    "trecho": "url: `${BASE}/payment-links/delete?id=bill_2`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 241,
+    "trecho": "url: `${BASE}/payment-links/refund`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 255,
+    "trecho": "url: `${BASE}/transparents/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 271,
+    "trecho": "url: `${BASE}/transparents/list?after=pix_char_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 280,
+    "trecho": "url: `${BASE}/transparents/simulate-payment?id=pix_char_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 289,
+    "trecho": "url: `${BASE}/transparents/check?id=pix_char_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 298,
+    "trecho": "url: `${BASE}/transparents/refund`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 312,
+    "trecho": "url: `${BASE}/transparents/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 335,
+    "trecho": "url: `${BASE}/transparents/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 354,
+    "trecho": "url: `${BASE}/transparents/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 366,
+    "trecho": "url: `${BASE}/transparents/get?id=card_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 380,
+    "trecho": "url: `${BASE}/transparents/list?method=CARD&status=APPROVED&after=card_9`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 389,
+    "trecho": "url: `${BASE}/transparents/refund`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 403,
+    "trecho": "url: `${BASE}/pix/send`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 415,
+    "trecho": "{ url: `${BASE}/pix/get?id=tran_1`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 421,
+    "trecho": "url: `${BASE}/pix/get?id=&externalId=trx+1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 429,
+    "trecho": "{ url: `${BASE}/pix/list?id=tran_`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 441,
+    "trecho": "url: `${BASE}/coupons/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 455,
+    "trecho": "url: `${BASE}/coupons/get?id=10%25OFF&status=ACTIVE`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 464,
+    "trecho": "url: `${BASE}/coupons/delete?id=10%25OFF`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 473,
+    "trecho": "url: `${BASE}/coupons/list?status=DISABLED`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 482,
+    "trecho": "url: `${BASE}/coupons/toggle`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 490,
+    "trecho": "{ url: `${BASE}/stores/get`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 495,
+    "trecho": "{ url: `${BASE}/stores/get`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 500,
+    "trecho": "{ url: `${BASE}/stores/list?limit=1`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 512,
+    "trecho": "url: `${BASE}/bank-statement/list?kind=WITHDRAW&method=PIX&search=tran_&after=tran_9`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 520,
+    "trecho": "{ url: `${BASE}/public-mrr/mrr`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 526,
+    "trecho": "url: `${BASE}/public-mrr/merchant-info`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 536,
+    "trecho": "url: `${BASE}/public-mrr/revenue?startDate=2026-01-01&endDate=2026-01-31`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 546,
+    "trecho": "url: `${BASE}/public-mrr/mrr-by-day?startDate=2026-01-01&endDate=2026-01-31`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 559,
+    "trecho": "url: `${BASE}/payouts/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 567,
+    "trecho": "{ url: `${BASE}/payouts/get?id=tran_1`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 573,
+    "trecho": "url: `${BASE}/payouts/get?externalId=a%26b`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 582,
+    "trecho": "url: `${BASE}/payouts/list?after=tran_9&limit=20`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 596,
+    "trecho": "url: `${BASE}/subscriptions/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 609,
+    "trecho": "url: `${BASE}/subscriptions/get?customerId=cust_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 623,
+    "trecho": "url: `${BASE}/subscriptions/list?status=ACTIVE&checkoutId=bill_1&after=subs_9`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 632,
+    "trecho": "url: `${BASE}/subscriptions/cancel`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 644,
+    "trecho": "url: `${BASE}/subscriptions/change-plan`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 657,
+    "trecho": "url: `${BASE}/subscriptions/change-plan`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 671,
+    "trecho": "url: `${BASE}/subscriptions/record-usage`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 680,
+    "trecho": "url: `${BASE}/subscriptions/checkouts/get?id=bill_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 689,
+    "trecho": "url: `${BASE}/subscriptions/checkouts/list?keyword=maria`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 698,
+    "trecho": "url: `${BASE}/subscriptions/checkouts/delete?id=bill_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 714,
+    "trecho": "url: `${BASE}/products/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 729,
+    "trecho": "url: `${BASE}/products/get?externalId=plano-pro`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 738,
+    "trecho": "url: `${BASE}/products/list?keyword=pro&limit=5`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 747,
+    "trecho": "url: `${BASE}/products/delete?id=prod_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 762,
+    "trecho": "url: `${BASE}/webhooks/create`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 776,
+    "trecho": "url: `${BASE}/webhooks/list?search=pedidos`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 785,
+    "trecho": "url: `${BASE}/webhooks/get?id=webh_prod_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 794,
+    "trecho": "url: `${BASE}/webhooks/delete?id=webh_prod_1`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 802,
+    "trecho": "{ url: `${BASE}/reports/list`, method: 'GET', body: undefined },"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 808,
+    "trecho": "url: `${BASE}/reports/run?reportId=balance_now`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 823,
+    "trecho": "url: `${BASE}/reports/run?reportId=cash_flow&startDate=2026-09-01&endDate=2026-09-30&timezone=America%2FSao_Paulo`,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 948,
+    "trecho": "warnings.some((message) => `${message}`.includes('deprecated')),"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/better-auth/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/better-auth/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/fastify/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/fastify/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/express/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/express/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/zod/src/v2/webhook.ts",
+    "linha": 102,
+    "trecho": "z.string().describe(`${description} (ISO 8601).`);"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/zod/scripts/version.ts",
+    "linha": 13,
+    "trecho": "* Current version of [${name}](https://www.npmjs.com/package/${name})."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/zod/scripts/version.ts",
+    "linha": 15,
+    "trecho": "export const version = '${version}' as const;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/zod/test/index.test.ts",
+    "linha": 150,
+    "trecho": "test(`WebhookEvent parses a real ${name} body`, () => {"
+   },
+   {
+    "repo": "go-rest",
+    "arquivo": "go-rest/url.go",
+    "linha": 24,
+    "trecho": "return u + \"?\" + q.Encode()"
+   },
+   {
+    "repo": "go-types",
+    "arquivo": "go-types/v1/routes.go",
+    "linha": 28,
+    "trecho": "return RouteSimulatePayment + \"?\" + query.Encode()"
+   },
+   {
+    "repo": "go-types",
+    "arquivo": "go-types/v1/routes.go",
+    "linha": 36,
+    "trecho": "return RouteCheckQRCodePIX + \"?\" + query.Encode()"
+   },
+   {
+    "repo": "go-types",
+    "arquivo": "go-types/v1/routes.go",
+    "linha": 55,
+    "trecho": "return RouteGetWithdraw + \"?\" + query.Encode()"
+   },
+   {
+    "repo": "go-types",
+    "arquivo": "go-types/v1/routes.go",
+    "linha": 72,
+    "trecho": "return RouteGetRevenue + \"?\" + query.Encode()"
+   },
+   {
+    "repo": "go-types",
+    "arquivo": "go-types/v2/routes.go",
+    "linha": 22,
+    "trecho": "return route + \"?\" + q.Encode()"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/AbacatePayTrigger.node.ts",
+    "linha": 152,
+    "trecho": "if (credentials !== `${username}:${password}`) {"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/transport/index.ts",
+    "linha": 17,
+    "trecho": "url: `${credentials.baseUrl}${endpoint}`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/pix/create.operation.ts",
+    "linha": 179,
+    "trecho": "url: `${credentials.baseUrl}/v1/pixQrCode/create`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/pix/checkStatus.operation.ts",
+    "linha": 32,
+    "trecho": "url: `${credentials.baseUrl}/v1/pixQrCode/check?id=${pixId}`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/pix/simulatePayment.operation.ts",
+    "linha": 83,
+    "trecho": "url: `${credentials.baseUrl}/v1/pixQrCode/simulate-payment?id=${pixId.trim()}`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/billing/list.operation.ts",
+    "linha": 16,
+    "trecho": "url: `${credentials.baseUrl}/v1/billing/list`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/billing/create.operation.ts",
+    "linha": 230,
+    "trecho": "url: `${credentials.baseUrl}/v1/billing/create`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/customer/list.operation.ts",
+    "linha": 16,
+    "trecho": "url: `${credentials.baseUrl}/v1/customer/list`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/customer/create.operation.ts",
+    "linha": 86,
+    "trecho": "url: `${credentials.baseUrl}/v1/customer/create`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/withdraw/list.operation.ts",
+    "linha": 16,
+    "trecho": "url: `${credentials.baseUrl}/v1/withdraw/list`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/withdraw/create.operation.ts",
+    "linha": 151,
+    "trecho": "url: `${credentials.baseUrl}/v1/withdraw/create`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/coupon/list.operation.ts",
+    "linha": 16,
+    "trecho": "url: `${credentials.baseUrl}/v1/coupon/list`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/actions/coupon/create.operation.ts",
+    "linha": 166,
+    "trecho": "url: `${credentials.baseUrl}/v1/coupon/create`,"
+   },
+   {
+    "repo": "n8n-nodes-abacatepay",
+    "arquivo": "n8n-nodes-abacatepay/nodes/AbacatePay/triggers/coupon/coupon.trigger.ts",
+    "linha": 101,
+    "trecho": "? `${data.discount}%`"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/SKILL-CONSOLIDATED.md",
+    "linha": 1945,
+    "trecho": "<p>${item.value}</p>"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 16,
+    "trecho": "const response = await fetch(`${BASE_URL}/mrr`, {"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 19,
+    "trecho": "'Authorization': `Bearer ${API_KEY}`"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 24,
+    "trecho": "throw new Error(`HTTP error! status: ${response.status}`);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 38,
+    "trecho": "const response = await fetch(`${BASE_URL}/merchant-info`, {"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 41,
+    "trecho": "'Authorization': `Bearer ${API_KEY}`"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 46,
+    "trecho": "throw new Error(`HTTP error! status: ${response.status}`);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 60,
+    "trecho": "const response = await fetch(`${BASE_URL}/revenue`, {"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 63,
+    "trecho": "'Authorization': `Bearer ${API_KEY}`"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 68,
+    "trecho": "throw new Error(`HTTP error! status: ${response.status}`);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/ts/webhook.test.ts",
+    "linha": 55,
+    "trecho": ".post('/webhooks/abacatepay?webhookSecret=' + secret)"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/ts/webhook.test.ts",
+    "linha": 75,
+    "trecho": ".post('/webhooks/abacatepay?webhookSecret=' + secret)"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/go/webhook_test.go",
+    "linha": 29,
+    "trecho": "req := httptest.NewRequest(\"POST\", \"/webhook?webhookSecret=\"+secret, bytes.NewReader(bodyBytes))"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/go/webhook_test.go",
+    "linha": 69,
+    "trecho": "req := httptest.NewRequest(\"POST\", \"/webhook?webhookSecret=\"+secret, bytes.NewReader([]byte(body)))"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/examples/ts/remotion-mrr.tsx",
+    "linha": 60,
+    "trecho": "<p>${item.value}</p>"
+   }
+  ],
+  "SSL_VERIFY_OFF": [],
+  "CMD_INJECTION": [
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/hooks/use-markdown.tsx",
+    "linha": 12,
+    "trecho": "const match = /language-(\\w+)/.exec(className || \"\");"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/main.go",
+    "linha": 26,
+    "trecho": "cmd.Exec()"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/cmd/root.go",
+    "linha": 29,
+    "trecho": "func Exec() {"
+   },
+   {
+    "repo": "abacatepay-cli",
+    "arquivo": "abacatepay-cli/cmd/abacatepay/main.go",
+    "linha": 24,
+    "trecho": "rootcmd.Exec()"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/scripts/inspector.js",
+    "linha": 4,
+    "trecho": "import { spawn } from 'child_process';"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/scripts/inspector.js",
+    "linha": 50,
+    "trecho": "const inspector = spawn('bunx', ["
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/oauth.test.ts",
+    "linha": 86,
+    "trecho": "const csrf = /name=\"csrf_token\"\\s+value=\"([^\"]+)\"/.exec(html)?.[1] ?? \"\";"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/spec/load_spec.rb",
+    "linha": 9,
+    "trecho": "system(RbConfig.ruby, \"-I#{lib}\", \"-e\", statement, out: File::NULL, err: File::NULL)"
+   }
+  ],
+  "DESERIALIZACAO_INSEGURA": [
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/.cursor/rules/1000-typescript.mdc",
+    "linha": 46,
+    "trecho": "- Never use `eval()` or dynamic code execution for security"
+   }
+  ],
+  "LOG_DADO_PESSOAL": [
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/.cursor/rules/1001-markdown.mdc",
+    "linha": 17,
+    "trecho": "- Maintain logical document structure and readability."
+   },
+   {
+    "repo": "abacatepay-python-sdk",
+    "arquivo": "abacatepay-python-sdk/docs/index.md",
+    "linha": 69,
+    "trecho": "print(customer.email)"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/README.md",
+    "linha": 122,
+    "trecho": "console.log(charge.data.id, charge.data.status, charge.data.cardToken);"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/SKILL-CONSOLIDATED.md",
+    "linha": 573,
+    "trecho": "- **Validation**: Validate inputs (e.g., email format, required fields) before API calls."
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/checkout.md",
+    "linha": 125,
+    "trecho": "- **Validation**: Validate inputs (e.g., email format, required fields) before API calls."
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/go/checkout.md",
+    "linha": 51,
+    "trecho": "- **Validation**: Validate inputs (e.g., email format, required fields) before API calls."
+   }
+  ],
+  "SSRF_URL_USUARIO": [
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 497,
+    "trecho": "const response = await fetch(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1317,
+    "trecho": "it(\"should call fetch with correct URL and headers\", async () => {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1323,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-nodejs-sdk.txt",
+    "linha": 1339,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 160,
+    "trecho": "httpClient, err := fetch.New(config.ApiKey, apiUrl, Version, timeout)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 320,
+    "trecho": "func (f *Fetch) Request(ctx context.Context, method, endpoint string, body interface{}, opts ...RequestOptions) (*http.Response, error) {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 362,
+    "trecho": "func (f *Fetch) Get(ctx context.Context, endpoint string, opts ...RequestOptions) (*http.Response, error) {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 366,
+    "trecho": "func (f *Fetch) Post(ctx context.Context, endpoint string, body interface{}, opts ...RequestOptions) (*http.Response, error) {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 370,
+    "trecho": "func (f *Fetch) Put(ctx context.Context, endpoint string, body interface{}, opts ...RequestOptions) (*http.Response, error) {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 374,
+    "trecho": "func (f *Fetch) Delete(ctx context.Context, endpoint string, opts ...RequestOptions) (*http.Response, error) {"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 441,
+    "trecho": "assert.ErrorIs(t, fetch.ErrInvalidAPIUrl, err)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 460,
+    "trecho": "client, err := fetch.New(\"test-key\", server.URL, \"1.0.0\", 10*time.Second)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 484,
+    "trecho": "client, err := fetch.New(\"test-key\", server.URL, \"1.0.0\", 10*time.Second)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 508,
+    "trecho": "client, err := fetch.New(\"test-key\", server.URL, \"1.0.0\", 10*time.Second)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 533,
+    "trecho": "client, err := fetch.New(\"test-key\", server.URL, \"1.0.0\", 10*time.Second)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 594,
+    "trecho": "client, err := fetch.New(\"test-key\", server.URL, \"1.0.0\", 10*time.Second)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 763,
+    "trecho": "client, err := fetch.New(\"test-key\", server.URL, \"1.0.0\", 10*time.Second)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/sdks/abacatepay-abacatepay-go-sdk.txt",
+    "linha": 808,
+    "trecho": "client, err := fetch.New(\"test-key\", server.URL, \"1.0.0\", 10*time.Second)"
+   },
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat/src/app/services/chatApi.ts",
+    "linha": 85,
+    "trecho": "const response = await fetch(`${this.baseUrl}/chat/${route}`, {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v1/withdraw/get.go",
+    "linha": 12,
+    "trecho": "if err := w.http.Get(ctx, v1.BuildGetWithdrawURL(query), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/internal/pkg/fetch/fetch.go",
+    "linha": 16,
+    "trecho": "ErrInvalidURL    = errors.New(\"fetch: base url is required\")"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/coupons/get.go",
+    "linha": 12,
+    "trecho": "if err := c.http.Get(ctx, v2.BuildGetCouponURL(id), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/coupons/list.go",
+    "linha": 12,
+    "trecho": "if err := c.http.Get(ctx, v2.BuildListCouponsURL(page, limit), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/checkouts/get.go",
+    "linha": 12,
+    "trecho": "if err := c.http.Get(ctx, v2.BuildGetCheckoutURL(id), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/payouts/get.go",
+    "linha": 12,
+    "trecho": "if err := p.http.Get(ctx, v2.BuildGetPayoutURL(id), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/payouts/list.go",
+    "linha": 12,
+    "trecho": "if err := p.http.Get(ctx, v2.BuildListPayoutsURL(page, limit), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/subscriptions/list.go",
+    "linha": 12,
+    "trecho": "if err := s.http.Get(ctx, v2.BuildListSubscriptionsURL(limit, cursor), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/transparents/status.go",
+    "linha": 12,
+    "trecho": "if err := t.http.Get(ctx, v2.BuildCheckQRCodePIXStatusURL(id), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/customers/get.go",
+    "linha": 12,
+    "trecho": "if err := c.http.Get(ctx, v2.BuildGetCustomerURL(id), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/customers/list.go",
+    "linha": 12,
+    "trecho": "if err := c.http.Get(ctx, v2.BuildListCustomersURL(page, limit), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/mrr/revenue.go",
+    "linha": 12,
+    "trecho": "if err := m.http.Get(ctx, v2.BuildGetRevenueURL(start, end), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/products/get.go",
+    "linha": 12,
+    "trecho": "if err := p.http.Get(ctx, v2.BuildGetProductURL(id, externalId), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-go-sdk",
+    "arquivo": "abacatepay-go-sdk/v2/products/list.go",
+    "linha": 12,
+    "trecho": "if err := p.http.Get(ctx, v2.BuildListProductsURL(page, limit), &data); err != nil {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/StoreService.kt",
+    "linha": 35,
+    "trecho": "val response = httpClient.get(\"$baseUrl/store/get\") {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/WithdrawService.kt",
+    "linha": 35,
+    "trecho": "val response = httpClient.post(\"$baseUrl/withdraw/create\") {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/WithdrawService.kt",
+    "linha": 52,
+    "trecho": "val response = httpClient.get(\"$baseUrl/withdraw/list\"){"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/BillingService.kt",
+    "linha": 41,
+    "trecho": "val response = httpClient.post(\"$baseUrl/billing/create\") {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/BillingService.kt",
+    "linha": 57,
+    "trecho": "val response = httpClient.get(\"$baseUrl/billing/list\"){"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/PixQRCodeService.kt",
+    "linha": 43,
+    "trecho": "val response = httpClient.post(\"$baseUrl/pixQrCode/create\") {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/PixQRCodeService.kt",
+    "linha": 64,
+    "trecho": "val response = httpClient.post(\"$baseUrl/pixQrCode/simulate-payment?id=$qrCodeId\") {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/PixQRCodeService.kt",
+    "linha": 83,
+    "trecho": "val response = httpClient.get(\"$baseUrl/pixQrCode/check?id=$qrCodeId\"){"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/CustomerService.kt",
+    "linha": 41,
+    "trecho": "val response = httpClient.post(\"$baseUrl/customer/create\") {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/CustomerService.kt",
+    "linha": 58,
+    "trecho": "val response = httpClient.get(\"$baseUrl/customer/list\"){"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/CouponService.kt",
+    "linha": 41,
+    "trecho": "val response = httpClient.post(\"$baseUrl/coupon/create\") {"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/CouponService.kt",
+    "linha": 58,
+    "trecho": "val response = httpClient.get(\"$baseUrl/coupon/list\"){"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/PublicMRRService.kt",
+    "linha": 38,
+    "trecho": "val response = httpClient.get(\"$baseUrl/public-mrr/mrr\"){"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/PublicMRRService.kt",
+    "linha": 53,
+    "trecho": "val response = httpClient.get(\"$baseUrl/public-mrr/merchant-info\"){"
+   },
+   {
+    "repo": "abacatepay-kotlin-sdk",
+    "arquivo": "abacatepay-kotlin-sdk/core/src/main/kotlin/com/abacatepay/service/PublicMRRService.kt",
+    "linha": 74,
+    "trecho": "val response = httpClient.get(\"$baseUrl/public-mrr/revenue?startDate=$startDate&endDate=$endDate\"){"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/src/http/api.ts",
+    "linha": 57,
+    "trecho": "const response = await fetch(url, {"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/bugfixes.test.ts",
+    "linha": 73,
+    "trecho": "const calls = stubFetch({ data: { id: \"bol_1\", status: \"PENDING\", url: \"https://x/pay/bol_1/boleto\", barCode: \"123\" } });"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/webhooks.test.ts",
+    "linha": 13,
+    "trecho": "const calls = stubFetch({ data: { id: \"webh_1\", name: \"Pagamentos\", endpoint: \"https://x.com/wh\" } });"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/helpers/fetch-stub.ts",
+    "linha": 1,
+    "trecho": "export type FetchCall = { url: string; init: RequestInit };"
+   },
+   {
+    "repo": "abacatepay-mcp",
+    "arquivo": "abacatepay-mcp/tests/unit/helpers/fetch-stub.ts",
+    "linha": 9,
+    "trecho": "globalThis.fetch = (async (url: unknown, init: RequestInit = {}) => {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/src/requests.ts",
+    "linha": 16,
+    "trecho": "const response = await fetch(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/requests.test.ts",
+    "linha": 24,
+    "trecho": "it(\"should call fetch with correct URL and headers\", async () => {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/requests.test.ts",
+    "linha": 30,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "abacatepay-nodejs-sdk",
+    "arquivo": "abacatepay-nodejs-sdk/test/requests.test.ts",
+    "linha": 46,
+    "trecho": "expect(fetch).toHaveBeenCalledWith(`${BASE_URL}${path}`, {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/src/client.ts",
+    "linha": 156,
+    "trecho": "const response = await fetch(url, {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/rest/test/index.test.ts",
+    "linha": 142,
+    "trecho": "const fetchSpy = mock(async (url: string) => {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 45,
+    "trecho": "globalThis.fetch = mock(async (url: string, init?: RequestInit) => {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 843,
+    "trecho": "const fetchSpy = mock(async (url: string) => {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/sdk/test/index.test.ts",
+    "linha": 867,
+    "trecho": "const fetchSpy = mock(async (url: string, init?: RequestInit) => {"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 16,
+    "trecho": "const response = await fetch(`${BASE_URL}/mrr`, {"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 38,
+    "trecho": "const response = await fetch(`${BASE_URL}/merchant-info`, {"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/ts/mrr.md",
+    "linha": 60,
+    "trecho": "const response = await fetch(`${BASE_URL}/revenue`, {"
+   }
+  ],
+  "SECRETO_EM_URL": [
+   {
+    "repo": "abacate-chat",
+    "arquivo": "abacate-chat/abacate-chat-api/contexts/docs/abacatepay-documentation.txt",
+    "linha": 1400,
+    "trecho": "https://meusite.com/webhook/abacatepay?webhookSecret=seu_secret_aqui"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/supabase/test/index.test.ts",
+    "linha": 24,
+    "trecho": "new Request('https://example.com/webhooks?webhookSecret=wrong'),"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/supabase/test/index.test.ts",
+    "linha": 36,
+    "trecho": "new Request('https://example.com/webhooks?webhookSecret=whsec_test', {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/supabase/test/index.test.ts",
+    "linha": 79,
+    "trecho": "new Request('https://example.com/webhooks?webhookSecret=whsec_test', {"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/README.md",
+    "linha": 138,
+    "trecho": "<p align=\"center\">Endpoints no formato antigo recebem o header <code>X-Webhook-Signature</code> e o seu secret em <code>?webhookSecret=</code>. Endpoints no formato Standard Webhoo"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/index.ts",
+    "linha": 27,
+    "trecho": "* `?webhookSecret=` query parameter (Compare it with your secret too). Endpoints that"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v2/webhook.ts",
+    "linha": 57,
+    "trecho": "* header and `?webhookSecret=` in the URL. Every endpoint created before the"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/types/types/v2/rest.ts",
+    "linha": 2087,
+    "trecho": "* Secret of the webhook (At least 32 characters). Legacy deliveries send it as `?webhookSecret=`;"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/typebox/src/v2/webhook.ts",
+    "linha": 743,
+    "trecho": "* `?webhookSecret=` in the URL)."
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/zod/src/v2/webhook.ts",
+    "linha": 732,
+    "trecho": "* `?webhookSecret=` in the URL)."
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/SKILL-CONSOLIDATED.md",
+    "linha": 1076,
+    "trecho": "1. **Secret in Query**: Simple check (`?webhookSecret=...`)."
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/rules/go/webhooks.md",
+    "linha": 20,
+    "trecho": "1.  **Secret in Query**: Simple check (`?webhookSecret=...`)."
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/ts/webhook.test.ts",
+    "linha": 55,
+    "trecho": ".post('/webhooks/abacatepay?webhookSecret=' + secret)"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/ts/webhook.test.ts",
+    "linha": 66,
+    "trecho": ".post('/webhooks/abacatepay?webhookSecret=wrong')"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/ts/webhook.test.ts",
+    "linha": 75,
+    "trecho": ".post('/webhooks/abacatepay?webhookSecret=' + secret)"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/go/webhook_test.go",
+    "linha": 29,
+    "trecho": "req := httptest.NewRequest(\"POST\", \"/webhook?webhookSecret=\"+secret, bytes.NewReader(bodyBytes))"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/go/webhook_test.go",
+    "linha": 53,
+    "trecho": "req := httptest.NewRequest(\"POST\", \"/webhook?webhookSecret=wrong\", nil)"
+   },
+   {
+    "repo": "skills",
+    "arquivo": "skills/tests/go/webhook_test.go",
+    "linha": 69,
+    "trecho": "req := httptest.NewRequest(\"POST\", \"/webhook?webhookSecret=\"+secret, bytes.NewReader([]byte(body)))"
+   }
+  ],
+  "VALIDACAO_AUSENTE_VALOR": [
+   {
+    "repo": "abacatepay-elixir-sdk",
+    "arquivo": "abacatepay-elixir-sdk/lib/abacatepay/struct/public_mrr.ex",
+    "linha": 124,
+    "trecho": "{date, %{amount: data[\"amount\"], count: data[\"count\"]}}"
+   },
+   {
+    "repo": "abacatepay-python-sdk",
+    "arquivo": "abacatepay-python-sdk/docs/tutorials/asynchronous.md",
+    "linha": 112,
+    "trecho": "amount=payload.amount,"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/lib/abacate_pay/clients/transparent_client.rb",
+    "linha": 100,
+    "trecho": "amount: data.amount,"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/lib/abacate_pay/clients/pix_client.rb",
+    "linha": 41,
+    "trecho": "amount: data.amount,"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/lib/abacate_pay/clients/product_client.rb",
+    "linha": 35,
+    "trecho": "price: data.price,"
+   },
+   {
+    "repo": "abacatepay-ruby-sdk",
+    "arquivo": "abacatepay-ruby-sdk/lib/abacate_pay/clients/payout_client.rb",
+    "linha": 33,
+    "trecho": "amount: data.amount,"
+   },
+   {
+    "repo": "ecosystem",
+    "arquivo": "ecosystem/packages/adapters/test/index.test.ts",
+    "linha": 164,
+    "trecho": "newAmount = payload.data.newAmount;"
+   }
+  ],
+  "AUTH_FRACO": [],
+  "DEP_LOCKFILE": []
+ },
+ "locks": [
+  "abacate-chat/abacate-chat-api/package-lock.json",
+  "abacate-chat/abacate-chat/package-lock.json",
+  "abacatepay-cli/go.sum",
+  "abacatepay-go-sdk/go.sum",
+  "abacatepay-java-sdk/pom.xml",
+  "abacatepay-kotlin-sdk/build.gradle.kts",
+  "abacatepay-kotlin-sdk/core/build.gradle.kts",
+  "abacatepay-kotlin-sdk/docs/build.gradle.kts",
+  "abacatepay-kotlin-sdk/samples/command-line/build.gradle",
+  "abacatepay-kotlin-sdk/samples/spring-demo/spring-demo/build.gradle",
+  "abacatepay-kotlin-sdk/buildSrc/build.gradle.kts",
+  "abacatepay-nodejs-sdk/package-lock.json",
+  "abacatepay-python-sdk/requirements.txt",
+  "n8n-nodes-abacatepay/package-lock.json"
+ ],
+ "compilados": [],
+ "arquivos_varridos": 1156
+}
