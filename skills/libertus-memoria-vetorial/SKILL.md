@@ -40,7 +40,12 @@ fontes.py  →  indexar_historico.py (arquivos)   →  chroma_store
 auto_indexar.py  →  guardião: roda os dois só se algo mudou
 lembrar.py / scripts/reflexion_recall.py  →  consultam o chroma_store
 scripts/session_brief.py  →  chama o guardião no início da sessão
+gravar_supabase.py  →  escreve na memória REAL (Supabase) — caminho inverso do dump
 ```
+
+Fluxo completo da memória: produção (arquivos/logs) → vetor local → recall →
+contexto da sessão → reflexão → Supabase → volta ao vetor. Se uma das pontas
+estiver aberta, memória nova não entra e eu "esqueço" o que fiz.
 
 ## Comandos que funcionam
 
@@ -55,8 +60,13 @@ $VENV memoria/auto_indexar.py --supabase       # conserta o que mudou
 $VENV memoria/indexar_historico.py --fontes all --dry-run
 $VENV memoria/indexar_supabase.py --baixar     # atualiza dump e indexa
 $VENV scripts/dump_supabase.py                 # 1498 memórias do Supabase
+$VENV memoria/gravar_supabase.py arquivo.md --titulo "X" --tipo reflexao --relevancia 10
 $VENV scripts/reflexion_recall.py "tarefa de hoje"   # feedback verbal (Reflexion)
 ```
+
+`auto_indexar.py --baixar-supabase` só baixa dump com mais de 6h
+(`--idade-max-horas`); o briefing usa exatamente isso, então memória gravada em
+outra sessão entra no recall sem custo perceptível.
 
 ## Pitfalls reais (todos custaram tempo)
 
