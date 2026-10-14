@@ -52,6 +52,12 @@ fi
 echo "[session_reflect_auto] Atividade detectada (commits=$commit_recente sessao_nova=$sessao_nova). Refletindo..."
 python3 scripts/session_reflect.py --auto
 
+# A reflexão acabou de gerar memória nova (Supabase) — indexar antes de sair,
+# senão a lição de hoje só existiria para a próxima sessão que abrir briefing.
+# O guardião é idempotente e sai em ~0.07s quando nada mudou.
+echo "[session_reflect_auto] Atualizando memória vetorial..."
+"$LIBERTUS_DIR/venv/bin/python" memoria/auto_indexar.py --quiet --supabase --baixar-supabase || true
+
 # Atualiza o stamp
 date +%s > "$STAMP"
 echo "[session_reflect_auto] Reflexão concluída e stamp atualizado."
