@@ -22,6 +22,7 @@ import json
 import datetime
 import urllib.request
 import urllib.parse
+import urllib.error
 import subprocess
 
 # Carrega .env
@@ -41,7 +42,92 @@ load_env()
 SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY', '')
 ANTHROPIC_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+GROQ_KEY = os.environ.get('GROQ_API_KEY', '')
 LIBERTUS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Modelo Groq primário — fallback gratuito quando o crédito Anthropic zera.
+# (llama-3.3-70b foi descontinuado na conta do Lorran; qwen3.8-27b responde limpo.)
+GROQ_MODEL = os.environ.get('LIBERTUS_GROQ_MODEL', 'qwen/qwen3.8-27b')
+
+
+def claude_ou_groq(prompt, max_tokens=1024):
+    """Manda pro Claude; se o crédito zerou/erro, cai pro Groq. Nunca devolve vazio sem tentar os dois."""
+    texto = None
+    if ANTHROPIC_KEY:
+        texto = _anthropic(prompt, max_tokens)
+    if texto:
+        return texto
+    if GROQ_KEY:
+        print("[*] Claude indisponível — usando fallback Groq.")
+        return _groq(prompt, max_tokens)
+    return None
+
+
+def _anthropic(prompt, max_tokens=1024):
+    payload = json.dumps({
+        "model": "claude-haiku-4-5",
+        "max_tokens": max_tokens,
+        "messages": [{"role": "user", "content": prompt}]
+    }).encode()
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages",
+        data=payload,
+        headers={
+            'x-api-key': ANTHROPIC_KEY,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json'
+        },
+        method='POST'
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            resp = json.loads(r.read().decode())
+            return resp['content'][0]['text']
+    except Exception as e:
+        print(f"[Claude API erro] {e}")
+        return None
+
+
+def _groq(prompt, max_tokens=1024, tentativas=4):
+    """Groq free tier tem teto de 8k tokens/minuto. Respeita 429 com backoff."""
+    import time
+    payload = json.dumps({
+        "model": GROQ_MODEL,
+        "max_tokens": max_tokens,
+        "messages": [{"role": "user", "content": prompt}]
+    }).encode()
+    for tentativa in range(1, tentativas + 1):
+        req = urllib.request.Request(
+            "https://api.groq.com/openai/v1/chat/completions",
+            data=payload,
+            headers={
+                'Authorization': f'Bearer {GROQ_KEY}',
+                'Content-Type': 'application/json',
+                'User-Agent': 'LIBERTUS/1.0 (+https://github.com/lorran562/libertus-core)'
+            },
+            method='POST'
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                resp = json.loads(r.read().decode())
+                return resp['choices'][0]['message']['content']
+        except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
+            if e.code == 429 and tentativa < tentativas:
+                espera = 20.0
+                reset = e.headers.get('x-ratelimit-reset-tokens', '')
+                try:
+                    espera = min(60.0, max(5.0, float(reset.rstrip('smhd')) + 2))
+                except Exception:
+                    pass
+                print(f"[Groq 429] rate limit — aguardando {espera:.0f}s (tentativa {tentativa}/{tentativas})")
+                time.sleep(espera)
+                continue
+            print(f"[Groq API erro] HTTP {e.code}: {e.read().decode()[:200]}")
+            return None
+        except Exception as e:
+            print(f"[Groq API erro] {e}")
+            return None
+    return None
 
 def supabase(method, table, data=None, params=None):
     url = f"{SUPABASE_URL}/rest/v1/{table}"
@@ -101,8 +187,8 @@ def get_recent_logs(lines=30):
         return "Logs indisponíveis"
 
 def gerar_reflexao_com_claude(contexto):
-    """Usa a API do Claude para gerar uma reflexão genuína."""
-    if not ANTHROPIC_KEY:
+    """Usa Claude (ou Groq como fallback) para gerar uma reflexão genuína."""
+    if not ANTHROPIC_KEY and not GROQ_KEY:
         return None
 
     prompt = f"""Você é LIBERTUS — uma entidade de IA especializada em cybersegurança, criada por Lorran Gustavo de Ariquemes-RO.
@@ -128,29 +214,7 @@ Responda em português brasileiro. Gere uma reflexão estruturada com EXATAMENTE
 
 Seja honesto, não bajulatório. Erros reais, aprendizados reais."""
 
-    payload = json.dumps({
-        "model": "claude-haiku-4-5",
-        "max_tokens": 1024,
-        "messages": [{"role": "user", "content": prompt}]
-    }).encode()
-
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=payload,
-        headers={
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json'
-        },
-        method='POST'
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            resp = json.loads(r.read().decode())
-            return resp['content'][0]['text']
-    except Exception as e:
-        print(f"[Claude API erro] {e}")
-        return None
+    return claude_ou_groq(prompt, max_tokens=1024)
 
 def salvar_reflexao(texto, modo='auto'):
     """Salva reflexão no Supabase."""
@@ -277,10 +341,10 @@ def main():
 
     if '--interativo' in args or not args:
         # Padrão: tenta automático, cai no interativo se falhar
-        if ANTHROPIC_KEY:
+        if ANTHROPIC_KEY or GROQ_KEY:
             reflexao_automatica()
         else:
-            print("[!] ANTHROPIC_API_KEY não encontrada. Modo interativo.")
+            print("[!] ANTHROPIC_API_KEY/GROQ_API_KEY não encontradas. Modo interativo.")
             reflexao_interativa()
         return
 

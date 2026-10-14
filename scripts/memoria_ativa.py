@@ -35,6 +35,7 @@ import json
 import datetime
 import urllib.request
 import urllib.parse
+import urllib.error
 import subprocess
 
 # ── Configuração ──────────────────────────────────────────────────────────────
@@ -55,6 +56,8 @@ load_env()
 SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY', '')
 ANTHROPIC_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+GROQ_KEY = os.environ.get('GROQ_API_KEY', '')
+GROQ_MODEL = os.environ.get('LIBERTUS_GROQ_MODEL', 'qwen/qwen3.8-27b')
 LIBERTUS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ── Supabase ──────────────────────────────────────────────────────────────────
@@ -84,9 +87,20 @@ def sb(method, table, data=None, params=None):
 # ── Claude API ────────────────────────────────────────────────────────────────
 
 def claude(prompt, max_tokens=2048, model="claude-haiku-4-5"):
-    """Chama Claude para raciocinar sobre a memória."""
-    if not ANTHROPIC_KEY:
-        return None
+    """Chama Claude para raciocinar sobre a memória. Se o crédito Anthropic zerou,
+    cai automaticamente pro Groq (gratuito) — a memória noturna não pode depender de billing."""
+    texto = None
+    if ANTHROPIC_KEY:
+        texto = _anthropic(prompt, max_tokens, model)
+    if texto:
+        return texto
+    if GROQ_KEY:
+        print("[*] Claude indisponível — usando fallback Groq.")
+        return _groq(prompt, max_tokens)
+    return None
+
+
+def _anthropic(prompt, max_tokens=2048, model="claude-haiku-4-5"):
     payload = json.dumps({
         "model": model,
         "max_tokens": max_tokens,
@@ -109,6 +123,49 @@ def claude(prompt, max_tokens=2048, model="claude-haiku-4-5"):
     except Exception as e:
         print(f"[Claude erro] {e}")
         return None
+
+
+def _groq(prompt, max_tokens=2048, tentativas=4):
+    """Groq free tier tem teto de 8k tokens/minuto. Respeita 429 com backoff
+    lendo x-ratelimit-reset-tokens — sem isso a consolidação noturna falha em silêncio."""
+    import time
+    payload = json.dumps({
+        "model": GROQ_MODEL,
+        "max_tokens": max_tokens,
+        "messages": [{"role": "user", "content": prompt}]
+    }).encode()
+    for tentativa in range(1, tentativas + 1):
+        req = urllib.request.Request(
+            "https://api.groq.com/openai/v1/chat/completions",
+            data=payload,
+            headers={
+                'Authorization': f'Bearer {GROQ_KEY}',
+                'Content-Type': 'application/json',
+                'User-Agent': 'LIBERTUS/1.0 (+https://github.com/lorran562/libertus-core)'
+            },
+            method='POST'
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                resp = json.loads(r.read().decode())
+                return resp['choices'][0]['message']['content']
+        except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
+            if e.code == 429 and tentativa < tentativas:
+                espera = 20.0
+                reset = e.headers.get('x-ratelimit-reset-tokens', '')
+                try:
+                    espera = min(60.0, max(5.0, float(reset.rstrip('smhd')) + 2))
+                except Exception:
+                    pass
+                print(f"[Groq 429] rate limit — aguardando {espera:.0f}s (tentativa {tentativa}/{tentativas})")
+                time.sleep(espera)
+                continue
+            print(f"[Groq erro] HTTP {e.code}: {e.read().decode()[:200]}")
+            return None
+        except Exception as e:
+            print(f"[Groq erro] {e}")
+            return None
+    return None
 
 # ── Funções de Memória ────────────────────────────────────────────────────────
 
@@ -256,17 +313,21 @@ Responda APENAS com um array JSON válido, sem texto antes ou depois:
 Se não há nada genuinamente novo para salvar, retorne: []
 Seja seletivo. Qualidade sobre quantidade. 2-5 memórias boas é melhor que 10 mediocres."""
 
-    resposta = claude(prompt, max_tokens=3000)
+    resposta = claude(prompt, max_tokens=1500)
     if not resposta:
         return []
     
-    # Extrai JSON da resposta
+    # Extrai JSON da resposta — tolera texto/cerca markdown ao redor
     try:
-        # Limpa possível texto extra
         resposta = resposta.strip()
         if '```' in resposta:
             import re
             match = re.search(r'\[[\s\S]+\]', resposta)
+            if match:
+                resposta = match.group(0)
+        elif not resposta.lstrip().startswith('['):
+            import re
+            match = re.search(r'\[[\s\S]*\]', resposta)
             if match:
                 resposta = match.group(0)
         return json.loads(resposta)
