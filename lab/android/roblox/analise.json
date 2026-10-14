@@ -1,0 +1,66 @@
+{
+ "apk": "/home/libertus/LIBERTUS/lab/android/roblox/aptoide_roblox.apk",
+ "bytes": 2802756,
+ "componentes": {
+  "exportados": [
+   {
+    "tipo": "activity",
+    "nome": "com.roblox.client.SplashActivity",
+    "exported": "true",
+    "permission": null,
+    "tem_filtro": true,
+    "grantUriPermissions": null,
+    "authorities": null
+   },
+   {
+    "tipo": "receiver",
+    "nome": "androidx.profileinstaller.ProfileInstallReceiver",
+    "exported": "true",
+    "permission": "android.permission.DUMP",
+    "tem_filtro": true,
+    "grantUriPermissions": null,
+    "authorities": null
+   }
+  ],
+  "deeplinks": [],
+  "perigosos": [],
+  "flags": {
+   "debuggable": null,
+   "allowBackup": "false",
+   "usesCleartextTraffic": "true",
+   "networkSecurityConfig": "@xml/network_security_config",
+   "taskAffinity": null,
+   "requestLegacyExternalStorage": null
+  }
+ },
+ "codigo": {
+  "HTTP_URL": [
+   {
+    "arquivo": "sources/androidx/core/content/pm/ShortcutXmlParser.java",
+    "linha": 107,
+    "trecho": "String attributeValue = xmlPullParser.getAttributeValue(\"http://schemas.android.com/apk/res/android\", str);",
+    "descricao": "endpoint HTTP sem TLS"
+   },
+   {
+    "arquivo": "sources/androidx/core/content/res/TypedArrayUtils.java",
+    "linha": 14,
+    "trecho": "private static final String NAMESPACE = \"http://schemas.android.com/apk/res/android\";",
+    "descricao": "endpoint HTTP sem TLS"
+   }
+  ],
+  "LOGGING_SENSIVEL": [
+   {
+    "arquivo": "sources/androidx/browser/trusted/PackageIdentityUtils.java",
+    "linha": 41,
+    "trecho": "Log.e(TAG, \"Could not check if package matches token.\", e);",
+    "descricao": "dado sensivel em log"
+   },
+   {
+    "arquivo": "sources/androidx/browser/trusted/Token.java",
+    "linha": 21,
+    "trecho": "Log.e(TAG, \"Exception when creating token.\", e);",
+    "descricao": "dado sensivel em log"
+   }
+  ]
+ }
+}

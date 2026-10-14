@@ -40,3 +40,7 @@ ejpt/john_home/john.pot
 abacatepay-audit/sdks/
 shield/recon/web_bundle.json
 shield/recon/web_page.json
+lab/android/roblox/decoded/
+lab/android/roblox/jadx_out/
+lab/android/roblox/*.apk
+lab/android/roblox/*.err
