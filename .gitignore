@@ -38,3 +38,5 @@ ejpt/john_home/john.pot
 
 # SDKs de terceiros clonados para auditoria (nao versionar)
 abacatepay-audit/sdks/
+shield/recon/web_bundle.json
+shield/recon/web_page.json

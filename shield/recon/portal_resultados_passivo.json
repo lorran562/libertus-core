@@ -1,0 +1,31 @@
+{
+ "host": "saofranciscorondonia.lab.jalis.net.br",
+ "porta": 7070,
+ "coletado_em": "2026-10-14T01:22:39.549278+00:00",
+ "observacao": "somente acesso a pagina publica de login; nenhuma tentativa de autenticacao",
+ "IP": [
+  "160.238.242.62"
+ ],
+ "tls": {
+  "protocolo": "TLSv1.2",
+  "emissor": "GoGetSSL",
+  "cn": "*.lab.jalis.net.br",
+  "ate": "Jan  8 23:59:59 2027 GMT",
+  "SAN": [
+   "*.lab.jalis.net.br",
+   "lab.jalis.net.br"
+  ]
+ },
+ "http": {
+  "status": 200,
+  "server": null,
+  "x_powered_by": null,
+  "hsts": "max-age=31536000 ; includeSubDomains",
+  "xfo": "DENY",
+  "csp": "",
+  "acao_do_form": "<form class=\"form-signin\" id=\"formulario\" action=\"logar?cfg_codigo=hsf_arq\" method=\"post\">",
+  "tem_captcha": false,
+  "title": "Laboratório São Francisco",
+  "fala_de_versao_no_html": false
+ }
+}
