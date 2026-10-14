@@ -1,0 +1,9 @@
+--- subtle.ConstantTimeCompare (Go) ---
+  iguais                                         -> 1
+  vazio vs digest (atacante não manda header)    -> 0
+  prefixo de 8 chars                             -> 0
+  digest vs digest (bytea)                       -> 0
+  case diferente (hex maiúsculo)                 -> 0
+
+  Regra: Go devolve 0 (seguro) quando o comprimento difere.
+  Compare com Node/Python, que LANÇAM exceção no mesmo caso.

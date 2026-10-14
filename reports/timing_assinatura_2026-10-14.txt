@@ -1,0 +1,70 @@
+==========================================================================
+TIMING LEAK NA COMPARAÇÃO DE ASSINATURA — medição local (mesma máquina)
+==========================================================================
+
+[1] VAZAMENTO IN-PROCESS (assinatura de 32 bytes, mediana de 20k reps)
+    loop interpretado (early-exit)   0 byte ok= 310.0 ns  31 bytes ok=  983.0 ns  delta= 673.0 ns   21.71 ns/byte
+    memcmp C (a == b)                0 byte ok=  76.0 ns  31 bytes ok=   97.0 ns  delta=  21.0 ns    0.68 ns/byte
+    compare_digest (constante)       0 byte ok= 117.0 ns  31 bytes ok=  164.0 ns  delta=  47.0 ns    1.52 ns/byte
+
+[2] JITTER REAL NO LOOPBACK (keep-alive + TCP_NODELAY, 5 lotes x 600 req)
+    mediana=  196639 ns  media=   212190 ns  p99=   534314 ns
+    sigma global (5 lotes):      96,269 ns
+    sigma por lote        : ['70,588', '73,909', '94,175', '84,973', '137,605']
+    -> adotado sigma=70,588 ns (lote mais quieto = melhor caso do atacante)
+    -> variacao de sigma entre execucoes eh ORDEM DE GRANDEZA: nenhuma
+       conclusao de timing vale sem ser re-medida nas condicoes do alvo.
+
+[3] REGRESSÃO: RTT x bytes de prefixo corretos (o juiz é o r de Pearson)
+            modo   slope (ns/byte)        r        t   leitura
+    naive (real)          -1423.78   -0.148    -0.82   sem sinal (ruido)
+    amplificado (controle)         116601.30    0.990    38.62   SINAL DETECTADO
+    (controle: cada byte correto dorme 50 us de propósito —
+     |t|>3 prova que o método acha vazamento quando ele existe)
+
+[4] RECUPERAÇÃO REAL DO 1o BYTE (256 candidatos, ranking por RTT médio)
+    modo=naive         512 req/cand  byte correto=0x00  posição=143/256  top5=['0x42', '0xe7', '0x4c', '0x68', '0xf0']  -> FALHOU
+    modo=amplificado   128 req/cand  byte correto=0x00  posição=  4/256  top5=['0x7d', '0xa6', '0x7c', '0x00', '0x02']  -> entre os 10 primeiros
+    (256 = acaso puro; 1 = sinal perfeito)
+
+[5] MONTE CARLO VALIDANDO O MODELO (delta=22 ns = vazamento do loop interpretado)
+       N/cand   sucesso
+        1,000      0.0%
+       10,000      1.0%
+      100,000      0.5%
+    1,000,000      1.0%
+    previsto pelo modelo (z=7.4): N = 578,926,467 por candidato
+
+[6] VEREDITO
+    loop interpretado (early-exit)
+      delta=   21.71 ns/byte   sigma=70,588 ns   (razão sigma/delta =      3,251x)
+      N/candidato=     578,926,467   total 32 bytes=    4,742,565,618,413 req
+    memcmp C (a == b)
+      delta=    0.68 ns/byte   sigma=70,588 ns   (razão sigma/delta =    104,202x)
+      N/candidato= 594,586,362,388   total 32 bytes=4,870,851,480,685,539 req
+
+    REGRA DE DECISÃO (o que entra no relatório):
+      para atacar em  10^6 req no total, o alvo precisa vazar >=    47.28 us/byte
+      para atacar em  10^7 req no total, o alvo precisa vazar >=    14.95 us/byte
+      para atacar em  10^9 req no total, o alvo precisa vazar >=     1.50 us/byte
+      vazamento medido do loop interpretado: 0.022 us/byte -> 689x abaixo do necessário
+      controle positivo (50 us/byte) fica ACIMA do corte; RSA/OpenSSL
+      da Brumley-Boneh vazava microssegundos por consulta — por isso funcionou.
+
+[6b] ESCALA COM O TAMANHO DO VALOR COMPARADO (critério acionável)
+      corte p/ 10^7 req = 15.0 us de vazamento;  corte p/ 10^6 req = 47.3 us
+      -> p/ caber em 10^6 req: valor comparado precisa ter >= 2,178 bytes (loop interpretado)
+      -> p/ caber em 10^7 req: valor comparado precisa ter >= 689 bytes (loop interpretado)
+      valor de     32 bytes  vazamento total=      0.69 us  total req=        4,631,411,737  -> IMPRATICÁVEL
+      valor de    128 bytes  vazamento total=      2.78 us  total req=          289,463,234  -> IMPRATICÁVEL
+      valor de    512 bytes  vazamento total=     11.12 us  total req=           18,091,452  -> IMPRATICÁVEL
+      valor de   4096 bytes  vazamento total=     88.92 us  total req=              282,679  -> POSSÍVEL
+      valor de  65536 bytes  vazamento total=   1422.77 us  total req=                1,104  -> POSSÍVEL
+      => o vazamento cresce LINEAR com o comprimento: digest de 32-64 B é
+         imune na prática; comparar blob/token de KB em loop interpretado é
+         o único caso em que 'usar ==' vira achado explorável de verdade.
+
+    Conclusão: 'usar == em vez de compare_digest' raramente é um achado Alto.
+    Reporte com estes números (Baixo/Informativo) OU vá atrás dos modos que
+    realmente quebram: sem verificação, prefixo truncado, fail-open de segredo,
+    exceção não tratada (DoS) e divergência de encoding.

@@ -1,0 +1,27 @@
+node v22.22.3
+
+==== 1) COMPARAÇÃO "OFICIAL" QUE EXPLODE (exemplo real de guia de webhook)
+  comprimento igual  (assinatura correta) -> retornou true
+  assinatura vazia   (cabeçalho ausente) -> LANÇA ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH: Input buffers must have the same byte length
+  assinatura truncada (16 chars) -> LANÇA ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH: Input buffers must have the same byte length
+  só o hex, sem prefixo -> LANÇA ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH: Input buffers must have the same byte length
+
+==== 2) MESMO BUG, AGORA COM O CORPO ERRADO — o 401 vira 500
+  requisição legítima -> retornou true
+  atacante manda 1 byte -> LANÇA ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH: Input buffers must have the same byte length
+  cabeçalho vira array (?sig[]=a -> ["a","b"]) -> LANÇA ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH: Input buffers must have the same byte length
+  valor vira objeto (?sig[x]=1 -> {x:"1"}) -> LANÇA ERR_INVALID_ARG_TYPE: The first argument must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object. Received an instance of Object
+  passa string direto no timingSafeEqual (sem Buffer.from) -> LANÇA ERR_INVALID_ARG_TYPE: The "buf1" argument must be an instance of ArrayBuffer, Buffer, TypedArray, or DataView.
+
+==== 3) COMPARAÇÃO SEGURA (o que deve estar no código do cliente)
+  seguro("sha256=feb9cc8a2eadf0a0  ) -> true
+  seguro("x"                       ) -> false
+  seguro(""                        ) -> false
+  seguro("sha256=aaaaaaaaaaaaaaaa  ) -> false
+  seguro("feb9cc8a2eadf0a07dd61b9  ) -> false
+
+==== 4) DETALHES QUE MUDAM A RESPOSTA (strings multibyte e utf8)
+  Buffer.from("é").length = 2 (1 caractere, 2 bytes)
+  assinatura com acento (2 bytes) vs digest de 71 bytes -> LANÇA ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH: Input buffers must have the same byte length
+  => o comprimento em BYTES é o que importa: o erro de 500 aparece
+     antes de qualquer análise do conteúdo (fail-closed, mas DoS).
