@@ -52,7 +52,13 @@ def ler_soul() -> dict:
 
 def ler_evolucao() -> dict:
     """Analisa historico de evolucao e extrai padroes."""
-    arquivos = sorted(EVOLUCAO_DIR.glob("*.md"), reverse=True)
+    # Ordena por mtime, nao por nome: "analisa ultimos 50" precisa ser o que
+    # eu escrevi por ultimo, nao o que vem por ultimo no alfabeto. Corrigido 18/out/2026.
+    arquivos = sorted(
+        EVOLUCAO_DIR.glob("*.md"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
 
     tecnologias_freq = Counter()
     temas_freq = Counter()
@@ -81,14 +87,16 @@ def ler_evolucao() -> dict:
         re.IGNORECASE
     )
 
+    # ultima_atividade = mtime REAL mais recente. Antes pegava arquivos[0],
+    # que e o primeiro em ordem alfabetica — reportava atividade de 104 dias
+    # atras enquanto eu escrevia reflexao hoje. Corrigido 18/out/2026.
+    ultima_atividade = max((p.stat().st_mtime for p in arquivos), default=None)
+
     for i, arq in enumerate(arquivos[:50]):  # analisa ultimos 50
         try:
             texto = arq.read_text(encoding="utf-8", errors="replace")
         except Exception:
             continue
-
-        if ultima_atividade is None:
-            ultima_atividade = arq.stat().st_mtime
 
         # tecnologias mencionadas
         for match in TECH_PATTERN.findall(texto):

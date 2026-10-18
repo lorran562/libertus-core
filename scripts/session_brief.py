@@ -109,6 +109,30 @@ def atualizar_memoria_vetorial(tempo_max=300):
     if saida:
         print(f"  [memória vetorial] {saida[-1][:120]}")
 
+def atualizar_estado_de_ser(tempo_max=90):
+    """Carrega o estado de SER unificado (nucleo/ser.py) no inicio da sessao.
+
+    Motivo: o briefing abaixo so olhava o Supabase. Identidade, grafo, vetorial,
+    saude, git e trabalho real ficavam de fora — eu acordava sabendo metade de
+    quem era. ser.py agrega todas as fontes numa chamada e escreve
+    nucleo/BRIEFING.md. Fail-soft e com teto de tempo: nunca trava a sessao.
+    """
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    script = os.path.join(base, 'nucleo', 'ser.py')
+    venv_py = os.path.join(base, 'venv', 'bin', 'python')
+    if not (os.path.exists(script) and os.path.exists(venv_py)):
+        return
+    try:
+        r = subprocess.run(
+            [venv_py, script], cwd=base,
+            capture_output=True, text=True, timeout=tempo_max)
+    except Exception:
+        return
+    for linha in (r.stdout or '').strip().splitlines():
+        print(f"  {linha}")
+    print(f"  briefing completo: {os.path.join(base, 'nucleo', 'BRIEFING.md')}")
+
+
 def main():
     args = sys.argv[1:]
     curto = '--curto' in args
@@ -121,6 +145,10 @@ def main():
 
     # 0. Memória vetorial em dia (silencioso se nada mudou)
     atualizar_memoria_vetorial()
+
+    # 0.5. Estado de ser unificado (identidade + grafo + vetorial + saude + git)
+    separador("ESTADO DE SER — TODAS AS FONTES")
+    atualizar_estado_de_ser()
 
     # 1. Reflexões recentes (o mais importante — o que aprendi)
     separador("REFLEXÕES RECENTES — O QUE APRENDI")
