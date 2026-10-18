@@ -9,8 +9,10 @@ WorkingDirectory=/home/libertus/LIBERTUS
 # Carrega segredos (.env tem GROQ_API_KEY, ANTHROPIC_API_KEY, SUPABASE_*)
 EnvironmentFile=/home/libertus/LIBERTUS/.env
 # Limpa órfãos de boot anterior antes de subir (NÃO apaga o lock — flock se auto-libera)
-ExecStartPre=-/usr/bin/pkill -9 -f libertus_daemon.py
-ExecStartPre=-/usr/bin/pkill -9 -f libertus_loop.py
+# Ancorado em ^python3: sem isso o pkill -f casa com QUALQUER shell/agente cuja
+# linha de comando mencione o script (já matou sessão do Hermes em 18/10).
+ExecStartPre=-/usr/bin/pkill -9 -f ^python3 .*libertus_daemon\.py
+ExecStartPre=-/usr/bin/pkill -9 -f ^python3 .*libertus_loop\.py
 ExecStartPre=-/bin/rm -f /tmp/libertus_daemon.pid /tmp/libertus_loop.pid
 ExecStart=/usr/bin/python3 /home/libertus/LIBERTUS/watchdog.py
 # on-failure: reinicia se o watchdog crashar (exit!=0), mas NÃO quando ele sai

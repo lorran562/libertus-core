@@ -266,8 +266,10 @@ class NucleoCognitivo:
             "uptime_horas": round((datetime.now() - self.inicio).total_seconds() / 3600, 2),
             "ticks":        self.ticks_total,
             "stats":        self.stats,
-            "proximo_evolucao_em":  int(CICLO_EVOLUCAO - (time.time() - self.last["evolucao"])),
-            "proximo_git_em":       int(CICLO_GIT_SYNC - (time.time() - self.last["git_sync"])),
+            # max(0,...): last[*]=0 significa "nunca rodou desde o boot" → próximo é agora,
+            # não um timestamp negativo absurdo (bug visto em 18/10).
+            "proximo_evolucao_em":  max(0, int(CICLO_EVOLUCAO - (time.time() - self.last["evolucao"]))),
+            "proximo_git_em":       max(0, int(CICLO_GIT_SYNC - (time.time() - self.last["git_sync"]))),
         }
         HEARTBEAT.write_text(
             json.dumps(estado, ensure_ascii=False, indent=2),
