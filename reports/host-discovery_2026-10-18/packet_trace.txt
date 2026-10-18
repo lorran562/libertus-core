@@ -1,0 +1,24 @@
+### nmap -sn --send-ip --packet-trace -n 172.31.99.20 (ICMP filtrado, 8080 aberto)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+SENT (0.0051s) ICMP [172.31.99.2 > 172.31.99.20 Echo request (type=8/code=0) id=65045 seq=0] IP [ttl=52 id=45796 iplen=28 ]
+SENT (0.0052s) TCP 172.31.99.2:54947 > 172.31.99.20:443 S ttl=44 id=64171 iplen=44  seq=2175947579 win=1024 <mss 1460>
+SENT (0.0052s) TCP 172.31.99.2:54947 > 172.31.99.20:80 A ttl=58 id=35765 iplen=40  seq=0 win=1024 
+SENT (0.0052s) ICMP [172.31.99.2 > 172.31.99.20 Timestamp request (type=13/code=0) id=10516 seq=0 orig=0 recv=0 trans=0] IP [ttl=59 id=37810 iplen=40 ]
+SENT (2.0067s) ICMP [172.31.99.2 > 172.31.99.20 Timestamp request (type=13/code=0) id=55308 seq=0 orig=0 recv=0 trans=0] IP [ttl=38 id=56280 iplen=40 ]
+SENT (2.0067s) TCP 172.31.99.2:54949 > 172.31.99.20:80 A ttl=57 id=1688 iplen=40  seq=0 win=1024 
+SENT (2.0067s) TCP 172.31.99.2:54949 > 172.31.99.20:443 S ttl=55 id=28248 iplen=44  seq=2175816505 win=1024 <mss 1460>
+SENT (2.0068s) ICMP [172.31.99.2 > 172.31.99.20 Echo request (type=8/code=0) id=17653 seq=0] IP [ttl=51 id=57393 iplen=28 ]
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 3.02 seconds
+
+### nmap -sn --send-ip --packet-trace -n 172.31.99.10 (controle: host normal)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+SENT (0.0075s) ICMP [172.31.99.2 > 172.31.99.10 Echo request (type=8/code=0) id=36672 seq=0] IP [ttl=57 id=43361 iplen=28 ]
+SENT (0.0075s) TCP 172.31.99.2:39147 > 172.31.99.10:443 S ttl=55 id=30500 iplen=44  seq=4101444294 win=1024 <mss 1460>
+SENT (0.0076s) TCP 172.31.99.2:39147 > 172.31.99.10:80 A ttl=58 id=20299 iplen=40  seq=0 win=1024 
+SENT (0.0076s) ICMP [172.31.99.2 > 172.31.99.10 Timestamp request (type=13/code=0) id=55384 seq=0 orig=0 recv=0 trans=0] IP [ttl=50 id=3852 iplen=40 ]
+RCVD (0.0075s) ICMP [172.31.99.10 > 172.31.99.2 Echo reply (type=0/code=0) id=36672 seq=0] IP [ttl=64 id=48206 iplen=28 ]
+Nmap scan report for 172.31.99.10
+Host is up (0.000081s latency).
+MAC Address: A2:06:88:06:7F:3B (Unknown)
+Nmap done: 1 IP address (1 host up) scanned in 0.05 seconds

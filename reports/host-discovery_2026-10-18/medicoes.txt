@@ -1,0 +1,177 @@
+LIBERTUS host-discovery lab — 2026-10-18T14:26:14-05:00
+nmap: Nmap version 7.95 ( https://nmap.org )
+
+[*] recriando topologia
+
+[*] captura do discovery padrão (root, --send-ip, /24)
+
+########## nmap -sn --send-ip -n 172.31.99.0/24 (root, sem ARP, 5 probes IP)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:26 UTC
+Nmap scan report for 172.31.99.1
+Host is up (0.00012s latency).
+MAC Address: D6:F5:00:ED:AA:24 (Unknown)
+Nmap scan report for 172.31.99.10
+Host is up (0.00045s latency).
+MAC Address: 22:EA:F7:79:E7:E8 (Unknown)
+Nmap scan report for 172.31.99.2
+Host is up.
+Nmap done: 256 IP addresses (3 hosts up) scanned in 26.28 seconds
+### tempo: 26384 ms
+
+########## nmap -sn --reason -n 172.31.99.20 (ARP decide: firewall DROP) 
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:26 UTC
+Nmap scan report for 172.31.99.20
+Host is up, received arp-response (0.000055s latency).
+MAC Address: 72:60:4E:1C:45:D7 (Unknown)
+Nmap done: 1 IP address (1 host up) scanned in 0.06 seconds
+### tempo: 177 ms
+
+########## nmap -sn --send-ip --reason -n 172.31.99.20 (sem ARP: ICMP filtrado)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:26 UTC
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 3.02 seconds
+### tempo: 3127 ms
+
+########## nmap -sn --send-ip --reason -n 172.31.99.30 (DROP total, sem serviço)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:26 UTC
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 3.02 seconds
+### tempo: 3179 ms
+
+########## nmap -sn --send-ip --reason -n 172.31.99.40 (ICMP REJECT host-unreachable)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:26 UTC
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 3.02 seconds
+### tempo: 3159 ms
+
+########## nmap -sn --send-ip --reason -n -PS8080 172.31.99.20 (probe na porta que passa)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:26 UTC
+Nmap scan report for 172.31.99.20
+Host is up, received syn-ack ttl 64 (0.000087s latency).
+MAC Address: 72:60:4E:1C:45:D7 (Unknown)
+Nmap done: 1 IP address (1 host up) scanned in 0.05 seconds
+### tempo: 152 ms
+
+########## nmap -sn --send-ip --reason -n -PA80 172.31.99.40 (ACK em porta fechada/filtrada)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:26 UTC
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 2.02 seconds
+### tempo: 2124 ms
+
+[*] captura da descoberta NÃO-ROOT (connect 80/443 = o que o proxychains faz)
+
+########## nmap -sn -n 172.31.99.20 como nobody (uid 65534, sem raw socket)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 3.00 seconds
+### tempo: 3114 ms
+--- pacotes do connect() ---
+19:27:00.561875 IP 172.31.99.2.54056 > 172.31.99.20.80: Flags [S], seq 3506706358, win 64240, options [mss 1460,sackOK,TS val 1548028681 ecr 0,nop,wscale 10], length 0
+19:27:00.561925 IP 172.31.99.2.37306 > 172.31.99.20.443: Flags [S], seq 575173784, win 64240, options [mss 1460,sackOK,TS val 4268735202 ecr 0,nop,wscale 10], length 0
+19:27:02.562729 IP 172.31.99.2.53746 > 172.31.99.20.443: Flags [S], seq 3630790113, win 64240, options [mss 1460,sackOK,TS val 2148715466 ecr 0,nop,wscale 10], length 0
+19:27:02.562783 IP 172.31.99.2.40966 > 172.31.99.20.80: Flags [S], seq 4264137771, win 64240, options [mss 1460,sackOK,TS val 819521315 ecr 0,nop,wscale 10], length 0
+
+########## nmap -sn -n -PS8080 172.31.99.20 como nobody (probe explícito)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+Nmap scan report for 172.31.99.20
+Host is up (0.00012s latency).
+Nmap done: 1 IP address (1 host up) scanned in 0.00 seconds
+### tempo: 138 ms
+
+########## nmap -p8080 --send-ip -n 172.31.99.20 (sem ARP, sem -Pn)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 3.08 seconds
+### tempo: 3209 ms
+
+########## nmap -p8080 --send-ip -Pn -n --reason 172.31.99.20 (com -Pn)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+Nmap scan report for 172.31.99.20
+Host is up, received user-set (0.000065s latency).
+
+PORT     STATE SERVICE    REASON
+8080/tcp open  http-proxy syn-ack ttl 64
+MAC Address: 72:60:4E:1C:45:D7 (Unknown)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.10 seconds
+### tempo: 209 ms
+
+########## nmap -p8080 -n --reason 172.31.99.30 (DROP total: estado filtered)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+Nmap scan report for 172.31.99.30
+Host is up, received arp-response (0.000041s latency).
+
+PORT     STATE    SERVICE    REASON
+8080/tcp filtered http-proxy no-response
+MAC Address: 02:AF:B6:D2:23:FD (Unknown)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.30 seconds
+### tempo: 412 ms
+
+########## nmap -Pn -p8080 -n 172.31.99.0/24 (custo de varrer /24 sem discovery)
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-18 19:27 UTC
+Nmap scan report for 172.31.99.1
+Host is up (0.000047s latency).
+
+PORT     STATE SERVICE
+8080/tcp open  http-proxy
+MAC Address: D6:F5:00:ED:AA:24 (Unknown)
+
+Nmap scan report for 172.31.99.10
+Host is up (0.000016s latency).
+
+PORT     STATE SERVICE
+8080/tcp open  http-proxy
+MAC Address: 22:EA:F7:79:E7:E8 (Unknown)
+
+Nmap scan report for 172.31.99.20
+Host is up (0.000035s latency).
+
+PORT     STATE SERVICE
+8080/tcp open  http-proxy
+MAC Address: 72:60:4E:1C:45:D7 (Unknown)
+
+Nmap scan report for 172.31.99.30
+Host is up (0.000020s latency).
+
+PORT     STATE    SERVICE
+8080/tcp filtered http-proxy
+MAC Address: 02:AF:B6:D2:23:FD (Unknown)
+
+Nmap scan report for 172.31.99.40
+Host is up (0.000028s latency).
+
+PORT     STATE SERVICE
+8080/tcp open  http-proxy
+MAC Address: 8A:61:E0:EB:5B:5D (Unknown)
+
+Nmap scan report for 172.31.99.2
+Host is up (0.000060s latency).
+
+PORT     STATE  SERVICE
+8080/tcp closed http-proxy
+
+Nmap done: 256 IP addresses (6 hosts up) scanned in 2.19 seconds
+### tempo: 2269 ms
+
+[*] pcaps: /home/libertus/LIBERTUS/reports/host-discovery_2026-10-18/sn_sendip.pcap , /home/libertus/LIBERTUS/reports/host-discovery_2026-10-18/connect.pcap
+[*] resumo de pacotes (sn_sendip.pcap):
+     15 ARP, Request who-has 172.31.99.98 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.95 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.94 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.93 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.92 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.91 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.90 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.89 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.86 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.85 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.84 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.83 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.82 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.81 tell 172.31.99.2,
+     15 ARP, Request who-has 172.31.99.80 tell 172.31.99.2,
+
+[*] derrubando topologia (use --keep para manter)
+
+[ok] evidências em /home/libertus/LIBERTUS/reports/host-discovery_2026-10-18

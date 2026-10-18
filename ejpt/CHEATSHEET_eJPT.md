@@ -29,6 +29,27 @@ nmap -sV -oN scan.txt IP             # salvar output em arquivo
 - `-sV` versão de serviço · `-sC` scripts default · `-O` OS (pode ser unreliable)
 - `-p 80,443,445` portas específicas · `-p-` todas · `-T4` rápido
 - `-Pn` pular ping · `-oN arquivo` salvar · `-v` verbose
+- `--reason` **mostra POR QUE o nmap achou o host up/down** — usar sempre que
+  o resultado parecer errado (`arp-response`, `syn-ack`, `user-set`, `no-response`)
+
+### "Host seems down" — a decisão medida (lab 18/10/2026)
+| Situação | O que decide | O que fazer |
+|---|---|---|
+| Mesma rede local (/24) | **ARP** — responde mesmo com `iptables -P INPUT DROP` | se diz down, o host está desligado; não precisa `-Pn` |
+| Através de roteador/VPN/pivô | ICMP echo + SYN/443 + ACK/80 + timestamp | **`-Pn` sempre** — host com ICMP filtrado é invisível |
+| Via proxychains (SOCKS) | só `connect()` em **80 e 443** | `-Pn` é obrigatório; `-sn` pelo proxy não descobre nada |
+| Descobrir por SOCKS sem `-Pn` | `-PS<porta real>` (vira connect) | `nmap -sn -PS22,80,443,445,8080 IP` |
+| `-p X` deu "host down" | a porta **nunca foi testada** | repetir com `-Pn` antes de concluir |
+
+```bash
+# custo medido numa /24: discovery 26,3 s (e esconde ICMP-filtrado)
+#                        -Pn       2,2 s (e mostra tudo)
+nmap -sn -PS22,80,443,445,8080 IP     # discovery em rede roteada
+nmap -Pn -p- -T4 IP                   # pivô: não perde tempo com ping
+nmap -Pn -p8080 --reason IP           # open/syn-ack vs filtered/no-response
+```
+Regra: `filtered` ≠ `down`. `filtered` = host vivo, firewall dropando.
+Análise completa + pcaps: `evolucao/analise_2026-10-18_host-discovery-nmap-arp.md`
 
 ### NSE relevantes no exame
 ```bash

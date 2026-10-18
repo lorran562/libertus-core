@@ -1,0 +1,17 @@
+--- tgt-fw
+-P INPUT DROP
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8080 -j ACCEPT
+--- tgt-drop
+-P INPUT DROP
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+--- tgt-rej
+-P INPUT DROP
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p icmp -j REJECT --reject-with icmp-host-unreachable
+-A INPUT -p tcp -m tcp --dport 8080 -j ACCEPT
