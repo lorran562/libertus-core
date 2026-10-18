@@ -172,6 +172,41 @@ def get_recent_git_commits(n=10):
     except Exception:
         return "Git indisponível"
 
+def get_ultimo_artefato(max_idade_horas=24, linhas=60):
+    """Acha o artefato real mais recente (analise/pesquisa) e devolve o começo dele.
+
+    Motivo (18/10/2026): a reflexão automática só olhava loop.log + git log.
+    Quando o trabalho da sessão ainda não tinha commit, o modelo lia o ruído do
+    daemon e concluía "nada novo foi aprendido" — reflexão errada sobre uma
+    sessão que tinha produzido análise técnica. O artefato é o sinal mais forte
+    do que a sessão realmente fez; entra no contexto antes do log.
+    """
+    base = os.path.join(LIBERTUS_ROOT, 'evolucao')
+    if not os.path.isdir(base):
+        return None
+    limite = datetime.datetime.now().timestamp() - max_idade_horas * 3600
+    candidatos = []
+    for nome in os.listdir(base):
+        if not (nome.startswith('analise_') or nome.startswith('pesquisa_')):
+            continue
+        caminho = os.path.join(base, nome)
+        try:
+            mtime = os.path.getmtime(caminho)
+        except OSError:
+            continue
+        if mtime >= limite:
+            candidatos.append((mtime, caminho))
+    if not candidatos:
+        return None
+    _, caminho = max(candidatos)
+    try:
+        with open(caminho, encoding='utf-8', errors='replace') as f:
+            texto = ''.join(f.readlines()[:linhas])
+    except OSError:
+        return None
+    return f"{os.path.basename(caminho)}\n{texto.strip()}"
+
+
 def get_recent_logs(lines=30):
     """Pega as últimas linhas do loop.log."""
     log_path = os.path.join(LIBERTUS_ROOT, 'logs', 'loop.log')
@@ -287,16 +322,29 @@ def reflexao_interativa():
 
     salvar_reflexao(texto, modo='manual')
 
-def reflexao_automatica():
+def reflexao_automatica(notas=None):
     """Modo automático: Claude analisa a sessão e gera reflexão."""
     print("\n[*] Coletando contexto da sessão...")
 
     # Coleta contexto
     memorias = get_recent_memories(15)
     commits = get_recent_git_commits(8)
+    artefato = get_ultimo_artefato()
     logs = get_recent_logs(20)
 
     contexto_parts = []
+
+    # O trabalho da sessão vem PRIMEIRO — log do daemon é o último e vem marcado
+    # como ruído. Sem isso o modelo narra o loop e ignora o que foi produzido.
+    if notas:
+        contexto_parts.append("=== TRABALHO DESTA SESSÃO (informado por quem executou) ===")
+        contexto_parts.append(notas)
+        contexto_parts.append("")
+
+    if artefato:
+        contexto_parts.append("=== ARTEFATO REAL PRODUZIDO NA SESSÃO (evolucao/) ===")
+        contexto_parts.append(artefato)
+        contexto_parts.append("")
 
     if memorias:
         contexto_parts.append("=== MEMÓRIAS DA SESSÃO ===")
@@ -304,10 +352,10 @@ def reflexao_automatica():
             dt = m.get('created_at', '')[:16].replace('T', ' ')
             contexto_parts.append(f"[{m['tipo']}] {dt} — {m['titulo']}")
 
-    contexto_parts.append("\n=== COMMITS GIT ===")
+    contexto_parts.append("\n=== COMMITS GIT (48h) ===")
     contexto_parts.append(commits)
 
-    contexto_parts.append("\n=== ÚLTIMAS AÇÕES DO LOOP ===")
+    contexto_parts.append("\n=== RUÍDO DO DAEMON (NÃO é o trabalho da sessão — ignore para julgar aprendizado) ===")
     contexto_parts.append(logs)
 
     contexto = "\n".join(contexto_parts)
@@ -327,6 +375,22 @@ def reflexao_automatica():
 def main():
     args = sys.argv[1:]
 
+    # --notas <arquivo|texto>: descrição do trabalho real desta sessão.
+    # Sem isso, o modo --auto depende só de artefato/commits e pode narrar o log
+    # do daemon em vez do trabalho (ver get_ultimo_artefato).
+    notas = None
+    for flag in ('--notas', '--contexto'):
+        if flag in args:
+            i = args.index(flag)
+            if i + 1 < len(args):
+                valor = args[i + 1]
+                if os.path.isfile(valor):
+                    with open(valor, encoding='utf-8', errors='replace') as f:
+                        notas = f.read().strip()
+                else:
+                    notas = valor
+                args = args[:i] + args[i + 2:]
+
     if '--read' in args or '--ler' in args:
         n = 5
         for a in args:
@@ -336,19 +400,19 @@ def main():
         return
 
     if '--auto' in args:
-        reflexao_automatica()
+        reflexao_automatica(notas)
         return
 
     if '--interativo' in args or not args:
         # Padrão: tenta automático, cai no interativo se falhar
         if ANTHROPIC_KEY or GROQ_KEY:
-            reflexao_automatica()
+            reflexao_automatica(notas)
         else:
             print("[!] ANTHROPIC_API_KEY/GROQ_API_KEY não encontradas. Modo interativo.")
             reflexao_interativa()
         return
 
-    print("Uso: session_reflect.py [--auto | --interativo | --read [N]]")
+    print("Uso: session_reflect.py [--auto [--notas <arquivo|texto>] | --interativo | --read [N]]")
 
 if __name__ == '__main__':
     main()
