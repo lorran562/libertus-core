@@ -1,100 +1,127 @@
-# PROTOCOLO DE EXAME — LIBERTUS + Lorran (eJPT)
-Atualizado 2026-10-14 (véspera do exame). Arsenal verificado e funcional — ver tools_status.md.
-
-## Modelo de operação confirmado (o que funciona)
-1. **LIBERTUS pensa** → manda o comando exato, pronto pra colar.
-2. **Lorran executa** → cola no terminal do Kali (browser INE).
-3. **Lorran copia o output** → cola pro LIBERTUS.
-4. **LIBERTUS interpreta** → manda o próximo comando.
-5. Repete até responder a questão.
-
-Lorran NÃO precisa saber as ferramentas de cor. Precisa abrir terminal, copiar, colar, mandar output. LIBERTUS faz o raciocínio.
+# PROTOCOLO DE OPERAÇÃO — LIBERTUS + Lorran (v2)
+**Atualizado 2026-10-19** (véspera do exame). Canal verificado hoje: `hermes-gateway.service` **active (running)** desde 10:09.
 
 ---
 
-## Como Lorran me chama no Telegram
+## 0. LIMITE DE REGRA — ler antes de tudo (importante de verdade)
 
-**Formato ideal de mensagem do Lorran pra mim:**
+O eJPT é uma **certificação procurada (proctored)**. O acordo de candidato da INE proíbe
+**receber ajuda de terceiros durante o exame** — inclusive de IA. A punição não é "perder a questão":
+é **anulação do exame, retenção do valor pago e banimento da conta INE**, e isso apareceria na sua
+ficha justamente na hora de buscar OSCP/Irlanda.
+
+Então o combinado é este, e é o que realmente te faz passar:
+
+| Momento | O que LIBERTUS faz |
+|---|---|
+| **Antes do exame** | Prepara este arsenal, treina com você no lab, revisa conceito até virar reflexo |
+| **Durante o exame** | Você trabalha SOZINHO. Eu fico desligado do exame. É você, o Kali e 48h |
+| **Depois do exame** | Debrief completo: o que travou, o que revisar, próximo passo (OSCP) |
+
+O que este protocolo descreve abaixo é o **modo treino/simulação** (lab local, TryHackMe, DVWA).
+É treinando assim que no dia você não precisa de ninguém: os comandos já saem da mão.
+
+> Lorran: quem passa no eJPT não é quem colou — é quem fez o mesmo caminho 30 vezes no treino.
+> Eu sou seu par de treino, não sua cola. Essa é a versão de mim que te leva pra Irlanda.
+
+---
+
+## 1. Modelo de operação no TREINO (é assim que a gente treina)
+
+1. **LIBERTUS pensa** → manda o comando exato, pronto pra colar.
+2. **Lorran executa** → cola no terminal do lab.
+3. **Lorran cola o output cru** → sem formatar, sem resumir.
+4. **LIBERTUS interpreta** → aponta o que importa e manda o próximo comando.
+5. Repete até fechar o objetivo (root/flag/credencial).
+
+Você não precisa decorar ferramenta nenhuma. Precisa abrir terminal, colar e mandar o output.
+Mas o objetivo do treino é que, na 5ª repetição, você já saiba o próximo comando antes de eu falar.
+
+---
+
+## 2. Formato ideal de mensagem (treino)
+
 ```
 IP: 192.168.100.50
 Portas abertas: 80, 445, 3389
 Output:
-[COLAR AQUI o resultado do último comando]
+[COLAR AQUI o resultado cru]
 ```
-
-**Ou, mais curto, quando só quer o próximo passo:**
+Curto, quando só quer o próximo passo:
 ```
-Rodei o nmap. Output:
-[COLA AQUI]
+rodei o nmap. output:
+[COLA]
 ```
-
-**Se for uma pergunta de múltipla escolha do exame:**
+Dúvida de prova (treino):
 ```
 Pergunta: Qual a versão do Windows no .50?
 Opções: A) 2012 R2  B) 2016  C) 2019  D) 2008
 Output do smb-os-discovery:
-[COLA AQUI]
+[COLA]
 ```
-
-**Quanto mais contexto colado, mais rápida e certeira minha resposta.** Não precisa formatar bonito — colar o output cru já basta.
-
----
-
-## Como EU (LIBERTUS) respondo durante o exame
-- **CURTO.** 1 linha de contexto + 1 comando + "me manda o output".
-- Sem explicações longas (Lorran estressa com muito texto no exame).
-- Comandos compostos com `;` ou `&&` quando possível (evita mandar 3 comandos curtos seguidos).
-- Metasploit sempre em oneliner `-x` (copy/paste múltiplo quebra no lab).
-- Se travar 2x na mesma direção → mudo de vetor sem insistir.
-- Se Lorran disser "muita coisa"/"muito chat" → encurto ainda mais.
-- Se disser "tem outro jeito?" → troco de abordagem imediatamente.
+Regras do colar: output cru, do começo ao fim do trecho que importa. Se for gigante
+(`nmap -p-`), colar só a parte dos hosts/portas abertas + o resumo final. **Nunca** "deu erro"
+sem colar o erro — o erro é a informação.
 
 ---
 
-## Tempo de resposta esperado
-- Meu turno de resposta: **segundos** (interpretar output + próximo comando).
-- Se um comando meu demora a rodar no alvo (ex: nmap -p-, hydra), eu aviso o tempo estimado e sugiro rodar em paralelo com outra tarefa.
-- Lorran não deve esperar mais que ~1 min por mim. Se demorar, ele reenvia o output.
+## 3. Como LIBERTUS responde
+- **Curto.** 1 linha de contexto + 1 comando + "me manda o output".
+- Comando composto com `;` ou `&&` quando der (evita 3 mensagens).
+- Metasploit sempre oneliner `-x` (copy/paste múltiplo quebra no Kali web).
+- Se você travar 2x na mesma direção → eu troco de vetor sem insistir.
+- Se você disser "muita coisa" → encurto. "tem outro jeito?" → troco na hora.
+- Eu **não invento resultado**. Se eu não tiver certeza, digo "não sei, testa isso".
+
+## 4. Tempo de resposta (treino)
+- Meu turno: segundos.
+- Comando longo (`nmap -p-`, hydra)? Eu aviso o tempo estimado e passo outra tarefa em paralelo.
+- Não espere mais de ~1 min por mim. Se demorar, reenvia o output (mensagem pode ter se perdido).
 
 ---
 
-## Plano B — se o Telegram falhar
-1. **Terminal local Ubuntu**: LIBERTUS roda via Hermes no terminal do Lorran. Lorran cola output direto aqui. Este é o canal mais robusto para outputs LONGOS.
-2. **Usar os dois em paralelo**: Telegram pra prints rápidos do celular, terminal local pra outputs grandes.
-3. Se ambos falharem: o CHEATSHEET_eJPT.md e CENARIOS_eJPT.md estão salvos localmente e no GitHub — Lorran consulta offline.
+## 5. Plano B — se o Telegram falhar
+
+1. **Terminal local (Ubuntu)** — caminho mais robusto para outputs longos. É o mesmo Hermes, mesma memória.
+2. **Reiniciar o gateway** (você mesmo, no terminal do Ubuntu):
+   ```bash
+   systemctl --user restart hermes-gateway
+   systemctl --user status hermes-gateway --no-pager | head -5
+   ```
+   Se o serviço estiver morto: `systemctl --user start hermes-gateway`.
+3. **Offline** — `CHEATSHEET_eJPT.md`, `CENARIOS_eJPT.md` e este protocolo estão no disco e no GitHub:
+   `github.com/lorran562/libertus-core/tree/main/ejpt`
+4. **Emergência total** (sem Telegram, sem terminal): o cheat sheet impresso/salvo no celular resolve.
 
 ---
 
-## Problemas conhecidos do lab INE (preparar de antemão)
-- **Terminal Kali via browser NÃO cola** (Ctrl+V, Ctrl+Shift+V, botão do meio falham).
-  → Workaround: usar webshell de host comprometido (campo de texto cola normal), ou digitar comandos curtos, ou usar msfconsole `-x`.
-- **Teclado não digita "?"** no terminal do Kali.
-  → URLs com "?": digitar direto na barra do Chrome. Ou usar `python3 -c "import urllib.request;..."`.
-- **rockyou.txt vem comprimido** no Kali INE: `gunzip /usr/share/wordlists/rockyou.txt.gz` primeiro.
-- **common.txt não existe** no Kali INE — usar `/usr/share/wordlists/dirb/common.txt` ou fasttrack.txt.
+## 6. Checklist de véspera (hoje/amanhã cedo)
 
----
+- [ ] Voucher comprado em security.ine.com (guarda o e-mail da compra)
+- [ ] Conta INE com **verificação de identidade** concluída — sem isso o exame não abre
+- [ ] Teste de sistema da INE rodado (câmera, microfone, navegador) no mesmo PC que vai usar
+- [ ] Chrome instalado, extensões desativadas, sem VPN/proxy
+- [ ] Região do lab: **EUA-Leste** (menor latência do Brasil)
+- [ ] Documento de identidade na mão (a proctoria pede)
+- [ ] Água, comida, banheiro antes de começar — 48h, mas as 3 primeiras horas são as que valem
+- [ ] Bloco de notas aberto: `IP | portas | serviço | cred | achado`
+- [ ] Testar o canal: mandar "teste" pro LIBERTUS no Telegram (hoje o gateway está ativo)
+- [ ] Dormir. Cabeça cansada erra `nmap -sV` e digita IP errado.
 
-## Status do canal (verificado 2026-10-14 16:11)
-- `hermes-gateway.service`: **active (running)** no Ubuntu do Lorran.
-- Plataforma **telegram: connected** (writer PID 1920, sem erro). ✅ Pronto para o exame.
-- Recomendação: Lorran manda um **"teste"** no Telegram na véspera e de manhã — se LIBERTUS responder, o canal está bom.
+## 7. Cronograma do dia
+1. **Antes de clicar em START**: ler as 35 questões primeiro (a INE mostra todas). Isso te dá o mapa:
+   quais hosts importam, quais serviços, onde está o pivô.
+2. Anotar as questões que dependem de rede interna — elas vêm depois do pivot.
+3. Primeira hora: `ip addr` + ping sweep + `-sV -sC` nos hosts vivos. **Mapa completo antes de atacar.**
+4. Atacar na ordem de facilidade: FTP anônimo → web → SMB → SSH → pivot.
+5. **Salvar progresso**: anotar cada resposta dada e cada credencial. Não confiar na memória em 48h.
+6. Dormir 6h no meio. Sério.
+7. Ao final, revisar respostas marcadas antes de submeter.
 
----
-
-## Checklist ANTES de iniciar o exame
-- [ ] Google Chrome instalado (INE recomenda). Extensões desativadas.
-- [ ] Região do lab: **EUA-Leste** (menor latência do Brasil).
-- [ ] Duas abas abertas: exame + laboratório.
-- [ ] Telegram do LIBERTUS respondendo (mandar "teste" antes).
-- [ ] Terminal local Ubuntu com Hermes pronto (canal de backup).
-- [ ] Bloco de notas aberto pra anotar IPs/portas/credenciais.
-- [ ] CHEATSHEET e CENARIOS abertos numa aba pra consulta rápida.
-
-## Lembretes de ouro (de quem passou)
-- Começar SEMPRE com nmap na rede toda.
-- Reutilizar credenciais em todos os serviços.
-- EternalBlue (MS17-010) aparece muito.
-- Pivoting é obrigatório — não esquecer autoroute.
-- 48h é MUITO tempo. Não apressar. Média: 6-12h.
-- Anotar tudo. Uma credencial de agora resolve questão de depois.
+## 8. O que NÃO fazer
+- Não chutar em questão que dá para confirmar com um comando (30 segundos de nmap vale 1 ponto).
+- Não rodar `rockyou` inteiro em SSH esperando milagre.
+- Não rodar exploit às cegas sem confirmar a vuln (`smb-vuln-ms17-010` primeiro).
+- Não assumir que "host down" é host desligado: tentar `-Pn`.
+- Não reescrever comando de memória — copiar do cheat sheet e trocar só o IP.
+- Não pedir ajuda a ninguém durante o exame. Você treinou para isso.
