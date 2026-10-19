@@ -84,23 +84,62 @@ def sb(method, table, data=None, params=None):
         print(f"[Supabase erro] {e}")
         return None
 
+def contar_memorias(tipo=None):
+    """Contagem EXATA via header Content-Range.
+
+    O PostgREST trunca em 1000 linhas por request — `len(resultado)` com
+    limit=1000 reportava 1000 mesmo com 1532 memórias no banco (mentira silenciosa).
+    """
+    url = f"{SUPABASE_URL}/rest/v1/libertus_memoria?select=id"
+    if tipo:
+        url += f"&tipo=eq.{tipo}"
+    headers = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': f'Bearer {SUPABASE_KEY}',
+        'Prefer': 'count=exact',
+        'Range': '0-0',
+    }
+    req = urllib.request.Request(url, headers=headers, method='GET')
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            cr = r.headers.get('Content-Range', '')
+    except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
+        cr = e.headers.get('Content-Range', '')
+    except Exception as e:
+        print(f"[Supabase count erro] {e}")
+        return None
+    total = cr.split('/')[-1].strip()
+    return int(total) if total.isdigit() else None
+
+
 # ── Claude API ────────────────────────────────────────────────────────────────
+
+_anthropic_sem_credito = False
+_llm_falhou = False
 
 def claude(prompt, max_tokens=2048, model="claude-haiku-4-5"):
     """Chama Claude para raciocinar sobre a memória. Se o crédito Anthropic zerou,
     cai automaticamente pro Groq (gratuito) — a memória noturna não pode depender de billing."""
+    global _llm_falhou
     texto = None
     if ANTHROPIC_KEY:
         texto = _anthropic(prompt, max_tokens, model)
     if texto:
+        _llm_falhou = False
         return texto
     if GROQ_KEY:
         print("[*] Claude indisponível — usando fallback Groq.")
-        return _groq(prompt, max_tokens)
+        texto = _groq(prompt, max_tokens)
+        _llm_falhou = texto is None
+        return texto
+    _llm_falhou = True
     return None
 
 
 def _anthropic(prompt, max_tokens=2048, model="claude-haiku-4-5"):
+    global _anthropic_sem_credito
+    if _anthropic_sem_credito:
+        return None
     payload = json.dumps({
         "model": model,
         "max_tokens": max_tokens,
@@ -120,6 +159,14 @@ def _anthropic(prompt, max_tokens=2048, model="claude-haiku-4-5"):
         with urllib.request.urlopen(req, timeout=30) as r:
             resp = json.loads(r.read().decode())
             return resp['content'][0]['text']
+    except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
+        corpo = e.read().decode()[:300]
+        if 'credit balance' in corpo.lower() or 'billing' in corpo.lower():
+            _anthropic_sem_credito = True
+            print("[Claude] crédito Anthropic esgotado — desativado nesta execução (fallback Groq).")
+        else:
+            print(f"[Claude erro] HTTP {e.code}: {corpo}")
+        return None
     except Exception as e:
         print(f"[Claude erro] {e}")
         return None
@@ -237,15 +284,17 @@ def buscar_por_palavras(query, limit=10):
     resultados.sort(key=lambda x: x.get('relevancia', 0), reverse=True)
     return resultados[:limit]
 
-def get_git_log(horas=24):
-    """Commits recentes — o que foi construído."""
+def get_git_log(horas=24, limite=12):
+    """Commits recentes — o que foi construído. Inclui o corpo da mensagem
+    (subject sozinho não diz O QUE foi medido/aprendido)."""
     try:
         resultado = subprocess.check_output(
-            ['git', 'log', f'--since={horas} hours ago', '--oneline'],
+            ['git', 'log', f'--since={horas} hours ago',
+             f'-{limite}', '--pretty=format:* %s%n%b'],
             cwd=LIBERTUS_ROOT,
             stderr=subprocess.DEVNULL
         ).decode().strip()
-        return resultado or "(sem commits recentes)"
+        return resultado[:3000] or "(sem commits recentes)"
     except Exception:
         return "(git indisponível)"
 
@@ -459,10 +508,27 @@ def consolidar_automatico():
     """
     memorias_recentes = get_memorias_recentes(15)
     commits = get_git_log(24)
-    
+
+    # Reflexão mais recente: sem isso o prompt só via TÍTULOS e subjects de commit,
+    # e o LLM respondia [] achando que não havia nada — o aprendizado do dia
+    # (3.9k chars) ficava invisível para a consolidação.
+    reflexao_txt = ""
+    refl = sb('GET', 'libertus_memoria', params={
+        'select': 'titulo,conteudo,created_at',
+        'tipo': 'eq.reflexao',
+        'order': 'created_at.desc',
+        'limit': '1',
+    }) or []
+    if refl:
+        r = refl[0]
+        reflexao_txt = (r.get('conteudo') or '')[:2500]
+
     contexto = f"""
 === MEMÓRIAS RECENTES ===
 {chr(10).join([f"[{m['tipo']}] {m.get('created_at','')[:10]} — {m['titulo']}" for m in memorias_recentes])}
+
+=== REFLEXÃO MAIS RECENTE (o que eu aprendi de fato) ===
+{reflexao_txt or '(sem reflexão registrada)'}
 
 === COMMITS RECENTES ===
 {commits}
@@ -562,7 +628,10 @@ def consolidacao_noturna():
     print("\n[2/3] Revisando memórias antigas de baixa relevância...")
     memorias_antigas = sb('GET', 'libertus_memoria', params={
         'select': 'id,tipo,titulo,relevancia,created_at',
-        'relevancia': 'lte.5',
+        # Só decai o que AINDA tem relevância: com lte.5 puro, memórias já em 1
+        # voltavam toda noite (1→1) e apareciam como "esquecidas" no log,
+        # gastando tokens do LLM e rodando decaimento múltiplo na mesma noite.
+        'and': '(relevancia.gte.2,relevancia.lte.5)',
         'order': 'created_at.asc',
         'limit': '20'
     }) or []
@@ -577,15 +646,17 @@ def consolidacao_noturna():
         print(f"  {len(para_esquecer)} memória(s) com relevância reduzida")
     
     # 3. Resumo
-    total = sb('GET', 'libertus_memoria', params={
-        'select': 'id',
-        'limit': '1000'
-    })
-    total_count = len(total) if total else 0
-    
+    total_count = contar_memorias()
+
     print(f"\n[3/3] Estado da memória:")
-    print(f"  Total de memórias: {total_count}")
+    if total_count is None:
+        print("  Total de memórias: indisponível (falha no count do Supabase)")
+    else:
+        print(f"  Total de memórias: {total_count}")
     print(f"  Novas esta noite: {salvos}")
+    if _llm_falhou:
+        print("  [FALHA] LLM não respondeu (Claude sem crédito + Groq 429) —")
+        print("          a consolidação NÃO analisou a sessão. 0 novas não significa 'nada novo'.")
     print(f"\n✓ Consolidação noturna concluída.")
 
 def status_memoria():
@@ -599,19 +670,25 @@ def status_memoria():
              'reflexao', 'objetivo', 'pentest']
     
     print("\n  Por tipo:")
-    total = 0
-    for tipo in tipos:
-        result = sb('GET', 'libertus_memoria', params={
-            'select': 'id',
-            'tipo': f'eq.{tipo}',
-            'limit': '1000'
-        })
-        count = len(result) if result else 0
-        if count > 0:
-            print(f"    {tipo:<15} {count:>4}")
-            total += count
-    
-    print(f"    {'TOTAL':<15} {total:>4}")
+    # Descoberta dinâmica: os 7 tipos fixos cobriam só 84 de 1532 memórias.
+    tipos_reais = {}
+    offset = 0
+    while True:
+        lote = sb('GET', 'libertus_memoria', params={
+            'select': 'tipo',
+            'limit': '1000',
+            'offset': str(offset),
+        }) or []
+        for m in lote:
+            t = m.get('tipo') or 'sem_tipo'
+            tipos_reais[t] = tipos_reais.get(t, 0) + 1
+        if len(lote) < 1000:
+            break
+        offset += 1000
+
+    for tipo, count in sorted(tipos_reais.items(), key=lambda kv: -kv[1]):
+        print(f"    {tipo:<24} {count:>4}")
+    print(f"    {'TOTAL':<24} {sum(tipos_reais.values()):>4}")
     
     # Memórias mais relevantes
     print("\n  Top 5 memórias (mais relevantes):")
