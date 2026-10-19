@@ -85,6 +85,33 @@ def _dias_desde(iso_ou_ts):
 
 # ── fontes ───────────────────────────────────────────────────────────────────
 
+def _resumo_reflexao(conteudo, limite=110):
+    """Primeira frase útil de uma reflexão.
+
+    Motivo: os títulos das reflexões automáticas são só data/hora
+    ("[REFLEXÃO AUTO] 19/10/2026 10:09"). No despertar de sessão eu lia cinco
+    datas e não fazia ideia do que tinha aprendido. O conteúdo é rico; o
+    problema era só o que eu mostrava de mim mesmo.
+    """
+    if not conteudo:
+        return ""
+    for linha in str(conteudo).splitlines():
+        linha = " ".join(linha.split())
+        limpa = linha.lstrip("#*-• ").strip()
+        if len(limpa) < 25 or limpa.lower().startswith(("reflexão", "reflexao")):
+            continue
+        if len(limpa) > limite:
+            corte = limpa[:limite]
+            ponto = max(corte.rfind(". "), corte.rfind(": "))
+            if ponto > 60:
+                limpa = corte[:ponto + 1]
+            else:
+                espaco = corte.rfind(" ")
+                limpa = (corte[:espaco] if espaco > 60 else corte) + "…"
+        return limpa
+    return ""
+
+
 def fonte_identidade():
     """Reaproveita nucleo/identidade.py — nao reescrevo o que ja funciona."""
     sys.path.insert(0, str(NUCLEO))
@@ -341,7 +368,9 @@ def construir_estado():
             "erros_identificados": hist.get("erros_identificados", []),
         },
         "reflexoes_supabase": [
-            {"data": (r.get("created_at") or "")[:10], "titulo": r.get("titulo")}
+            {"data": (r.get("created_at") or "")[:10],
+             "titulo": r.get("titulo"),
+             "resumo": _resumo_reflexao(r.get("conteudo"))}
             for r in sup.get("reflexoes", [])
         ],
         "decisoes_tecnicas": [
@@ -442,7 +471,12 @@ def gerar_briefing(estado, recall=None):
         L.append("")
     L.append("## REFLEXOES RECENTES (Supabase)")
     for r in (estado["reflexoes_supabase"] or [])[:5]:
-        L.append(f"- [{r['data']}] {r['titulo']}")
+        resumo = (r.get("resumo") or "").strip()
+        # Titulo automatico e so data/hora: o resumo e o que diz o que aprendi.
+        if resumo:
+            L.append(f"- [{r['data']}] {resumo}")
+        else:
+            L.append(f"- [{r['data']}] {r['titulo']}")
     if not estado["reflexoes_supabase"]:
         L.append("- (nenhuma)")
     L.append("")
