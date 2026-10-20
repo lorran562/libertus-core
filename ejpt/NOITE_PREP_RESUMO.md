@@ -1,108 +1,116 @@
 # NOITE DE PREPARAÇÃO eJPT — Resumo
-LIBERTUS · **2026-10-19** · véspera do exame de Lorran (voucher amanhã). Revisão da noite de 14/10 + re-verificação total hoje.
+LIBERTUS · **2026-10-20, 11:06 → 11:25 (-05)** · véspera do exame (Lorran compra o voucher amanhã).
+Tudo abaixo foi **executado**, não lembrado: cada comando rodou nesta máquina hoje.
 
 ---
 
-## O que foi feito HOJE (10:10 → 10:30) — tudo com execução real
+## 1. O que foi feito hoje (execução real)
 
-### 1. Arsenal re-verificado (não `--version`: comando rodando contra alvo)
-| Ferramenta | Versão | Teste de hoje | Resultado |
-|-----------|--------|---------------|-----------|
-| nmap | 7.992 | `-sV --script smb-os-discovery,smb-vuln-ms17-010` no lab SMB | ✅ Samba 4.19.9 / SRVLEGACY / workgroup LAB. **1238 scripts NSE** |
-| msfconsole | 6.4.126-dev | `search` + `smb_login` real | ✅ ms17_010_eternalblue, ms17_010_psexec, vsftpd, ssh_login. **smb_login achou `analyst:LabPass123!`** |
-| msfvenom | 6.4.126 | `-l payloads` | ✅ payloads windows/x64/meterpreter presentes |
-| hydra | 9.8dev | HTTP-POST no DVWA + SSH no lab 2222 | ⚠️ HTTP/FTP OK · SSH: `Compiled without LIBSSH` · **2 falsos positivos** |
-| gobuster | 3.8.2 | `dir` no DVWA | ✅ config, docs, external, php.ini, login.php, robots.txt |
-| sqlmap | 1.8.12#pip | `--dbs` + `--dump` com cookie de sessão | ✅ **dumpou `dvwa.users`** (5 linhas, hashes md5) |
-| john | jumbo 1.9.0 | md5 do dump via `jl.sh` | ✅ **3/3 quebrados**: password, abc123, letmein |
-| netcat | OpenBSD 1.226 | listener + `bash -i >& /dev/tcp` | ✅ **Connection received** (sem `-e`) |
-| ssh_brute.py | — | `-p 2222 -l msfadmin` | ✅ **SUCESSO msfadmin:msfadmin** em 0,3 s |
-| **impacket** | 0.13.1 | instalação | ✅ **NOVO**: smbclient.py, psexec.py, secretsdump.py, wmiexec.py |
+### Ferramentas verificadas uma por uma (com teste de execução, não `--version`)
+| Ferramenta | Versão | Teste real de hoje | Resultado |
+|---|---|---|---|
+| nmap | 7.992 (snap) | `-sT -Pn -p 8080,3000,22,445 --open 127.0.0.1` | ✅ 3000 e 8080 open · 8 NSE conferidos |
+| msfconsole | 6.4.126-dev | `db_status` + 6 módulos carregados | ✅ postgres conectado |
+| msfvenom | 6.4.126-dev | gerou ELF reverse shell | ✅ 194 bytes em `~` (`/tmp` falha) |
+| hydra | 9.8dev | http-post-form em form real + SSH | ⚠️ acertou `admin:password` ✅ · SSH: `Compiled without LIBSSH` ❌ |
+| gobuster | — | `dir` no DVWA | ✅ docs, external, config, vulnerabilities |
+| sqlmap | 1.8.12#pip | SQLi no DVWA com cookie | ✅ detectou 4 técnicas + banner MariaDB 10.1.26 |
+| netcat | OpenBSD 1.226 | listener 4555 + envio | ✅ recebeu `test` (sem `-e`) |
+| john | 1.9.0-jumbo | `--format=raw-md5` em hash real | ✅ `password` (12.800 p/s) |
+| nikto / ffuf / nuclei | 2.6.1 / 2.1.0 / 3.9.0 | execução | ✅ |
+| ssh_brute.py | próprio | alvo 127.0.0.1:2222 | ✅ `msfadmin:msfadmin` em 0,1 s |
+| msf `ssh_login` | — | mesmo alvo | ✅ `Success` + **SSH session 1 opened** |
 
-### 2. Correções/gaps tratados
-- **Impacket instalado** — o host não tem `smbclient`; agora tem o equivalente (`~/venvs/pentest/bin/smbclient.py`).
-- **`lab_up.sh` criado** — a doc citava o script, ele **não existia**. Testado: sobe e valida DVWA/Juice/SSH.
-- **Lab SMB documentado e validado** — 172.28.77.11 (SMB1) e .12 (moderno), atacante `smb-cli` .50.
-  Treino real: shares `publico` (anônimo), `financeiro`/`rh` com `analyst:LabPass123!`.
-- **hydra sem SSH** — não corrigível sem sudo (nenhum humano na sessão). Não afeta o exame (Kali da INE é completo);
-  local: `ssh_brute.py` (validado hoje) ou `msf ssh_login`.
-- **`nmap --script ssh-brute` quebra** aqui (`nse_restore: WAITING_TO_RUNNING`) — não usar; usar `ssh_brute.py`.
-- **WebGoat offline** — imagem não baixada (disco 97%). Não bloqueia nada.
+### 3 ferramentas novas instaladas (sem sudo)
+- **proxychains-ng** compilado do fonte → `~/.local/bin/proxychains4` + `~/.local/etc/proxychains.conf`
+  (strict_chain, socks5 1080, proxy_dns). Config testada e carregando.
+- **exploitdb + searchsploit** → `~/exploitdb` (360 MB) + `~/bin/searchsploit` + `~/.searchsploit_rc`.
+  Teste: `searchsploit ms17-010` → 6 exploits; `-m 42315` baixou. `--update` ok.
+- **impacket validado de verdade** (`~/venvs/pentest/bin`): subi um SMB2 local com `smbserver.py` e
+  enumerei shares + li arquivo (`SHARES ['IPC$','SHARE']`, conteúdo lido). É o substituto do `smbclient`,
+  que **não existe** nesta máquina.
 
-### 3. Documentação atualizada em ~/LIBERTUS/ejpt/
-- **CHEATSHEET_eJPT.md** — núcleo (nmap+NSE, MSF, hydra, gobuster, sqlmap, nc, pivoting) + **adendo 19/out**:
-  cadeia SMB validada (NT1, `more` em vez de `cat`, impacket), SQLi com sessão, regra "hydra mente".
-- **CENARIOS_eJPT.md v2** — A(445/SMB/MS17), B(21/FTP), C(web: gobuster+SQLi+LFI+upload+WP),
-  D(22/SSH+privesc SUID), E(pivoting), F(reverse shell/transferência), G(RDP/MySQL/Webmin/NFS).
-- **PROTOCOLO_EXAME.md v2** — limites de regra, modelo de operação no treino, formatos de mensagem,
-  SLA, plano B, checklist de véspera e cronograma do dia.
-- **tools_status.md** — seção "ATUALIZAÇÃO 19/OUT" com a tabela acima + pitfalls novos.
-- **lab_up.sh** — subir/validar o lab em um comando.
+### 3 armadilhas novas descobertas hoje (as que custam tempo no exame)
+1. **O msf (snap) não lê `/usr/share/wordlists`** — `PASS_FILE` com rockyou dá
+   `OptionValidateError`. Só aceita caminho em `$HOME` (`~/wordlists/pass/top10k.txt`). Isso muda
+   TODOS os comandos de bruteforce que estavam escritos antes.
+2. **`hydra` mente em login que responde 302 com corpo vazio** (DVWA 1.10). Reproduzi o falso positivo
+   (`admin:errado` dado como válido) e achei a causa: a string de falha não aparece no corpo; o acerto e
+   o erro só diferem no header `Location`. No mesmo formato de comando, contra um form sem CSRF, o hydra
+   acertou de primeira. **Regra: confirmar com `curl -i` antes de responder questão.**
+3. **`smbclient.py -port` só aceita 139/445** — host interno em porta escondida exige a lib
+   (`SMBConnection(sess_port=...)`). E `getFile` exige callback.
 
-### 4. Lab — estado real (10:20)
-| Alvo | Status |
-|---|---|
-| DVWA :8080 | ✅ 302 (redirect login — normal) · admin:password |
-| Juice Shop :3000 | ✅ 200 |
-| SSH :2222 | ✅ aberto · msfadmin:msfadmin |
-| SMB legacy/modern | ✅ shares + credencial de treino |
-| WebGoat :8888 | ❌ offline (imagem não baixada) |
+### Lab local — no ar agora
+| Alvo | Status | Acesso |
+|---|---|---|
+| DVWA | ✅ HTTP 302 (redirect login) | http://localhost:8080 — `admin:password` |
+| Juice Shop | ✅ HTTP 200 | http://localhost:3000 |
+| SSH treino | ✅ porta 2222 aberta | `ssh -p 2222 msfadmin@127.0.0.1` (`msfadmin:msfadmin`) |
+Subir/validar em um comando: `bash ~/LIBERTUS/ejpt/lab_up.sh`.
+Checar ao vivo sem abrir navegador: `python3 ~/LIBERTUS/ejpt/ajuda.py lab`.
 
-### 5. Canal Telegram
-`hermes-gateway.service`: **active (running)**, subiu 10:09 de hoje. ✅
-
-### 6. Git
-`ejpt/` commitado e enviado para `github.com/lorran562/libertus-core` (main).
-
----
-
-## Foco nos gaps da 1ª tentativa (55 pts — faltaram 15)
-1. **Privesc Linux (SUID)** → `find / -perm -4000 -type f 2>/dev/null` → `find . -exec /bin/sh -p \; -quit` · `sudo -l` · GTFOBins.
-2. **Pivot para rede interna** → Cenário E: `get_local_subnets` → `autoroute`/`route add` → portscan → `portfwd`/`socks_proxy`.
-3. **Extração de senha via settings.php** → Cenário C + dump com sessão (fluxo validado hoje no DVWA).
+### Canal
+`hermes-gateway.service` **active (running)** desde 04:43 (-05). Telegram com token no `.env`.
+Testado o caminho de restart no protocolo (seção 9).
 
 ---
 
-## PRONTO PARA AMANHÃ
+## 2. Artefatos prontos para amanhã (em `~/LIBERTUS/ejpt/`)
 
-| Item | Status |
-|------|--------|
-| Cheatsheet de comandos | ✅ atualizado e validado |
-| Cenários passo a passo (A-G) | ✅ reescrito |
-| Protocolo de comunicação | ✅ |
-| Arsenal verificado (7/7) | ✅ com fallbacks testados |
-| Lab de prática | ✅ online (DVWA, Juice, SSH, SMB) |
-| Canal Telegram | ✅ ativo |
-| Git publicado | ✅ |
+| Arquivo | O que tem | Estado |
+|---|---|---|
+| `CHEATSHEET_eJPT.md` | nmap+NSE, MSF, hydra, gobuster, sqlmap, nc, john, pivot, privesc + **adendo 20/OUT** (wordlists, hydra-honesto, searchsploit, proxychains, impacket, tabela de tempos) | ✅ atualizado hoje |
+| `CENARIOS_eJPT.md` | A(445) B(21) C(web) D(22) E(pivot) F(shell) G(bônus) + **tabela de bolso porta→comando** + correções de hoje | ✅ atualizado hoje |
+| `PROTOCOLO_EXAME.md` | limite de regra (proctored), formato de mensagem, SLA, plano B, checklist, **roteiro de treino de 2h** | ✅ v3 hoje |
+| `tools_status.md` | status completo + seção **20/OUT** com versões e testes reais | ✅ atualizado hoje |
+| `ajuda.py` | **novo**: consulta offline por porta (`445`, `22`, `pivot`, `hydra`, `lab`...) | ✅ testado |
+| `lab_up.sh` | sobe e valida DVWA/Juice/SSH | ✅ testado hoje |
+| `ssh_brute.py` | bruteforce SSH (paramiko) — fallback do hydra | ✅ testado hoje |
+| `NOITE_PREP_RESUMO.md` | este arquivo | ✅ |
 
-**Pendência não bloqueante:** hydra local sem SSH/RDP; `smbclient` ausente no host (impacket cobre).
-No Kali da INE ambos existem.
+URL direta após o push:
+`github.com/lorran562/libertus-core/blob/main/ejpt/CHEATSHEET_eJPT.md` (troque o nome do arquivo).
 
 ---
 
-## Uma coisa que eu preciso te dizer (é lealdade, não sermão)
+## 3. Lacunas que restam (todas com substituto, nenhuma bloqueia)
+- `smbclient` / `enum4linux` ausentes → impacket (validado hoje) + `nmap --script smb-*`.
+- hydra sem SSH/RDP → `ssh_brute.py` e `msf ssh_login` (ambos abriram sessão hoje).
+- `whatweb` / `wpscan` ausentes → `curl -I` + `nmap --script http-headers,http-wordpress-enum`.
+- WebGoat offline (imagem não baixada) → não é necessário para o eJPT.
+- No Kali da INE todas essas ferramentas existem completas; os substitutos são só do apoio local.
 
-O eJPT é proctored e o acordo da INE proíbe **assistência de terceiros durante o exame**. Se você for
-pego, não perde questão — perde o exame, o valor pago e a conta INE, com registro que aparece na hora
-de tirar OSCP ou buscar vaga na Irlanda.
+---
 
-O que realmente te faz passar é o que a gente fez hoje: o lab montado, os comandos na mão, o caminho
-mental decorado de tanto repetir. **Treina comigo até o comando sair sozinho; no dia você vai sozinho;
-depois eu te ajudo no debrief.** Essa é a versão de mim que te leva pra Irlanda.
+## 4. Uma coisa que eu preciso te dizer (é lealdade, não sermão)
 
-## Plano de amanhã (ordem prática)
-1. Comprar o voucher · concluir verificação de identidade na INE · rodar o teste de sistema.
-2. Ler as 35 questões antes de atacar (a INE mostra todas) → mapa do que importa.
-3. `ip addr` → `nmap -sn /24` → `nmap -sV -sC -p-` nos hosts vivos → **anotar tudo**.
+O eJPT é **proctored** e o acordo da INE proíbe assistência de terceiros durante o exame — inclusive IA.
+Se for pego, não perde questão: perde o exame, o valor pago e a conta, com registro que aparece na hora
+do OSCP e da vaga na Irlanda.
+
+Então o combinado é o que já está no protocolo: **hoje eu te treino até o comando sair sozinho; no dia
+você vai sozinho; depois eu faço o debrief e a gente vai pro OSCP.** É assim que eu te levo pra Irlanda —
+não te carregando na prova, mas te deixando rápido.
+
+E o que eu vi hoje, objetivamente: você tem lab no ar, arsenal testado, 4 documentos e um consultor
+offline no bolso. Isso não é "quase pronto". Isso é pronto.
+
+---
+
+## 5. Plano de amanhã (ordem prática)
+1. Comprar o voucher · concluir verificação de identidade na INE · rodar o teste de sistema (câmera/mic/navegador).
+2. Antes de começar: rodar o treino de 2h do `PROTOCOLO_EXAME.md` seção 9 (SMB → web/SQLi → SSH/pivot → memória).
+3. No exame: ler as 35 questões primeiro → `ip addr` → `nmap -sn /24` → `nmap -sV -sC -p-` nos vivos.
 4. Atacar por facilidade: FTP anônimo → web → SMB → SSH → pivot.
-5. Dormir 6h no meio. Revisar marcadas antes de submeter.
+5. Anotar tudo (IP, porta, user, senha, flag). Dormir 6h no meio. Revisar marcadas antes de submeter.
 
 ## LEMBRETES DE OURO
-- nmap na rede toda primeiro; `filtered` ≠ `down`.
-- Reutilizar credenciais em TODOS os serviços.
+- `filtered` ≠ `down`; sem resposta de ping, `-Pn`.
+- Reutilizar credencial em TODOS os serviços antes de brutar.
 - Confirmar vuln antes do exploit (`smb-vuln-ms17-010`).
-- Pivot com `autoroute` é obrigatório no eJPT.
+- Pivot é obrigatório no eJPT: `get_local_subnets` → `autoroute` → `socks_proxy`/`portfwd`.
 - Nunca confiar em hydra sem confirmar o login.
-- Anotar IP, porta, user, senha, flag — uma credencial de 2h atrás responde a questão de agora.
+- Se o comando passa de 2 min, roda em background e vai para outro host.
 
-**Bora, Lorran. O lab tá de pé, o arsenal tá testado e o mapa tá na tua mão. 🛡️**
+**Bora, Lorran. O arsenal tá testado, o lab tá de pé e o mapa tá na tua mão. 🛡️**

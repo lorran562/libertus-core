@@ -348,3 +348,83 @@ Não foi só `--version`: cada linha abaixo rodou contra alvo de verdade (lab lo
 **8/8 ferramentas do escopo funcionam.** Dois gaps conhecidos e ambos com substituto validado:
 hydra sem SSH → `ssh_brute.py`/msf; sem smbclient → impacket. Nada bloqueia o apoio de amanhã.
 
+---
+
+# ATUALIZAÇÃO 20/OUT/2026 11:06-11:20 — véspera do exame (voucher comprado amanhã)
+
+Re-verificação completa, com execução real, e **3 ferramentas novas instaladas**.
+Tudo abaixo rodou nesta máquina hoje; nenhuma linha é memória.
+
+## Quadro final (o que responder em 5 segundos)
+
+| Ferramenta | Versão | Estado | Teste real de HOJE |
+|---|---|---|---|
+| nmap | 7.992 (snap) | ✅ | `-sT -Pn -p8080,3000,22,445 --open 127.0.0.1` → 3000/8080 open |
+| msfconsole | 6.4.126-dev (snap) | ✅ | `db_status` → **postgresql conectado**; ms17/vsftpd/ssh_login/socks/autoroute carregam |
+| msfvenom | 6.4.126-dev | ⚠️ só `$HOME` | gerou ELF 194 B em `~/rev_test.elf` (`/tmp` falha silencioso) |
+| hydra | 9.8dev | ⚠️ **sem SSH** | http-post-form achou `admin:password` em form sem CSRF ✅; SSH → `Compiled without LIBSSH` ❌ |
+| gobuster | (go/bin) | ✅ | `dir` no DVWA: `docs`, `external`, `config`, `vulnerabilities` |
+| sqlmap | 1.8.12#pip | ✅ | SQLi no DVWA + **banner `10.1.26-MariaDB`** em ~10 s |
+| netcat | OpenBSD 1.226 | ✅ | `nc -lvnp 4555` recebeu `test` (sem `-e`) |
+| john | 1.9.0-jumbo bleeding | ✅ | `--format=raw-md5` → `password` (12.800 p/s) |
+| nikto / ffuf / nuclei | 2.6.1 / 2.1.0 / 3.9.0 | ✅ | versões executam |
+| **proxychains4** | ng (fonte, `~/.local`) | ✅ NOVO | config `~/.local/etc/proxychains.conf` carregada; chain executada |
+| **searchsploit** | exploitdb 360 MB | ✅ NOVO | `ms17-010` → 6 exploits; `-m 42315` baixou |
+| **impacket** | 0.13.1 (`~/venvs/pentest`) | ✅ validado | SMB2 local: shares `IPC$`,`SHARE` + leitura de arquivo |
+| ssh_brute.py | próprio | ✅ | `msfadmin:msfadmin` na 2222 em 0,1 s |
+| msf `ssh_login` | — | ✅ | `Success` + **SSH session 1 opened** na 2222 |
+
+## 3 pitfalls que continuam valendo (reconfirmados hoje com erro exato)
+
+1. **Snap não vê `/tmp`** (nmap, sqlmap, msfconsole, msfvenom):
+   `nmap ... -oN /tmp/nmap_tmp.txt` → exit 0, **arquivo não existe**. Em `~` → 357 bytes ✅.
+2. **msf (snap) NÃO lê `/usr/share/wordlists`** — pitfall NOVO de hoje:
+   ```
+   set PASS_FILE /usr/share/wordlists/rockyou.txt
+   [-] Msf::OptionValidateError ... failed to validate: PASS_FILE
+   set PASS_FILE /home/libertus/wordlists/pass/top1000.txt   # aceito ✅
+   ```
+   → todo comando msf usa `~/wordlists/...`, nunca `/usr/share/...`.
+3. **hydra mente quando o login responde 302 com corpo vazio** (DVWA 1.10):
+   falha = `302 Location: login.php` corpo 0 bytes; acerto = `302 Location: index.php`.
+   `F=Login failed` nunca aparece → qualquer palpite vira "achado". Contra form sem CSRF (teste 8099)
+   o mesmo comando acertou de primeira. **Regra: confirmar com `curl -s -i` antes de responder.**
+
+## O que foi instalado hoje (sem sudo)
+
+- **proxychains-ng** compilado do fonte → `~/.local/bin/proxychains4` + `~/.local/etc/proxychains.conf`
+  (`strict_chain`, `socks5 127.0.0.1 1080`, `proxy_dns`). Fecha o gap de pivot fora do msf.
+- **exploitdb + searchsploit** → `~/exploitdb` (360 MB), `~/bin/searchsploit`, `~/.searchsploit_rc`
+  apontando para `$HOME/exploitdb` (o padrão `/opt` não é gravável). `--update` funciona.
+- **impacket** também no `~/LIBERTUS/venv` (redundante): o canônico continua `~/venvs/pentest/bin/`,
+  que tem **paramiko** junto (necessário pro `ssh_brute.py`).
+
+## SMB sem smbclient — padrão validado hoje
+`smbserver.py -smb2support -port 4450 SHARE /tmp/smbshare` (impacket) como alvo:
+```
+SHARES: ['IPC$', 'SHARE'] ; ARQUIVO: notes.txt 46 bytes
+CONTEUDO LIDO: credencial: usuario=analyst senha=LabPass123!
+```
+Detalhes que economizam tempo:
+- `smbclient.py -port` **só aceita 139/445** → para porta não padrão usar `SMBConnection(sess_port=...)`.
+- `getFile(share, path, callback)` exige callback (`io.BytesIO().write`), não retorna bytes.
+- `msf auxiliary/scanner/smb/smb_login` recusa credencial vazia (`Invalid Cred details can't be blank`)
+  → share anônimo: impacket com `login('','')`, ou `nmap --script smb-enum-shares`.
+
+## Lacunas restantes (todas com substituto)
+`smbclient` ❌ → impacket · `enum4linux` ❌ → nmap smb-* + impacket · `whatweb` ❌ → `curl -I` +
+`http-headers` · `wpscan` ❌ → `http-wordpress-enum` · hydra sem SSH/RDP → `ssh_brute.py` / msf ·
+ncat ❌ → `nc` OpenBSD · `whois`/`dnsrecon` ❌ → `dig` + `nmap --script dns-*`.
+
+## Wordlists (contagem real, 20/out)
+`directory-list-2.3-medium` 220.559 · `-small` 87.663 · `raft-small-words` 43.007 ·
+`raft-medium-directories` 29.999 · `subdomains-5000` 5.000 · `pass/top1000` 1.000 ·
+`pass/top10k` 10.000 · `pass/500-worst` 500 · `user/top-usernames` 10 ·
+`/usr/share/wordlists/rockyou.txt` 13.992.149 · `common.txt` 4.000.
+⚠️ rockyou/common em `/usr/share` = invisíveis para o msf. hydra/gobuster leem normal.
+
+## Veredito 20/out
+**Arsenal completo.** 18 ferramentas verificadas em execução, 3 gaps fechados hoje (proxychains,
+searchsploit, impacket SMB validado). Os únicos limites são de snap (`/tmp`, `/usr/share`) e do hydra
+(sem SSH) — todos com caminho alternativo testado nesta mesma noite.
+

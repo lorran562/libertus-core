@@ -1,5 +1,7 @@
-# PROTOCOLO DE OPERAÇÃO — LIBERTUS + Lorran (v2)
-**Atualizado 2026-10-19** (véspera do exame). Canal verificado hoje: `hermes-gateway.service` **active (running)** desde 10:09.
+# PROTOCOLO DE OPERAÇÃO — LIBERTUS + Lorran (v3)
+**Atualizado 2026-10-20 11:20** (véspera do exame; voucher comprado amanhã).
+Canal verificado hoje: `hermes-gateway.service` **active (running)** desde 04:43 (-05), Telegram com token no `.env`.
+Arsenal re-verificado hoje com execução real: ver `tools_status.md` (seção 20/OUT).
 
 ---
 
@@ -125,3 +127,59 @@ sem colar o erro — o erro é a informação.
 - Não assumir que "host down" é host desligado: tentar `-Pn`.
 - Não reescrever comando de memória — copiar do cheat sheet e trocar só o IP.
 - Não pedir ajuda a ninguém durante o exame. Você treinou para isso.
+
+---
+
+# 9. TREINO DE HOJE À NOITE — roteiro de 2h (é isso que te faz passar)
+
+O exame é proctored: eu **não** entro com você. O que eu posso fazer é te deixar rápido hoje.
+Lab no ar (verificado 11:15): DVWA `:8080`, Juice `:3000`, SSH `:2222`.
+Arsenal testado (`python3 ~/LIBERTUS/ejpt/ajuda.py lab` confirma ao vivo).
+
+**Rodada 1 (30 min) — SMB, o cenário que mais cai**
+1. Você: `python3 ~/LIBERTUS/ejpt/ajuda.py 445` → cola o primeiro comando.
+2. Sobe um SMB de treino você mesmo:
+   ```bash
+   mkdir -p /tmp/smbshare && echo "user=analyst pass=LabPass123!" > /tmp/smbshare/notes.txt
+   ~/venvs/pentest/bin/python ~/venvs/pentest/bin/smbserver.py -smb2support -port 4450 SHARE /tmp/smbshare
+   ```
+3. Objetivo: listar shares e ler `notes.txt` **sem** smbclient (impacket). Eu corrijo o caminho.
+
+**Rodada 2 (30 min) — Web + SQLi com sessão**
+1. DVWA `admin:password`, security=low.
+2. Você faz o login com `curl`, pega o cookie, roda `sqlmap --banner` e `--dump` em `dvwa.users`.
+3. Meta: < 5 min do zero ao dump. Se travar, me manda o output cru.
+
+**Rodada 3 (30 min) — SSH + pivot simulado**
+1. `ssh_brute.py` contra `127.0.0.1:2222` com `top1000`.
+2. `msf ssh_login` no mesmo alvo e abrir sessão (`sessions -l`).
+3. Pivot: `socks_proxy` na 1080 + `proxychains4 nmap -sT -Pn -p22,8080 127.0.0.1`.
+   (É loopback, mas o caminho técnico é idêntico ao do exame.)
+
+**Rodada 4 (30 min) — simulado de memória, sem colar**
+Eu falo a porta, você digita o comando de cabeça. Errou? Repete até sair sem pensar.
+Esse é o teste real: no exame não tem ninguém pra perguntar.
+
+## Como me chamar no Telegram (treino)
+
+Formato que eu respondo mais rápido:
+```
+T: 445 | alvo 10.10.10.20
+OUT:
+[nmap --script smb-os-discovery,smb-vuln-ms17-010]  <- cola cru
+```
+Regras:
+- **Cola o output cru**, do começo ao fim do trecho. "deu erro" sem o erro não dá pra resolver.
+- Output gigante (`-p-`): cola só hosts/portas abertas + resumo final.
+- Diz o que você **já tentou** — evita eu repetir comando.
+- Se eu não responder em ~1 min, reenvia (mensagem perdida é comum).
+- Quer só o próximo comando? `próximo` + o output.
+
+## Se o canal cair (plano real, testado)
+```bash
+systemctl --user restart hermes-gateway
+systemctl --user status hermes-gateway --no-pager | head -5
+```
+Sem Telegram e sem mim: os 5 arquivos de `~/LIBERTUS/ejpt/` estão no disco **e** no GitHub
+(`github.com/lorran562/libertus-core/tree/main/ejpt`), e o `ajuda.py` funciona offline.
+No exame, a única ferramenta que importa é o que você já treinou.

