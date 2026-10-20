@@ -266,6 +266,12 @@ def _executar(fontes_txt: str, desde: str, reindexar: bool, dry_run: bool):
 
 
 def main():
+    import sys as _s
+    from pathlib import Path as _P
+    _s.path.insert(0, str(_P(__file__).resolve().parent.parent))
+    from core.ambiente import sanear_ambiente
+    sanear_ambiente()
+
     parser = argparse.ArgumentParser(
         description="LIBERTUS: indexa fontes de conhecimento no banco vetorial (v2 multi-fonte)")
     parser.add_argument("--fontes", default="all",

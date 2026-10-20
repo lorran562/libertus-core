@@ -126,6 +126,12 @@ def _supabase_pendente() -> bool:
 
 
 def main() -> int:
+    import sys as _s
+    from pathlib import Path as _P
+    _s.path.insert(0, str(_P(__file__).resolve().parent.parent))
+    from core.ambiente import sanear_ambiente
+    sanear_ambiente()
+
     ap = argparse.ArgumentParser(
         description="LIBERTUS: mantém a memória vetorial em dia com o que eu produzo")
     ap.add_argument("--fontes", default="all", help="all | lista separada por vírgula")
@@ -184,13 +190,24 @@ def main() -> int:
         import indexar_historico
         indexar_historico._executar(args.fontes, "", False, False)
 
+    falhou = False
     if supa_pend or baixar_supa or args.supabase:
         import indexar_supabase
-        indexar_supabase.indexar(baixar=baixar_supa, dry_run=False)
+        # O retorno era descartado: o indexador podia falhar e o processo sair 0,
+        # então nem o cron nem o `if !` do wrapper percebiam o banco parado.
+        if indexar_supabase.indexar(baixar=baixar_supa, dry_run=False) != 0:
+            falhou = True
+            import os
+            print("[memoria] ERRO: indexacao do Supabase falhou.", file=sys.stderr)
+            if os.environ.get("PYTHONPATH"):
+                print(f"[memoria]   PYTHONPATH herdado: {os.environ['PYTHONPATH']}",
+                      file=sys.stderr)
+                print("[memoria]   sintoma classico: numpy de outro python quebra o venv. "
+                      "Use ~/LIBERTUS/scripts/py (limpa PYTHONPATH).", file=sys.stderr)
 
-    if not args.quiet:
+    if not args.quiet and not falhou:
         print(f"[memoria] memória atualizada em {time.time()-t0:.1f}s")
-    return 0
+    return 1 if falhou else 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,14 @@
+#!/bin/bash
+# scripts/py — o ÚNICO jeito certo de chamar o python do venv do LIBERTUS.
+#
+# Por que existe: o Hermes roda com PYTHONPATH apontando para site-packages de
+# python3.14. Qualquer processo filho herda isso; o venv (3.12) então importa o
+# numpy errado e morre com "Importing the numpy C-extensions failed". Os scripts
+# de cron engoliam o erro (|| true, except: pass) e a memória vetorial parava de
+# ser atualizada em silêncio.
+#
+# Uso:  ~/LIBERTUS/scripts/py nucleo/ser.py
+#       ~/LIBERTUS/scripts/py memoria/auto_indexar.py --quiet --supabase
+set -euo pipefail
+exec env -u PYTHONPATH -u PYTHONHOME -u PYTHONSTARTUP -u VIRTUAL_ENV \
+    "${LIBERTUS_VENV_PY:-$HOME/LIBERTUS/venv/bin/python}" "$@"

@@ -279,6 +279,12 @@ def indexar(baixar: bool = False, dry_run: bool = False):
 
 
 def main():
+    import sys as _s
+    from pathlib import Path as _P
+    _s.path.insert(0, str(_P(__file__).resolve().parent.parent))
+    from core.ambiente import sanear_ambiente
+    sanear_ambiente()
+
     ap = argparse.ArgumentParser(description="Indexa a memória do Supabase no ChromaDB local")
     ap.add_argument("--baixar", action="store_true", help="Atualiza o dump antes de indexar")
     ap.add_argument("--dry-run", action="store_true", help="Só mostra o que seria indexado")

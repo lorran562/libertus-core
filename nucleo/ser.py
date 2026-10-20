@@ -507,7 +507,17 @@ def recall_semantico(query, n=4):
 
 # ── cli ──────────────────────────────────────────────────────────────────────
 
+def _saneado():
+    """Se o PYTHONPATH do Hermes vazou pra cá, re-executa limpo (ver core/ambiente.py)."""
+    import sys as _s
+    from pathlib import Path as _P
+    _s.path.insert(0, str(_P(__file__).resolve().parent.parent))
+    from core.ambiente import sanear_ambiente
+    sanear_ambiente()
+
+
 def main():
+    _saneado()
     args = sys.argv[1:]
     estado = construir_estado()
     OUT_JSON.write_text(json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8")

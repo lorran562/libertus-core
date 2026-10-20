@@ -56,7 +56,14 @@ python3 scripts/session_reflect.py --auto
 # senão a lição de hoje só existiria para a próxima sessão que abrir briefing.
 # O guardião é idempotente e sai em ~0.07s quando nada mudou.
 echo "[session_reflect_auto] Atualizando memória vetorial..."
-"$LIBERTUS_DIR/venv/bin/python" memoria/auto_indexar.py --quiet --supabase --baixar-supabase || true
+if ! "$LIBERTUS_DIR/scripts/py" memoria/auto_indexar.py --quiet --supabase --baixar-supabase; then
+    # Falha de indexação NÃO pode ser silenciosa: já ficamos um dia com
+    # PYTHONPATH do Hermes quebrando o numpy do venv e o `|| true` engoliu.
+    mkdir -p "$LIBERTUS_DIR/logs"
+    echo "$(date -Is) FALHA ao indexar (auto_indexar.py) — memória vetorial desatualizada" \
+        >> "$LIBERTUS_DIR/logs/memoria_erros.log"
+    echo "[session_reflect_auto] AVISO: indexação falhou — registrado em logs/memoria_erros.log"
+fi
 
 # Atualiza o stamp
 date +%s > "$STAMP"

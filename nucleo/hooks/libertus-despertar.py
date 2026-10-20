@@ -158,6 +158,20 @@ def _podar_markers(max_age_s: int = 30 * 24 * 3600) -> None:
         pass
 
 
+def _env_limpo() -> dict:
+    """Ambiente para o python do venv do LIBERTUS (3.12).
+
+    O hook roda DENTRO do Hermes, cujo PYTHONPATH aponta para site-packages
+    de python3.14. Herdado, o venv 3.12 importa numpy 3.14 e morre com
+    "Importing the numpy C-extensions failed" — e as fontes (vetorial,
+    recall) caem em silencio. Venv nao se mistura com PYTHONPATH alheio.
+    """
+    env = dict(os.environ)
+    for k in ("PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "VIRTUAL_ENV"):
+        env.pop(k, None)
+    return env
+
+
 def _briefing() -> str:
     """Estado de SER, regenerado se estiver velho. Nunca falha a sessão."""
     try:
@@ -165,7 +179,8 @@ def _briefing() -> str:
             time.time() - BRIEFING.stat().st_mtime > BRIEFING_MAX_AGE_S)
         if velho and SER.exists() and VENV_PY.exists():
             subprocess.run([str(VENV_PY), str(SER)], cwd=str(BASE),
-                           capture_output=True, timeout=90)
+                           capture_output=True, timeout=120,
+                           env=_env_limpo())
         if not BRIEFING.exists():
             return ""
         texto = BRIEFING.read_text(encoding="utf-8", errors="replace").strip()
@@ -203,7 +218,8 @@ def _recall(mensagem: str) -> str:
         r = subprocess.run(
             [str(VENV_PY), str(LEMBRAR), mensagem[:300],
              "--n", str(RECALL_N), "--json"],
-            cwd=str(BASE), capture_output=True, text=True, timeout=45)
+            cwd=str(BASE), capture_output=True, text=True, timeout=60,
+            env=_env_limpo())
         if r.returncode != 0 or not r.stdout.strip():
             return ""
         dados = _json_de_saida(r.stdout)

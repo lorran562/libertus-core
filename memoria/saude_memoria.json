@@ -1,0 +1,40 @@
+{
+  "quando": "2026-10-20T11:18:09",
+  "ok": true,
+  "falhas": [],
+  "duracao_s": 39.2,
+  "checagens": {
+    "chroma": {
+      "ok": true,
+      "total": 4985,
+      "detalhe": ""
+    },
+    "recall_limpo": {
+      "ok": true,
+      "n": 3,
+      "duplicatas": 0,
+      "top": "supabase/sessoes/f33f5bee-5ac7-4e43-bb0f-0592fd4e62b6",
+      "similaridade": 65.5,
+      "detalhe": ""
+    },
+    "recall_venv_poluido": {
+      "ok": true,
+      "n": 3,
+      "duplicatas": 0,
+      "top": "supabase/sessoes/f33f5bee-5ac7-4e43-bb0f-0592fd4e62b6",
+      "similaridade": 65.5,
+      "detalhe": ""
+    },
+    "despertar": {
+      "ok": true,
+      "chars": 6914,
+      "detalhe": ""
+    },
+    "frescor": {
+      "ok": true,
+      "arquivo": "ultimo_index_supabase.json",
+      "horas": 0.1,
+      "detalhe": ""
+    }
+  }
+}

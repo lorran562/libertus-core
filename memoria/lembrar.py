@@ -23,7 +23,11 @@ from datetime import datetime
 from pathlib import Path
 
 MEM_DIR = Path(__file__).resolve().parent
+BASE_DIR = MEM_DIR.parent
 sys.path.insert(0, str(MEM_DIR))
+sys.path.insert(0, str(BASE_DIR))
+
+from core.ambiente import sanear_ambiente  # noqa: E402
 
 CHROMA_DIR = MEM_DIR / "chroma_store"
 COLLECTION_NAME = "libertus_memoria"
@@ -65,9 +69,58 @@ def _onde(fontes=None, categoria=None, importancia=None):
     return clausulas[0] if len(clausulas) == 1 else {"$and": clausulas}
 
 
+def _norm(texto: str) -> str:
+    """Forma canônica do conteúdo — o que faz duas memórias serem 'a mesma'.
+
+    Dobra acentos: a mesma reflexão aparece com e sem acentuação dependendo da
+    fonte (Supabase grava sem, arquivo grava com). Sem dobrar, a duplicata passa.
+    """
+    import unicodedata
+    t = unicodedata.normalize("NFKD", str(texto).lower())
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return " ".join(t.split())
+
+
+def _shingles(texto: str, k: int = 5) -> set:
+    """Conjunto de k-gramas de palavras: assinatura barata de quase-duplicata."""
+    palavras = _norm(texto).split()
+    if len(palavras) < k:
+        return set(palavras)
+    return {" ".join(palavras[i:i + k]) for i in range(len(palavras) - k + 1)}
+
+
+def _contido(a: set, b: set) -> float:
+    """Coeficiente de sobreposição: tolera prefixo/cabeçalho diferente na cópia."""
+    if not a or not b:
+        return 0.0
+    return len(a & b) / min(len(a), len(b))
+
+
+def _so_unicos(itens, limite: int, limiar: float = 0.80):
+    """Colapsa memórias redundantes mantendo a mais similar de cada conteúdo.
+
+    O mesmo conteúdo entra na coleção por caminhos diferentes (Supabase, arquivo
+    datado, cópia em docs/). Sem isso, um top-5 pode ser o MESMO parágrafo
+    quatro vezes — recall que parece rico e informa nada. Devolve
+    (itens_unicos, quantos_foram_colapsados).
+    """
+    unicos, assinaturas = [], []
+    colapsados = 0
+    for it in itens:  # já vêm ordenados por similaridade desc
+        sh = _shingles(it["texto"])
+        if any(_contido(sh, outra) >= limiar for outra in assinaturas):
+            colapsados += 1
+            continue
+        unicos.append(it)
+        assinaturas.append(sh)
+        if len(unicos) >= limite:
+            break
+    return unicos, colapsados
+
+
 def lembrar(query: str, n_resultados: int = 5, filtro_categoria: str | None = None,
             fontes: str | None = None, importancia: str | None = None,
-            desde: str | None = None):
+            desde: str | None = None, dedupe: bool = True):
     collection = _carregar()
     if collection is None:
         return []
@@ -77,7 +130,11 @@ def lembrar(query: str, n_resultados: int = 5, filtro_categoria: str | None = No
         print("Colecao vazia. Use gravar.py ou indexar_historico.py primeiro.")
         return []
 
-    pool = total if desde else min(n_resultados, total)
+    # Sobre-busca: preciso de folga para colapsar redundância e ainda entregar n.
+    if desde:
+        pool = total          # o corte por data é feito depois, aqui
+    else:
+        pool = min(total, max(n_resultados * 8, 40))
     kwargs = {
         "query_texts": [query],
         "n_results": pool,
@@ -108,8 +165,12 @@ def lembrar(query: str, n_resultados: int = 5, filtro_categoria: str | None = No
             "timestamp": ts,
             "texto": doc,
         })
-        if len(itens) >= n_resultados:
-            break
+
+    colapsados = 0
+    if dedupe:
+        itens, colapsados = _so_unicos(itens, n_resultados)
+    else:
+        itens = itens[:n_resultados]
 
     print(f"\n[LIBERTUS-MEMORIA] Query: '{query}'")
     filtros = ", ".join(
@@ -117,7 +178,8 @@ def lembrar(query: str, n_resultados: int = 5, filtro_categoria: str | None = No
         [("fonte", fontes), ("categoria", filtro_categoria),
          ("importancia", importancia), ("desde", desde)] if v)
     print(f"Total na colecao: {total} | Retornando top-{len(itens)}"
-          + (f" | filtros: {filtros}" if filtros else ""))
+          + (f" | filtros: {filtros}" if filtros else "")
+          + (f" | {colapsados} redundante(s) colapsada(s)" if colapsados else ""))
     print("=" * 66)
 
     for i, it in enumerate(itens, 1):
@@ -186,6 +248,9 @@ def _registrar_busca(query, itens):
 
 
 def main():
+    # venv 3.12 + PYTHONPATH de 3.14 = numpy quebrado; re-executa limpo se preciso
+    sanear_ambiente()
+
     parser = argparse.ArgumentParser(
         description="LIBERTUS: busca memórias semanticamente similares")
     parser.add_argument("query", nargs="?", help="Texto de busca semântica")
@@ -196,6 +261,8 @@ def main():
     parser.add_argument("--importancia", default=None,
                         choices=["baixa", "normal", "alta", "critica"])
     parser.add_argument("--desde", default=None, help="YYYY-MM-DD (corta por data do arquivo)")
+    parser.add_argument("--sem-dedupe", action="store_true",
+                        help="Não colapsa memórias redundantes (mostra o ranking cru)")
     parser.add_argument("--stats", action="store_true",
                         help="Mostra só a distribuição de tudo que está indexado")
     parser.add_argument("--json", action="store_true", dest="output_json",
@@ -209,7 +276,8 @@ def main():
         parser.error("informe uma query (ou use --stats)")
 
     itens = lembrar(args.query, n_resultados=args.n, filtro_categoria=args.categoria,
-                    fontes=args.fonte, importancia=args.importancia, desde=args.desde)
+                    fontes=args.fonte, importancia=args.importancia, desde=args.desde,
+                    dedupe=not args.sem_dedupe)
 
     if args.output_json:
         print(json.dumps(itens, ensure_ascii=False, indent=2))
