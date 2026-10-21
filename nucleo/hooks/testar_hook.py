@@ -48,7 +48,7 @@ def main() -> int:
 
     casos = []
 
-    def checar(nome, payload, deve_injetar, contem=None):
+    def checar(nome, payload, deve_injetar, contem=None, nao_contem=None):
         out = rodar(payload)
         injetou = bool(out)
         ok = injetou == deve_injetar
@@ -56,6 +56,9 @@ def main() -> int:
         if ok and injetou and contem:
             ok = contem in out
             detalhe = f" (contem {contem!r}: {ok})"
+        if ok and injetou and nao_contem:
+            ok = nao_contem not in out
+            detalhe = f" (nao contem {nao_contem!r}: {ok})"
         if ok and injetou:
             ctx = json.loads(out)
             if "context" not in ctx:
@@ -104,6 +107,19 @@ def main() -> int:
                       r.returncode == 0, ""))
     except Exception as e:
         casos.append(("7. payload invalido nao quebra (fail-soft)", False, f" {e}"))
+
+    # 8. o grafo tem de acender sozinho — é o terceiro sistema, não um extra
+    checar("8. rede cognitiva acende no primeiro turno",
+           {"session_id": SESSAO + "_rede", "is_first_turn": True,
+            "user_message": "preciso do relatorio de pentest para a SHIELD e do eJPT",
+            "conversation_history": []},
+           True, "REDE COGNITIVA ATIVADA")
+
+    # 9. mensagem curta não paga embedding nem rede (custo sem sinal)
+    checar("9. mensagem curta nao quebra nem infla",
+           {"session_id": SESSAO + "_curta", "is_first_turn": True,
+            "user_message": "oi", "conversation_history": []},
+           True, "QUEM SOU", nao_contem="REDE COGNITIVA ATIVADA")
 
     limpar()
 

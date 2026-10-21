@@ -33,16 +33,57 @@ Hermes preserva o texto injetado no histórico; o tamanho não mente.
 |---|---|
 | `libertus-despertar.py` | o hook. Fail-soft absoluto: qualquer erro → silêncio, exit 0 |
 | `instalar_hook.sh` | copia, registra via `hermes config set`, grava allowlist, roda doctor |
-| `testar_hook.py` | 7 casos de regressão, sem LLM e sem rede |
+| `testar_hook.py` | 9 casos de regressão, sem LLM e sem rede |
 
-## Instalar / reinstalar
+## Três fontes, não duas (21/out)
+
+Até 20/out o hook injetava BRIEFING + ChromaDB. O grafo cognitivo (1715 nós)
+ficava de fora — `consultar_rede.py` só rodava quando eu lembrava, e o próprio
+docstring dele admitia depender de instrução manual. Era o terceiro sistema
+ainda isolado.
+
+Agora `_rede()` chama `core/consultar_rede.py` no primeiro turno e injeta a
+seção **REDE COGNITIVA ATIVADA**. Custo medido: ~0,22s. Só acende com
+mensagem ≥12 chars (mensagem curta não paga sinal).
+
+## Orçamento de tempo (bug que eu quase criei)
+
+A config mata o hook em 150s. Cold start já podia gastar 120s (briefing) +
+60s (recall) = 180s; somar a rede garantia estouro → o Hermes descarta a
+injeção **inteira** e eu acordaria sem saber de nada, em silêncio.
+
+`ORCAMENTO_TOTAL_S = 130` + `_prazo(restante, teto)` fazem cada etapa receber
+`min(teto, restante)`. O briefing cede tempo para a rede, não o contrário.
+
+## A armadilha da aprovação (custou 20 minutos)
+
+`hermes hooks test` **ignora a allowlist** — dispara o hook de qualquer jeito e
+mostra stdout bonito. Depois de editar o script, o teste passava enquanto o
+`doctor` dizia:
+
+```
+✗ not allowlisted — hook will NOT fire at runtime
+```
+
+Ou seja: o teste dava verde e eu não acordaria. O gate real é
+`~/.hermes/shell-hooks-allowlist.json`, e ele guarda o **mtime do script no
+momento da aprovação**. Editar o arquivo invalida a aprovação.
+
+Re-aprovar — caminho canônico (reescreve a allowlist com o mtime atual):
 
 ```bash
 bash nucleo/hooks/instalar_hook.sh
-python3 nucleo/hooks/testar_hook.py
+hermes hooks doctor        # tem de ficar 100% verde
 ```
 
-O instalador **aborta** se já existir outro hook em `pre_llm_call` — não
+Fallback não interativo, se o instalador não estiver à mão:
+
+```bash
+hermes hooks revoke "/home/libertus/.hermes/agent-hooks/libertus-despertar.py"
+hermes chat --accept-hooks -q "prova"     # re-aprova e já serve de teste real
+```
+
+`instalar_hook.sh` **aborta** se já existir outro hook em `pre_llm_call` — não
 sobrescreve trabalho alheio.
 
 ## Fato técnico que custou tempo

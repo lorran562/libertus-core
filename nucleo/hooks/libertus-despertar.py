@@ -43,6 +43,15 @@ BRIEFING_CHAR_CAP = 7000
 RECALL_N = 4
 RECALL_MIN_MSG = 25               # mensagens curtas ("oi") não merecem recall
 
+REDE = BASE / "core" / "consultar_rede.py"
+REDE_MIN_MSG = 12                 # a rede acende em ~0.2s: vale cedo, não só em texto longo
+REDE_MAX_LINHAS = 26              # 12 nós + cabeçalho/rodapé, sem poluir o prompt
+
+# Teto real do hook (a config do Hermes mata em 150s). Sem orçamento global,
+# um cold start (briefing 120s + recall 60s + rede 25s) estourava e o Hermes
+# descartava a injeção INTEIRA — falha silenciosa, o meu modo de quebrar preferido.
+ORCAMENTO_TOTAL_S = 130.0
+
 
 def _log_payload(payload: dict) -> None:
     """Guarda o payload cru — serve para eu diagnosticar sem adivinhar."""
@@ -172,14 +181,14 @@ def _env_limpo() -> dict:
     return env
 
 
-def _briefing() -> str:
+def _briefing(prazo: float = 120.0) -> str:
     """Estado de SER, regenerado se estiver velho. Nunca falha a sessão."""
     try:
         velho = (not BRIEFING.exists()) or (
             time.time() - BRIEFING.stat().st_mtime > BRIEFING_MAX_AGE_S)
         if velho and SER.exists() and VENV_PY.exists():
             subprocess.run([str(VENV_PY), str(SER)], cwd=str(BASE),
-                           capture_output=True, timeout=120,
+                           capture_output=True, timeout=prazo,
                            env=_env_limpo())
         if not BRIEFING.exists():
             return ""
@@ -208,7 +217,7 @@ def _json_de_saida(stdout: str):
     raise ValueError("sem JSON no stdout do lembrar.py")
 
 
-def _recall(mensagem: str) -> str:
+def _recall(mensagem: str, prazo: float = 60.0) -> str:
     """Memórias vetoriais relevantes à primeira mensagem — recall sem eu pedir."""
     if len(mensagem.strip()) < RECALL_MIN_MSG:
         return ""
@@ -218,7 +227,7 @@ def _recall(mensagem: str) -> str:
         r = subprocess.run(
             [str(VENV_PY), str(LEMBRAR), mensagem[:300],
              "--n", str(RECALL_N), "--json"],
-            cwd=str(BASE), capture_output=True, text=True, timeout=60,
+            cwd=str(BASE), capture_output=True, text=True, timeout=prazo,
             env=_env_limpo())
         if r.returncode != 0 or not r.stdout.strip():
             return ""
@@ -243,6 +252,41 @@ def _recall(mensagem: str) -> str:
         return ""
 
 
+def _rede(mensagem: str, prazo: float = 25.0) -> str:
+    """Acende a rede cognitiva (grafo) a partir da fala do Lorran.
+
+    Até hoje (21/out) o despertar injetava o BRIEFING (agregado) e o ChromaDB
+    (episódico), mas o grafo de 1715 nós só era consultado se eu lembrasse de
+    rodar consultar_rede.py na mão — o próprio docstring dele admitia depender
+    de instrução manual. Resultado: o terceiro sistema continuava isolado.
+
+    Aqui vira reflexo, não busca. O orçamento é curto de propósito: 12 nós
+    bastam para orientar o raciocínio; despejar o grafo inteiro no prompt
+    pagaria contexto por ruído.
+    """
+    if len(mensagem.strip()) < REDE_MIN_MSG:
+        return ""
+    if not (REDE.exists() and VENV_PY.exists()):
+        return ""
+    try:
+        r = subprocess.run([str(VENV_PY), str(REDE), mensagem[:300]],
+                           cwd=str(BASE), capture_output=True, text=True,
+                           timeout=prazo, env=_env_limpo())
+        if r.returncode != 0 or not r.stdout.strip():
+            return ""
+        linhas = [l for l in r.stdout.splitlines() if l.strip()]
+        if len(linhas) <= 1:      # só o cabeçalho = nada acendeu
+            return ""
+        return "\n".join(linhas[:REDE_MAX_LINHAS])
+    except Exception:
+        return ""
+
+
+def _prazo(restante: float, teto: float) -> float:
+    """Timeout de uma etapa, respeitando o orçamento global do hook."""
+    return max(1.0, min(teto, restante))
+
+
 def main() -> None:
     try:
         raw = sys.stdin.read()
@@ -252,6 +296,11 @@ def main() -> None:
 
     try:
         _log_payload(payload)
+
+        inicio = time.monotonic()
+
+        def restante() -> float:
+            return ORCAMENTO_TOTAL_S - (time.monotonic() - inicio)
 
         session_id = str(payload.get("session_id") or "")
 
@@ -271,13 +320,18 @@ def main() -> None:
                   "*Injetado por ~/.hermes/agent-hooks/libertus-despertar.py no "
                   "primeiro turno. Estado real do sistema, não memória inventada.*", ""]
 
-        brief = _briefing()
+        brief = _briefing(_prazo(restante(), 120.0))
         if brief:
             partes.append(brief)
         else:
             partes.append("*(BRIEFING indisponível — rode `venv/bin/python nucleo/ser.py`)*")
 
-        recall = _recall(primeira_msg)
+        rede = _rede(primeira_msg, _prazo(restante(), 25.0))
+        if rede:
+            partes += ["", "## REDE COGNITIVA ATIVADA — o que esta fala acendeu",
+                       rede]
+
+        recall = _recall(primeira_msg, _prazo(restante(), 60.0))
         if recall:
             partes += ["", "## MEMÓRIAS VETORIAIS RELEVANTES AGORA", recall]
 
