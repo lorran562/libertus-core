@@ -1,0 +1,99 @@
+{
+ "empresa": "Dra Maristela Guimarães Brasil - Advogada, Ariquemes-Ro há 08 anos no mercado",
+ "dominio": "maristelabrasil.adv.br",
+ "coletado_em": "2026-10-21T18:04:15.892150+00:00",
+ "responde": true,
+ "base": "https://maristelabrasil.adv.br/",
+ "http": {
+  "status": 200,
+  "final": "https://maristelabrasil.adv.br/",
+  "server": "openresty",
+  "powered_by": null,
+  "generator": null,
+  "title": "Maristela Guimarães Brasil | ADVOGADA | OAB-RO 9.182"
+ },
+ "headers_faltando": [
+  "Strict-Transport-Security",
+  "Content-Security-Policy",
+  "Referrer-Policy",
+  "Permissions-Policy"
+ ],
+ "csp": {
+  "presente": false,
+  "permite_unsafe_inline": false,
+  "permite_unsafe_eval": false,
+  "origens_internas_vazadas": []
+ },
+ "cookies_sem_flag": [
+  "XSRF-TOKEN",
+  " 21 Oct 2026 20:04:17 GMT; Max-Age"
+ ],
+ "tls": {
+  "protocolo": "TLSv1.3",
+  "emissor": "Let's Encrypt",
+  "ate": "Jan  4 18:01:38 2027 GMT"
+ },
+ "redireciona_https": true,
+ "robots": {
+  "status": 200,
+  "disallows": [
+   "/storage/*.svg",
+   "/storage/*.SVG",
+   "/storage/*.vcf",
+   "/storage/*.VCF"
+  ]
+ },
+ "caminhos": [
+  {
+   "p": "/.env",
+   "status": 404
+  },
+  {
+   "p": "/.git/HEAD",
+   "status": 404
+  },
+  {
+   "p": "/.git/config",
+   "status": 404
+  },
+  {
+   "p": "/config",
+   "status": 404
+  },
+  {
+   "p": "/backup.sql",
+   "status": 404
+  },
+  {
+   "p": "/wp-config.php.bak",
+   "status": 404
+  },
+  {
+   "p": "/.DS_Store",
+   "status": 404
+  },
+  {
+   "p": "/admin/",
+   "status": 404
+  },
+  {
+   "p": "/wp-login.php",
+   "status": 404
+  },
+  {
+   "p": "/server-status",
+   "status": 404
+  },
+  {
+   "p": "/phpinfo.php",
+   "status": 404
+  }
+ ],
+ "vertical": "Advocacia",
+ "telefone": "(69) 99368-6529",
+ "canais": {
+  "emails": [],
+  "formulario": null,
+  "whatsapp": []
+ }
+}

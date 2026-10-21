@@ -1,0 +1,96 @@
+{
+ "empresa": "Confiance Negócios Imobiliários",
+ "dominio": "imobiliariaconfiancero.com.br",
+ "coletado_em": "2026-10-21T18:06:12.359066+00:00",
+ "responde": true,
+ "base": "https://imobiliariaconfiancero.com.br/",
+ "http": {
+  "status": 200,
+  "final": "https://imobiliariaconfiancero.com.br/",
+  "server": "cloudflare",
+  "powered_by": null,
+  "generator": null,
+  "title": "Imobiliária em Ariquemes RO | Imóveis à Venda | Confiance"
+ },
+ "headers_faltando": [
+  "Strict-Transport-Security",
+  "Content-Security-Policy",
+  "X-Frame-Options",
+  "X-Content-Type-Options",
+  "Referrer-Policy",
+  "Permissions-Policy"
+ ],
+ "csp": {
+  "presente": false,
+  "permite_unsafe_inline": false,
+  "permite_unsafe_eval": false,
+  "origens_internas_vazadas": []
+ },
+ "tls": {
+  "protocolo": "TLSv1.3",
+  "emissor": "Let's Encrypt",
+  "ate": "Dec 17 14:28:18 2026 GMT"
+ },
+ "redireciona_https": false,
+ "robots": {
+  "status": 200,
+  "disallows": [
+   "/__sites",
+   "/imoveis?",
+   "/"
+  ]
+ },
+ "caminhos": [
+  {
+   "p": "/.env",
+   "status": 404
+  },
+  {
+   "p": "/.git/HEAD",
+   "status": 404
+  },
+  {
+   "p": "/.git/config",
+   "status": 404
+  },
+  {
+   "p": "/config",
+   "status": 404
+  },
+  {
+   "p": "/backup.sql",
+   "status": 404
+  },
+  {
+   "p": "/wp-config.php.bak",
+   "status": 403
+  },
+  {
+   "p": "/.DS_Store",
+   "status": 404
+  },
+  {
+   "p": "/admin/",
+   "status": 404
+  },
+  {
+   "p": "/wp-login.php",
+   "status": 404
+  },
+  {
+   "p": "/server-status",
+   "status": 404
+  },
+  {
+   "p": "/phpinfo.php",
+   "status": 404
+  }
+ ],
+ "vertical": "Imobiliária",
+ "telefone": "(69) 99201-9164",
+ "canais": {
+  "emails": [],
+  "formulario": null,
+  "whatsapp": []
+ }
+}

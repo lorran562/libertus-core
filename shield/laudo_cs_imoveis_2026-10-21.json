@@ -1,0 +1,36 @@
+{
+  "empresa": "CS Imóveis — Ariquemes/RO",
+  "segmento": "Imobiliária",
+  "dominio": "csimoveisariquemes.com.br",
+  "data": "21/10/2026, 13h10 (horário de Rondônia)",
+  "resumo": "O site da CS Imóveis está fora do ar. A verificação foi feita por requisição direta, com e sem www, em HTTP e em HTTPS, e todas retornam o mesmo resultado: HTTP 530 com o corpo \"error code: 1016\", servido pelo Cloudflare.\n\nO código 1016 significa \"Origin DNS error\": o Cloudflare (a camada que fica na frente do site) está funcionando, mas o servidor onde o site realmente mora não está sendo encontrado. O domínio está registrado e ativo até 05/01/2028 — ou seja, o domínio está pago; o que caiu foi o apontamento ou o servidor de origem.\n\nPara uma imobiliária, o efeito é direto em receita: quem pesquisa imóvel no Google, encontra o link da CS Imóveis e clica, vê página de erro e volta para a busca — geralmente para o concorrente. Não é problema do visitante nem da internet dele, e não há como o cliente saber disso sem testar.\n\nNão houve invasão nem indício de comprometimento: o que este laudo registra é indisponibilidade, não ataque.",
+  "achados": [
+    {
+      "titulo": "Site indisponível — erro de origem no Cloudflare (1016)",
+      "severidade": "ALTO",
+      "evidencia": "http://csimoveisariquemes.com.br/ → HTTP 530, corpo \"error code: 1016\"; http://www.csimoveisariquemes.com.br/ → 530; https:// → 530. Cabeçalho Server: cloudflare; CF-RAY: a4e237f54ccdca7e-GIG. RDAP registro.br: domínio ativo, expira em 05/01/2028.",
+      "impacto": "Todo visitante que chega pelo Google, Instagram ou cartão de visita encontra página de erro. Perda de leads enquanto durar."
+    },
+    {
+      "titulo": "Sem página de manutenção ou identidade da marca no erro",
+      "severidade": "MÉDIO",
+      "evidencia": "O corpo da resposta é texto puro \"error code: 1016\", sem logotipo, sem telefone e sem aviso de que o site volta.",
+      "impacto": "O visitante não sabe que a empresa existe e está apenas com o site fora: para ele, a imobiliária parece ter fechado."
+    }
+  ],
+  "lgpd": [
+    "Não há tratamento de dado pessoal exposto neste caso — o problema é disponibilidade e imagem, não vazamento.",
+    "Se o site guardava formulário de contato ou cadastro de cliente, é necessário confirmar se os dados continuam preservados no servidor de origem antes de religar (art. 46 da LGPD trata também de disponibilidade e integridade)."
+  ],
+  "plano": [
+    {"passo": "Confirmar com a hospedagem se o servidor de origem mudou de IP ou está desligado/suspenso.", "prazo": "Hoje"},
+    {"passo": "Atualizar o registro de origem na Cloudflare (ou reativar o servidor) e validar HTTP e HTTPS.", "prazo": "24 a 48h"},
+    {"passo": "Configurar página de manutenção com marca e telefone enquanto o site não volta.", "prazo": "Imediato"},
+    {"passo": "Monitoramento mensal com alerta no mesmo dia de site fora do ar e de certificado vencendo.", "prazo": "Contínuo"}
+  ],
+  "oferta": [
+    {"item": "Socorro Digital — diagnóstico do que caiu e interlocução técnica com a hospedagem", "preco": "R$ 397"},
+    {"item": "Diagnóstico Express + laudo LGPD do site depois de restabelecido", "preco": "R$ 497"},
+    {"item": "Escudo Mensal (inclui alerta de site fora do ar no mesmo dia)", "preco": "R$ 297/mês"}
+  ]
+}

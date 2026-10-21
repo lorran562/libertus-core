@@ -1,0 +1,1455 @@
+[
+ {
+  "empresa": "CS Imóveis - Imobiliária",
+  "dominio": "csimoveisariquemes.com.br",
+  "coletado_em": "2026-10-21T18:06:10.472312+00:00",
+  "responde": false,
+  "base": null,
+  "vertical": "Imobiliária",
+  "telefone": "(69) 99236-7365",
+  "canais": {},
+  "forca_venda": 115
+ },
+ {
+  "empresa": "Laboratório Cidadão Ariquemes",
+  "dominio": "exameslaboratoriocidadao.com.br",
+  "coletado_em": "2026-10-21T18:08:25.686335+00:00",
+  "responde": false,
+  "base": null,
+  "vertical": "Laboratório",
+  "telefone": "(69) 99294-6971",
+  "canais": {},
+  "forca_venda": 115
+ },
+ {
+  "empresa": "Laboratório Popular - Setor 09",
+  "dominio": "grupolaboratorios.com.br",
+  "coletado_em": "2026-10-21T18:08:34.092788+00:00",
+  "responde": false,
+  "base": null,
+  "vertical": "Laboratório",
+  "telefone": "(69) 99244-3367",
+  "canais": {},
+  "forca_venda": 115
+ },
+ {
+  "empresa": "AnimalVET | Clínica Veterinária 24h",
+  "dominio": "animalvetariquemes.com",
+  "coletado_em": "2026-10-21T18:09:30.724299+00:00",
+  "responde": false,
+  "base": null,
+  "vertical": "Veterinária",
+  "telefone": "(69) 99941-3851",
+  "canais": {},
+  "forca_venda": 115
+ },
+ {
+  "empresa": "Symmetria Odontologia Ariquemes",
+  "dominio": "odontologiasymmetria.com.br",
+  "coletado_em": "2026-10-21T18:09:09.448359+00:00",
+  "responde": true,
+  "base": "https://odontologiasymmetria.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://odontologiasymmetria.com.br/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": null,
+   "title": "Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru"
+  },
+  "headers_faltando": [
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Google Trust Services",
+   "ate": "Dec 31 20:56:58 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": []
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "<html lang=\"pt-BR\">",
+     "  <head>",
+     "    <meta charset=\"UTF-8\" />",
+     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+     "",
+     "    <!-- Primary Meta Tags -->",
+     "    <title>Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru</title>",
+     "    <meta name=\"title\" content=\"Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Pret",
+     "    <meta name=\"description\" content=\"Clínica odontológica em Rondônia com 4 unidades. Implantes dentários, or",
+     "    <meta name=\"keywords\" content=\"dentista rondônia, dentista ji-paraná, dentista ariquemes, dentista ouro pr",
+     "    <meta name=\"author\" content=\"Symmetria Odontologia\" />",
+     "    <meta name=\"robots\" content=\"index, follow\" />",
+     "    <meta name=\"language\" content=\"Portuguese\" />",
+     "    <meta name=\"revisit-after\" content=\"7 days\" />",
+     "",
+     "    <!-- Canonical URL -->",
+     "    <link rel=\"canonical\" href=\"https://odontologiasymmetria.com.br/\" />",
+     "",
+     "    <!-- Geo Tags -->"
+    ]
+   },
+   {
+    "p": "/backup.sql",
+    "status": 403
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "<html lang=\"pt-BR\">",
+     "  <head>",
+     "    <meta charset=\"UTF-8\" />",
+     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+     "",
+     "    <!-- Primary Meta Tags -->",
+     "    <title>Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru</title>",
+     "    <meta name=\"title\" content=\"Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Pret",
+     "    <meta name=\"description\" content=\"Clínica odontológica em Rondônia com 4 unidades. Implantes dentários, or",
+     "    <meta name=\"keywords\" content=\"dentista rondônia, dentista ji-paraná, dentista ariquemes, dentista ouro pr",
+     "    <meta name=\"author\" content=\"Symmetria Odontologia\" />",
+     "    <meta name=\"robots\" content=\"index, follow\" />",
+     "    <meta name=\"language\" content=\"Portuguese\" />",
+     "    <meta name=\"revisit-after\" content=\"7 days\" />",
+     "",
+     "    <!-- Canonical URL -->",
+     "    <link rel=\"canonical\" href=\"https://odontologiasymmetria.com.br/\" />",
+     "",
+     "    <!-- Geo Tags -->"
+    ]
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 403
+   },
+   {
+    "p": "/server-status",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "<html lang=\"pt-BR\">",
+     "  <head>",
+     "    <meta charset=\"UTF-8\" />",
+     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+     "",
+     "    <!-- Primary Meta Tags -->",
+     "    <title>Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru</title>",
+     "    <meta name=\"title\" content=\"Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Pret",
+     "    <meta name=\"description\" content=\"Clínica odontológica em Rondônia com 4 unidades. Implantes dentários, or",
+     "    <meta name=\"keywords\" content=\"dentista rondônia, dentista ji-paraná, dentista ariquemes, dentista ouro pr",
+     "    <meta name=\"author\" content=\"Symmetria Odontologia\" />",
+     "    <meta name=\"robots\" content=\"index, follow\" />",
+     "    <meta name=\"language\" content=\"Portuguese\" />",
+     "    <meta name=\"revisit-after\" content=\"7 days\" />",
+     "",
+     "    <!-- Canonical URL -->",
+     "    <link rel=\"canonical\" href=\"https://odontologiasymmetria.com.br/\" />",
+     "",
+     "    <!-- Geo Tags -->"
+    ]
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ],
+  "vertical": "Odontologia",
+  "telefone": "(69) 99935-2255",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 80
+ },
+ {
+  "empresa": "Advogado em Ariquemes - DIEGO GOMES ADVOGADO",
+  "dominio": "dgadvogado.adv.br",
+  "coletado_em": "2026-10-21T18:03:48.127047+00:00",
+  "responde": true,
+  "base": "https://dgadvogado.adv.br/",
+  "http": {
+   "status": 404,
+   "final": "https://dgadvogado.adv.br/",
+   "server": null,
+   "powered_by": null,
+   "generator": null,
+   "title": null
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Dec 18 10:14:22 2026 GMT"
+  },
+  "redireciona_https": false,
+  "robots": {
+   "status": 404,
+   "disallows": []
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 410
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 403
+   },
+   {
+    "p": "/server-status",
+    "status": 403
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 403
+   }
+  ],
+  "vertical": "Advocacia",
+  "telefone": "(69) 99263-0373",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 15
+ },
+ {
+  "empresa": "Jardim & Rodrigues Advocacia",
+  "dominio": "jardimerodriguesadvocacia.com",
+  "coletado_em": "2026-10-21T18:04:43.750890+00:00",
+  "responde": true,
+  "base": "https://jardimerodriguesadvocacia.com/",
+  "http": {
+   "status": 200,
+   "final": "https://www.jardimerodriguesadvocacia.com/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": "Wix.com Website Builder",
+   "title": null
+  },
+  "headers_faltando": [
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "ssr-caching"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Dec 16 02:42:14 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "*?lightbox=",
+    "/_partials*",
+    "/pro-gallery-webapp/v1/galleries/*",
+    "/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 400
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 403
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 400
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 403
+   }
+  ],
+  "vertical": "Advocacia",
+  "telefone": "(69) 99288-9089",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 15
+ },
+ {
+  "empresa": "Confiance Negócios Imobiliários",
+  "dominio": "imobiliariaconfiancero.com.br",
+  "coletado_em": "2026-10-21T18:06:12.359066+00:00",
+  "responde": true,
+  "base": "https://imobiliariaconfiancero.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://imobiliariaconfiancero.com.br/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": null,
+   "title": "Imobiliária em Ariquemes RO | Imóveis à Venda | Confiance"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Dec 17 14:28:18 2026 GMT"
+  },
+  "redireciona_https": false,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/__sites",
+    "/imoveis?",
+    "/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 404
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 404
+   },
+   {
+    "p": "/.git/config",
+    "status": 404
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 404
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ],
+  "vertical": "Imobiliária",
+  "telefone": "(69) 99201-9164",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 15
+ },
+ {
+  "empresa": "Imobiliária Casanossa",
+  "dominio": "casanossaimobiliaria.com",
+  "coletado_em": "2026-10-21T18:06:26.746136+00:00",
+  "responde": true,
+  "base": "https://casanossaimobiliaria.com/",
+  "http": {
+   "status": 200,
+   "final": "https://www.casanossaimobiliaria.com/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": "Wix.com Website Builder",
+   "title": null
+  },
+  "headers_faltando": [
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "ssr-caching"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Google Trust Services",
+   "ate": "Dec 15 00:13:26 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "*?lightbox=",
+    "/_partials*",
+    "/pro-gallery-webapp/v1/galleries/*",
+    "/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 400
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 403
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 400
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 403
+   }
+  ],
+  "vertical": "Imobiliária",
+  "telefone": "(69) 3535-7090",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 15
+ },
+ {
+  "empresa": "Hospital do Dente",
+  "dominio": "odontohospital.com.br",
+  "coletado_em": "2026-10-21T18:08:36.374880+00:00",
+  "responde": true,
+  "base": "https://odontohospital.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://www.odontohospital.com.br/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": "Wix.com Website Builder",
+   "title": null
+  },
+  "headers_faltando": [
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "ssr-caching"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Google Trust Services",
+   "ate": "Nov 26 13:56:39 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "*?lightbox=",
+    "/_partials*",
+    "/pro-gallery-webapp/v1/galleries/*",
+    "/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 400
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 403
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 429
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 403
+   }
+  ],
+  "vertical": "Odontologia",
+  "telefone": "(69) 3536-5492",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 15
+ },
+ {
+  "empresa": "Prontovet Hospital Veterinário",
+  "dominio": "meupetmelhor.com.br",
+  "coletado_em": "2026-10-21T18:09:31.876041+00:00",
+  "responde": true,
+  "base": "https://www.meupetmelhor.com.br/",
+  "http": {
+   "status": 404,
+   "final": "https://www.meupetmelhor.com.br/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": null,
+   "title": null
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Nov 29 13:15:54 2026 GMT"
+  },
+  "redireciona_https": false,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "Crawl-delay:",
+    "Crawl-delay:"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 403
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 403
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 403
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 403
+   }
+  ],
+  "vertical": "Veterinária",
+  "telefone": "(69) 99247-4640",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 15
+ },
+ {
+  "empresa": "Dra Maristela Guimarães Brasil - Advogada, Ariquemes-Ro há 08 anos no mercado",
+  "dominio": "maristelabrasil.adv.br",
+  "coletado_em": "2026-10-21T18:04:15.892150+00:00",
+  "responde": true,
+  "base": "https://maristelabrasil.adv.br/",
+  "http": {
+   "status": 200,
+   "final": "https://maristelabrasil.adv.br/",
+   "server": "openresty",
+   "powered_by": null,
+   "generator": null,
+   "title": "Maristela Guimarães Brasil | ADVOGADA | OAB-RO 9.182"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "XSRF-TOKEN",
+   " 21 Oct 2026 20:04:17 GMT; Max-Age"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Jan  4 18:01:38 2027 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/storage/*.svg",
+    "/storage/*.SVG",
+    "/storage/*.vcf",
+    "/storage/*.VCF"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 404
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 404
+   },
+   {
+    "p": "/.git/config",
+    "status": 404
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 404
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 404
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ],
+  "vertical": "Advocacia",
+  "telefone": "(69) 99368-6529",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 10
+ },
+ {
+  "empresa": "Imobiliária Mendes & Campos",
+  "dominio": "mendesecampos.com.br",
+  "coletado_em": "2026-10-21T18:07:09.651734+00:00",
+  "responde": true,
+  "base": "https://mendesecampos.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://www.mendesecampos.com.br/",
+   "server": "gocache",
+   "powered_by": null,
+   "generator": null,
+   "title": "Mendes &amp; Campos Imóveis para Venda e Locação em Ariquemes CCA"
+  },
+  "headers_faltando": [
+   "Content-Security-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "__goc_session__",
+   " 28-Oct-26 18:07:11 GMT; SameSite"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Nov 12 17:08:20 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/api/*",
+    "/*.marko$",
+    "/api/*",
+    "/*.marko$",
+    "/*+*",
+    "/*%2B*",
+    "/*%2b*",
+    "/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 404
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 404
+   },
+   {
+    "p": "/.git/config",
+    "status": 404
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 404
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 404
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ],
+  "vertical": "Imobiliária",
+  "telefone": "(69) 3535-5454",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 10
+ },
+ {
+  "empresa": "Innova Imóveis",
+  "dominio": "innovaimoveisro.com.br",
+  "coletado_em": "2026-10-21T18:07:37.684741+00:00",
+  "responde": true,
+  "base": "https://innovaimoveisro.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://www.innovaimoveisro.com.br/",
+   "server": "gocache",
+   "powered_by": null,
+   "generator": null,
+   "title": "Imóveis em Ariquemes, Construção, Condomínios Fechado, Terrenos."
+  },
+  "headers_faltando": [
+   "Content-Security-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "__goc_session__",
+   " 28-Oct-26 18:07:39 GMT; SameSite"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Nov 16 09:16:57 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/api/*",
+    "/*.marko$",
+    "/api/*",
+    "/*.marko$",
+    "/*+*",
+    "/*%2B*",
+    "/*%2b*",
+    "/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 404
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 404
+   },
+   {
+    "p": "/.git/config",
+    "status": 404
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 404
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 404
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ],
+  "vertical": "Imobiliária",
+  "telefone": "(69) 99349-5842",
+  "canais": {
+   "emails": [],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 10
+ },
+ {
+  "empresa": "JR ADVOCACIA | TRABALHISTA",
+  "dominio": "jradvocacia.com",
+  "coletado_em": "2026-10-21T18:04:23.748733+00:00",
+  "responde": true,
+  "base": "https://jradvocacia.com/",
+  "http": {
+   "status": 200,
+   "final": "https://jradvocacia.com/",
+   "server": "Apache",
+   "powered_by": null,
+   "generator": null,
+   "title": "Home - JR Advocacia"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Dec 10 01:54:50 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "Sitemap:"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 406
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 404
+   },
+   {
+    "p": "/.git/config",
+    "status": 404
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 406
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 406
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "\t<html lang=\"pt-BR\">",
+     "\t<head>",
+     "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />",
+     "\t<title>Acessar &lsaquo; JR Advocacia &#8212; WordPress</title>",
+     "\t<meta name='robots' content='noindex, follow' />",
+     "<link rel='dns-prefetch' href='//www.googletagmanager.com' />",
+     "<link rel='stylesheet' id='dashicons-css' href='https://jradvocacia.com/wp-includes/css/dashicons.min.css?ver=",
+     "<link rel='stylesheet' id='buttons-css' href='https://jradvocacia.com/wp-includes/css/buttons.min.css?ver=7.1.",
+     "<link rel='stylesheet' id='forms-css' href='https://jradvocacia.com/wp-admin/css/forms.min.css?ver=7.1.3' medi",
+     "<link rel='stylesheet' id='l10n-css' href='https://jradvocacia.com/wp-admin/css/l10n.min.css?ver=7.1.3' media=",
+     "<link rel='stylesheet' id='wp-base-styles-css' href='https://jradvocacia.com/wp-includes/css/dist/base-styles/",
+     "<link rel='stylesheet' id='wp-tooltip-css' href='https://jradvocacia.com/wp-admin/css/wp-tooltip.min.css?ver=7",
+     "<link rel='stylesheet' id='login-css' href='https://jradvocacia.com/wp-admin/css/login.min.css?ver=7.1.3' medi",
+     "<meta name=\"generator\" content=\"Site Kit by Google 1.168.0\" />\t<meta name='referrer' content='strict-origin-wh",
+     "\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+     "\t<link rel=\"icon\" href=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFIL-REDES-SOCIAIS-scaled",
+     "<link rel=\"icon\" href=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFIL-REDES-SOCIAIS-scaled-",
+     "<link rel=\"apple-touch-icon\" href=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFIL-REDES-SOC",
+     "<meta name=\"msapplication-TileImage\" content=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFI"
+    ]
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "\t<html lang=\"pt-BR\">",
+     "\t<head>",
+     "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />",
+     "\t<title>Acessar &lsaquo; JR Advocacia &#8212; WordPress</title>",
+     "\t<meta name='robots' content='noindex, follow' />",
+     "<link rel='dns-prefetch' href='//www.googletagmanager.com' />",
+     "<link rel='stylesheet' id='dashicons-css' href='https://jradvocacia.com/wp-includes/css/dashicons.min.css?ver=",
+     "<link rel='stylesheet' id='buttons-css' href='https://jradvocacia.com/wp-includes/css/buttons.min.css?ver=7.1.",
+     "<link rel='stylesheet' id='forms-css' href='https://jradvocacia.com/wp-admin/css/forms.min.css?ver=7.1.3' medi",
+     "<link rel='stylesheet' id='l10n-css' href='https://jradvocacia.com/wp-admin/css/l10n.min.css?ver=7.1.3' media=",
+     "<link rel='stylesheet' id='wp-base-styles-css' href='https://jradvocacia.com/wp-includes/css/dist/base-styles/",
+     "<link rel='stylesheet' id='wp-tooltip-css' href='https://jradvocacia.com/wp-admin/css/wp-tooltip.min.css?ver=7",
+     "<link rel='stylesheet' id='login-css' href='https://jradvocacia.com/wp-admin/css/login.min.css?ver=7.1.3' medi",
+     "<meta name=\"generator\" content=\"Site Kit by Google 1.168.0\" />\t<meta name='referrer' content='strict-origin-wh",
+     "\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+     "\t<link rel=\"icon\" href=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFIL-REDES-SOCIAIS-scaled",
+     "<link rel=\"icon\" href=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFIL-REDES-SOCIAIS-scaled-",
+     "<link rel=\"apple-touch-icon\" href=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFIL-REDES-SOC",
+     "<meta name=\"msapplication-TileImage\" content=\"https://jradvocacia.com/wp-content/uploads/2024/04/cropped-PERFI"
+    ]
+   },
+   {
+    "p": "/server-status",
+    "status": 403
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ],
+  "vertical": "Advocacia",
+  "telefone": "(69) 99202-3420",
+  "canais": {
+   "emails": [
+    "contato@midiasim.com.br"
+   ],
+   "formulario": "https://jradvocacia.com/contato/",
+   "whatsapp": []
+  },
+  "forca_venda": 0
+ },
+ {
+  "empresa": "AD Imóveis",
+  "dominio": "adimoveisro.com.br",
+  "coletado_em": "2026-10-21T18:05:27.065057+00:00",
+  "responde": true,
+  "base": "https://adimoveisro.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://adimoveisro.com.br/",
+   "server": "LiteSpeed",
+   "powered_by": null,
+   "generator": null,
+   "title": "AD Imóveis | Imobiliária em Ariquemes"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Jan  9 01:40:04 2027 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "Sitemap:"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "\t<html lang=\"pt-BR\">",
+     "\t<head>",
+     "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />",
+     "\t<title>Acessar &lsaquo; AD Imóveis &#8212; WordPress</title>",
+     "\t<meta name='robots' content='noindex, follow' />",
+     "<link rel='stylesheet' id='dashicons-css' href='https://adimoveisro.com.br/wp-includes/css/dashicons.css?ver=6",
+     "<link rel='stylesheet' id='buttons-css' href='https://adimoveisro.com.br/wp-includes/css/buttons.css?ver=6.8.8",
+     "<link rel='stylesheet' id='forms-css' href='https://adimoveisro.com.br/wp-admin/css/forms.css?ver=6.8.8' type=",
+     "<link rel='stylesheet' id='l10n-css' href='https://adimoveisro.com.br/wp-admin/css/l10n.css?ver=6.8.8' type='t",
+     "<link rel='stylesheet' id='login-css' href='https://adimoveisro.com.br/wp-admin/css/login.css?ver=6.8.8' type=",
+     "<style>/* mtr-login.css*/",
+     "",
+     "body,",
+     "body * {",
+     "    vertical-align: top;",
+     "    box-sizing: border-box;",
+     "    -webkit-box-sizing: border-box;",
+     "    -moz-box-sizing: border-box;",
+     "    -ms-box-sizing: border-box;"
+    ]
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "Falha ao validar token de segurança, <a = <REDIGIDO>"
+    ]
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ],
+  "vertical": "Imobiliária",
+  "telefone": "(69) 3536-7480",
+  "canais": {
+   "emails": [],
+   "formulario": "https://adimoveisro.com.br/contato/",
+   "whatsapp": []
+  },
+  "forca_venda": 0
+ },
+ {
+  "empresa": "Laboratório Paraná",
+  "dominio": "laboratorioparana-ro.com.br",
+  "coletado_em": "2026-10-21T18:08:26.659163+00:00",
+  "responde": true,
+  "base": "https://laboratorioparana-ro.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://laboratorioparana-ro.com.br/",
+   "server": "Apache",
+   "powered_by": null,
+   "generator": null,
+   "title": "Laboratório de Análises Clínicas Paraná"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Jan 10 03:32:29 2027 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/cgi-bin/",
+    "/wusage"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 403
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 404
+   },
+   {
+    "p": "/server-status",
+    "status": 403
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 403
+   }
+  ],
+  "vertical": "Laboratório",
+  "telefone": "(69) 3536-7707",
+  "canais": {
+   "emails": [
+    "contato@laboratorioparana-ro.com.br"
+   ],
+   "formulario": null,
+   "whatsapp": []
+  },
+  "forca_venda": 0
+ }
+]

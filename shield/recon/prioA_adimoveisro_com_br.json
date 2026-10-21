@@ -1,0 +1,118 @@
+{
+ "empresa": "AD Imóveis",
+ "dominio": "adimoveisro.com.br",
+ "coletado_em": "2026-10-21T18:05:27.065057+00:00",
+ "responde": true,
+ "base": "https://adimoveisro.com.br/",
+ "http": {
+  "status": 200,
+  "final": "https://adimoveisro.com.br/",
+  "server": "LiteSpeed",
+  "powered_by": null,
+  "generator": null,
+  "title": "AD Imóveis | Imobiliária em Ariquemes"
+ },
+ "headers_faltando": [
+  "Strict-Transport-Security",
+  "Content-Security-Policy",
+  "Permissions-Policy"
+ ],
+ "csp": {
+  "presente": false,
+  "permite_unsafe_inline": false,
+  "permite_unsafe_eval": false,
+  "origens_internas_vazadas": []
+ },
+ "tls": {
+  "protocolo": "TLSv1.3",
+  "emissor": "Let's Encrypt",
+  "ate": "Jan  9 01:40:04 2027 GMT"
+ },
+ "redireciona_https": true,
+ "robots": {
+  "status": 200,
+  "disallows": [
+   "Sitemap:"
+  ]
+ },
+ "caminhos": [
+  {
+   "p": "/.env",
+   "status": 403
+  },
+  {
+   "p": "/.git/HEAD",
+   "status": 403
+  },
+  {
+   "p": "/.git/config",
+   "status": 403
+  },
+  {
+   "p": "/config",
+   "status": 404
+  },
+  {
+   "p": "/backup.sql",
+   "status": 404
+  },
+  {
+   "p": "/wp-config.php.bak",
+   "status": 403
+  },
+  {
+   "p": "/.DS_Store",
+   "status": 404
+  },
+  {
+   "p": "/admin/",
+   "status": 200,
+   "EXPOSTO": true,
+   "amostra": [
+    "<!DOCTYPE html>",
+    "\t<html lang=\"pt-BR\">",
+    "\t<head>",
+    "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />",
+    "\t<title>Acessar &lsaquo; AD Imóveis &#8212; WordPress</title>",
+    "\t<meta name='robots' content='noindex, follow' />",
+    "<link rel='stylesheet' id='dashicons-css' href='https://adimoveisro.com.br/wp-includes/css/dashicons.css?ver=6",
+    "<link rel='stylesheet' id='buttons-css' href='https://adimoveisro.com.br/wp-includes/css/buttons.css?ver=6.8.8",
+    "<link rel='stylesheet' id='forms-css' href='https://adimoveisro.com.br/wp-admin/css/forms.css?ver=6.8.8' type=",
+    "<link rel='stylesheet' id='l10n-css' href='https://adimoveisro.com.br/wp-admin/css/l10n.css?ver=6.8.8' type='t",
+    "<link rel='stylesheet' id='login-css' href='https://adimoveisro.com.br/wp-admin/css/login.css?ver=6.8.8' type=",
+    "<style>/* mtr-login.css*/",
+    "",
+    "body,",
+    "body * {",
+    "    vertical-align: top;",
+    "    box-sizing: border-box;",
+    "    -webkit-box-sizing: border-box;",
+    "    -moz-box-sizing: border-box;",
+    "    -ms-box-sizing: border-box;"
+   ]
+  },
+  {
+   "p": "/wp-login.php",
+   "status": 200,
+   "EXPOSTO": true,
+   "amostra": [
+    "Falha ao validar token de segurança, <a = <REDIGIDO>"
+   ]
+  },
+  {
+   "p": "/server-status",
+   "status": 404
+  },
+  {
+   "p": "/phpinfo.php",
+   "status": 404
+  }
+ ],
+ "vertical": "Imobiliária",
+ "telefone": "(69) 3536-7480",
+ "canais": {
+  "emails": [],
+  "formulario": "https://adimoveisro.com.br/contato/",
+  "whatsapp": []
+ }
+}

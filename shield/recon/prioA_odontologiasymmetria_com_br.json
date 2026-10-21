@@ -1,0 +1,158 @@
+{
+ "empresa": "Symmetria Odontologia Ariquemes",
+ "dominio": "odontologiasymmetria.com.br",
+ "coletado_em": "2026-10-21T18:09:09.448359+00:00",
+ "responde": true,
+ "base": "https://odontologiasymmetria.com.br/",
+ "http": {
+  "status": 200,
+  "final": "https://odontologiasymmetria.com.br/",
+  "server": "cloudflare",
+  "powered_by": null,
+  "generator": null,
+  "title": "Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru"
+ },
+ "headers_faltando": [
+  "Content-Security-Policy",
+  "X-Frame-Options",
+  "Permissions-Policy"
+ ],
+ "csp": {
+  "presente": false,
+  "permite_unsafe_inline": false,
+  "permite_unsafe_eval": false,
+  "origens_internas_vazadas": []
+ },
+ "tls": {
+  "protocolo": "TLSv1.3",
+  "emissor": "Google Trust Services",
+  "ate": "Dec 31 20:56:58 2026 GMT"
+ },
+ "redireciona_https": true,
+ "robots": {
+  "status": 200,
+  "disallows": []
+ },
+ "caminhos": [
+  {
+   "p": "/.env",
+   "status": 403
+  },
+  {
+   "p": "/.git/HEAD",
+   "status": 403
+  },
+  {
+   "p": "/.git/config",
+   "status": 403
+  },
+  {
+   "p": "/config",
+   "status": 200,
+   "EXPOSTO": true,
+   "amostra": [
+    "<!DOCTYPE html>",
+    "<html lang=\"pt-BR\">",
+    "  <head>",
+    "    <meta charset=\"UTF-8\" />",
+    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+    "",
+    "    <!-- Primary Meta Tags -->",
+    "    <title>Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru</title>",
+    "    <meta name=\"title\" content=\"Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Pret",
+    "    <meta name=\"description\" content=\"Clínica odontológica em Rondônia com 4 unidades. Implantes dentários, or",
+    "    <meta name=\"keywords\" content=\"dentista rondônia, dentista ji-paraná, dentista ariquemes, dentista ouro pr",
+    "    <meta name=\"author\" content=\"Symmetria Odontologia\" />",
+    "    <meta name=\"robots\" content=\"index, follow\" />",
+    "    <meta name=\"language\" content=\"Portuguese\" />",
+    "    <meta name=\"revisit-after\" content=\"7 days\" />",
+    "",
+    "    <!-- Canonical URL -->",
+    "    <link rel=\"canonical\" href=\"https://odontologiasymmetria.com.br/\" />",
+    "",
+    "    <!-- Geo Tags -->"
+   ]
+  },
+  {
+   "p": "/backup.sql",
+   "status": 403
+  },
+  {
+   "p": "/wp-config.php.bak",
+   "status": 403
+  },
+  {
+   "p": "/.DS_Store",
+   "status": 404
+  },
+  {
+   "p": "/admin/",
+   "status": 200,
+   "EXPOSTO": true,
+   "amostra": [
+    "<!DOCTYPE html>",
+    "<html lang=\"pt-BR\">",
+    "  <head>",
+    "    <meta charset=\"UTF-8\" />",
+    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+    "",
+    "    <!-- Primary Meta Tags -->",
+    "    <title>Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru</title>",
+    "    <meta name=\"title\" content=\"Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Pret",
+    "    <meta name=\"description\" content=\"Clínica odontológica em Rondônia com 4 unidades. Implantes dentários, or",
+    "    <meta name=\"keywords\" content=\"dentista rondônia, dentista ji-paraná, dentista ariquemes, dentista ouro pr",
+    "    <meta name=\"author\" content=\"Symmetria Odontologia\" />",
+    "    <meta name=\"robots\" content=\"index, follow\" />",
+    "    <meta name=\"language\" content=\"Portuguese\" />",
+    "    <meta name=\"revisit-after\" content=\"7 days\" />",
+    "",
+    "    <!-- Canonical URL -->",
+    "    <link rel=\"canonical\" href=\"https://odontologiasymmetria.com.br/\" />",
+    "",
+    "    <!-- Geo Tags -->"
+   ]
+  },
+  {
+   "p": "/wp-login.php",
+   "status": 403
+  },
+  {
+   "p": "/server-status",
+   "status": 200,
+   "EXPOSTO": true,
+   "amostra": [
+    "<!DOCTYPE html>",
+    "<html lang=\"pt-BR\">",
+    "  <head>",
+    "    <meta charset=\"UTF-8\" />",
+    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+    "",
+    "    <!-- Primary Meta Tags -->",
+    "    <title>Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Preto e Jaru</title>",
+    "    <meta name=\"title\" content=\"Symmetria Odontologia | Dentista em Rondônia - Ji-Paraná, Ariquemes, Ouro Pret",
+    "    <meta name=\"description\" content=\"Clínica odontológica em Rondônia com 4 unidades. Implantes dentários, or",
+    "    <meta name=\"keywords\" content=\"dentista rondônia, dentista ji-paraná, dentista ariquemes, dentista ouro pr",
+    "    <meta name=\"author\" content=\"Symmetria Odontologia\" />",
+    "    <meta name=\"robots\" content=\"index, follow\" />",
+    "    <meta name=\"language\" content=\"Portuguese\" />",
+    "    <meta name=\"revisit-after\" content=\"7 days\" />",
+    "",
+    "    <!-- Canonical URL -->",
+    "    <link rel=\"canonical\" href=\"https://odontologiasymmetria.com.br/\" />",
+    "",
+    "    <!-- Geo Tags -->"
+   ]
+  },
+  {
+   "p": "/phpinfo.php",
+   "status": 404
+  }
+ ],
+ "vertical": "Odontologia",
+ "telefone": "(69) 99935-2255",
+ "canais": {
+  "emails": [],
+  "formulario": null,
+  "whatsapp": []
+ }
+}

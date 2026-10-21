@@ -1,0 +1,99 @@
+{
+ "empresa": "Hospital do Dente",
+ "dominio": "odontohospital.com.br",
+ "coletado_em": "2026-10-21T18:08:36.374880+00:00",
+ "responde": true,
+ "base": "https://odontohospital.com.br/",
+ "http": {
+  "status": 200,
+  "final": "https://www.odontohospital.com.br/",
+  "server": "cloudflare",
+  "powered_by": null,
+  "generator": "Wix.com Website Builder",
+  "title": null
+ },
+ "headers_faltando": [
+  "Content-Security-Policy",
+  "X-Frame-Options",
+  "X-Content-Type-Options",
+  "Referrer-Policy",
+  "Permissions-Policy"
+ ],
+ "csp": {
+  "presente": false,
+  "permite_unsafe_inline": false,
+  "permite_unsafe_eval": false,
+  "origens_internas_vazadas": []
+ },
+ "cookies_sem_flag": [
+  "ssr-caching"
+ ],
+ "tls": {
+  "protocolo": "TLSv1.3",
+  "emissor": "Google Trust Services",
+  "ate": "Nov 26 13:56:39 2026 GMT"
+ },
+ "redireciona_https": true,
+ "robots": {
+  "status": 200,
+  "disallows": [
+   "*?lightbox=",
+   "/_partials*",
+   "/pro-gallery-webapp/v1/galleries/*",
+   "/"
+  ]
+ },
+ "caminhos": [
+  {
+   "p": "/.env",
+   "status": 403
+  },
+  {
+   "p": "/.git/HEAD",
+   "status": 403
+  },
+  {
+   "p": "/.git/config",
+   "status": 403
+  },
+  {
+   "p": "/config",
+   "status": 404
+  },
+  {
+   "p": "/backup.sql",
+   "status": 400
+  },
+  {
+   "p": "/wp-config.php.bak",
+   "status": 403
+  },
+  {
+   "p": "/.DS_Store",
+   "status": 403
+  },
+  {
+   "p": "/admin/",
+   "status": 404
+  },
+  {
+   "p": "/wp-login.php",
+   "status": 429
+  },
+  {
+   "p": "/server-status",
+   "status": 404
+  },
+  {
+   "p": "/phpinfo.php",
+   "status": 403
+  }
+ ],
+ "vertical": "Odontologia",
+ "telefone": "(69) 3536-5492",
+ "canais": {
+  "emails": [],
+  "formulario": null,
+  "whatsapp": []
+ }
+}

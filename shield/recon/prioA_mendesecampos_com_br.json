@@ -1,0 +1,101 @@
+{
+ "empresa": "Imobiliária Mendes & Campos",
+ "dominio": "mendesecampos.com.br",
+ "coletado_em": "2026-10-21T18:07:09.651734+00:00",
+ "responde": true,
+ "base": "https://mendesecampos.com.br/",
+ "http": {
+  "status": 200,
+  "final": "https://www.mendesecampos.com.br/",
+  "server": "gocache",
+  "powered_by": null,
+  "generator": null,
+  "title": "Mendes &amp; Campos Imóveis para Venda e Locação em Ariquemes CCA"
+ },
+ "headers_faltando": [
+  "Content-Security-Policy",
+  "Permissions-Policy"
+ ],
+ "csp": {
+  "presente": false,
+  "permite_unsafe_inline": false,
+  "permite_unsafe_eval": false,
+  "origens_internas_vazadas": []
+ },
+ "cookies_sem_flag": [
+  "__goc_session__",
+  " 28-Oct-26 18:07:11 GMT; SameSite"
+ ],
+ "tls": {
+  "protocolo": "TLSv1.3",
+  "emissor": "Let's Encrypt",
+  "ate": "Nov 12 17:08:20 2026 GMT"
+ },
+ "redireciona_https": true,
+ "robots": {
+  "status": 200,
+  "disallows": [
+   "/api/*",
+   "/*.marko$",
+   "/api/*",
+   "/*.marko$",
+   "/*+*",
+   "/*%2B*",
+   "/*%2b*",
+   "/"
+  ]
+ },
+ "caminhos": [
+  {
+   "p": "/.env",
+   "status": 404
+  },
+  {
+   "p": "/.git/HEAD",
+   "status": 404
+  },
+  {
+   "p": "/.git/config",
+   "status": 404
+  },
+  {
+   "p": "/config",
+   "status": 404
+  },
+  {
+   "p": "/backup.sql",
+   "status": 404
+  },
+  {
+   "p": "/wp-config.php.bak",
+   "status": 404
+  },
+  {
+   "p": "/.DS_Store",
+   "status": 404
+  },
+  {
+   "p": "/admin/",
+   "status": 404
+  },
+  {
+   "p": "/wp-login.php",
+   "status": 404
+  },
+  {
+   "p": "/server-status",
+   "status": 404
+  },
+  {
+   "p": "/phpinfo.php",
+   "status": 404
+  }
+ ],
+ "vertical": "Imobiliária",
+ "telefone": "(69) 3535-5454",
+ "canais": {
+  "emails": [],
+  "formulario": null,
+  "whatsapp": []
+ }
+}
