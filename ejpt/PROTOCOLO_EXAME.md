@@ -244,7 +244,7 @@ Se eu demorar mais de 3 min, reenvia com `reenvio:` na frente — mensagem perdi
 
 | Camada | O que fazer | Funciona sem internet? |
 |---|---|---|
-| 1 | `python3 ~/LIBERTUS/ejpt/ajuda.py 445` (ou `web`, `ssh`, `pivot`, `msf`, `hydra`) | ✅ sim |
+| 1 | `python3 ~/LIBERTUS/ejpt/ajuda.py 445` (ou `web`, `ssh`, `pivot`, `msf`, `hydra`, `traps`) | ✅ sim |
 | 2 | `bash ~/LIBERTUS/ejpt/scan.sh IP` — recon rápido e salva em `~/LIBERTUS/ejpt/recon/` | ✅ sim |
 | 3 | `less ~/LIBERTUS/ejpt/CHEATSHEET_eJPT.md` | ✅ sim |
 | 4 | GitHub `github.com/lorran562/libertus-core/tree/main/ejpt` (precisa internet) | ❌ |

