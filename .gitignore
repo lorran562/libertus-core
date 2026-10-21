@@ -5,7 +5,14 @@ __pycache__/
 
 # Logs e evolução (gerados automaticamente — não precisam ir pro GitHub)
 evolution_logs/
-evolucao/
+# evolucao/ tem 86% de relatorio automatico duplicado — ignorar o ruido, mas
+# NAO as reflexoes: elas sao trabalho real e o Lorran precisa do link no GitHub
+# (ele nao consegue navegar o terminal). Descoberto 21/10: a regra antiga
+# "evolucao/" engolia junto todas as reflexoes de autoevolucao.
+evolucao/*
+!evolucao/reflexao_*_autoevolucao.md
+!evolucao/reflexao_autoevolucao_*.md
+!evolucao/semana_*.md
 memory/feedback/
 memory/heartbeat.json
 plans/
