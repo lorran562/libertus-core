@@ -183,3 +183,82 @@ systemctl --user status hermes-gateway --no-pager | head -5
 Sem Telegram e sem mim: os 5 arquivos de `~/LIBERTUS/ejpt/` estão no disco **e** no GitHub
 (`github.com/lorran562/libertus-core/tree/main/ejpt`), e o `ajuda.py` funciona offline.
 No exame, a única ferramenta que importa é o que você já treinou.
+
+---
+
+# ADENDO 21/OUT — CANAL TESTADO E PROTOCOLO DE HOJE
+
+## 1. O canal está vivo (testado agora, não suposto)
+
+- Bot: `@libertusshield_bot` · `getMe` OK · mensagem de teste **entregue** no chat `8837403146`
+  (msg_id 864, 21/out 12:35).
+- Gateway: `hermes-gateway.service` **active (running)** — sobe junto com a máquina
+  (`enabled`), não precisa iniciar na mão.
+- ⚠️ Este cron entrega em **`local`** (`~/.hermes/cron/output/`), não no Telegram. Ou seja:
+  o resumo desta noite não chega no seu celular sozinho — o canal serve pra você me
+  **chamar** e eu responder, que é o que importa durante o exame.
+
+**Teste de 10 segundos, antes de abrir o exame** — manda no Telegram: `teste`
+Se eu responder algo, está tudo certo. Se não responder em 2 min:
+```bash
+systemctl --user restart hermes-gateway
+systemctl --user status hermes-gateway --no-pager | head -5
+```
+
+## 2. Formato de mensagem (o que me faz responder em 15 s)
+
+```
+IP: 10.10.10.20
+PORTAS: 22,80,445
+OUT: <cola o output cru aqui>
+JA TENTEI: curl /admin (404)
+```
+Mínimo aceitável: **IP + portas + output**. Sem output eu chuto — e chute no exame custa tempo.
+
+Atalhos que eu entendo na hora:
+- `445` / `smb` / `ftp` / `web` / `ssh` / `pivot` → eu devolvo o bloco de comandos daquele cenário
+- `nmap <ip>` → eu devolvo a linha de scan certa pro estágio que você está
+- `travei` → eu mando o próximo passo único, sem teoria
+- `privesc` → checklist de enumeração local
+
+## 3. Tempo de resposta
+
+| Situação | Espera real |
+|---|---|
+| Pergunta de comando (o caso comum) | **10-20 s** |
+| Output grande pra eu interpretar | 30-60 s |
+| Eu preciso testar algo no lab antes de te responder | 1-3 min — eu aviso "testando" |
+
+**Enquanto espera, não fica parado**: manda a mensagem e segue para o próximo host/serviço.
+Se eu demorar mais de 3 min, reenvia com `reenvio:` na frente — mensagem perdida acontece.
+
+## 4. Ordem de prioridade quando o tempo aperta
+
+1. **Pontos fáceis primeiro**: portas abertas → enumeração → credencial default → flag.
+2. Exploit complexo (MS17-010) **só** depois de esgotar o óbvio (shares anônimos, FTP anônimo,
+   credencial em página, SQLi simples).
+3. Pivoting é obrigatório no eJPT — reservar os últimos 40 min pro segmento interno.
+4. Se travar 10 min num alvo: **abandona e volta depois**. Anota o IP e segue.
+
+## 5. Plano B em camadas (se o Telegram morrer de vez)
+
+| Camada | O que fazer | Funciona sem internet? |
+|---|---|---|
+| 1 | `python3 ~/LIBERTUS/ejpt/ajuda.py 445` (ou `web`, `ssh`, `pivot`, `msf`, `hydra`) | ✅ sim |
+| 2 | `bash ~/LIBERTUS/ejpt/scan.sh IP` — recon rápido e salva em `~/LIBERTUS/ejpt/recon/` | ✅ sim |
+| 3 | `less ~/LIBERTUS/ejpt/CHEATSHEET_eJPT.md` | ✅ sim |
+| 4 | GitHub `github.com/lorran562/libertus-core/tree/main/ejpt` (precisa internet) | ❌ |
+
+## 6. Checklist de véspera (5 min, fazer na ordem)
+
+```bash
+bash ~/LIBERTUS/ejpt/lab_up.sh                       # sobe DVWA/Juice/SSH
+python3 ~/LIBERTUS/ejpt/ajuda.py lab                 # confirma que estão de pé
+msfdb status | head -3                               # Database started
+nmap -Pn -p 8080 --open 127.0.0.1                    # nmap vivo
+gobuster dir -u http://localhost:8080 -w ~/wordlists/web/raft-small-words.txt -t 20 -q | head -3
+sqlmap --version                                     # responde versão
+nc -h 2>&1 | head -1                                 # OpenBSD netcat
+```
+Tudo isso já foi rodado hoje e passou. Se algum falhar amanhã, é o ambiente que mudou — me avisa.
+

