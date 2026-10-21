@@ -322,8 +322,9 @@ class NucleoCognitivo:
                 + f"\n\n## Contexto\n{len(recentes)} memórias recentes analisadas"
             )
             self.mem.salvar(
-                "evolucao", f"padroes_consolidados",
-                conteudo, ["padrao", "consolidacao", "autonomo"]
+                "evolucao", "padroes_consolidados",
+                conteudo, ["padrao", "consolidacao", "autonomo"],
+                unico_por_dia=True
             )
             self.stats["memorias_consolidadas"] += 1
 
@@ -648,7 +649,8 @@ class NucleoCognitivo:
         relatorio = self.gerar_relatorio_diario()
         self.mem.salvar(
             "evolucao", "relatorio_diario_daemon",
-            relatorio, ["daemon", "relatorio", "diario"]
+            relatorio, ["daemon", "relatorio", "diario"],
+            unico_por_dia=True
         )
 
     # ── Relatórios ────────────────────────────────────────────────────────

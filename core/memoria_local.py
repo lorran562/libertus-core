@@ -97,11 +97,17 @@ class MemoriaLocal:
     # ── Escrita ───────────────────────────────────────────────────────────
 
     def salvar(self, pasta: str, titulo: str, conteudo: str,
-               tags: List[str] = None) -> str:
+               tags: List[str] = None, unico_por_dia: bool = False) -> str:
         """
         Salva conhecimento estruturado no vault.
         Pasta deve ser: memoria | evolucao | skills | projetos | erros
-        Retorna caminho do arquivo criado.
+
+        unico_por_dia=True: um arquivo por dia por titulo, sobrescrito a cada
+        chamada. Existe porque relatórios automáticos (padroes_consolidados a
+        cada 30 min, relatorio_diario_daemon a cada restart) geravam um arquivo
+        NOVO por execução — 382 de 442 arquivos de evolucao eram essa duplicata
+        (86%), medido em 21/out/2026. Atividade sem direção não é crescimento.
+        Uso explícito: nada de aprendizado real é sobrescrito por acidente.
         """
         if pasta not in self.PASTAS:
             pasta = self._classificar(conteudo, pasta)
@@ -109,10 +115,24 @@ class MemoriaLocal:
         dir_pasta = self.root / pasta
         dir_pasta.mkdir(parents=True, exist_ok=True)
 
-        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        agora = datetime.datetime.now()
+        ts = agora.strftime("%Y%m%d_%H%M%S")
         nome_seguro = re.sub(r"[^\w\s-]", "", titulo).replace(" ", "_")[:40]
-        nome_arquivo = f"{ts}_{nome_seguro}.md"
+        if unico_por_dia:
+            # mesmo nome para o mesmo dia ⇒ write_text sobrescreve em vez de acumular
+            nome_arquivo = f"{agora.strftime('%Y%m%d')}_{nome_seguro}.md"
+        else:
+            nome_arquivo = f"{ts}_{nome_seguro}.md"
         caminho = dir_pasta / nome_arquivo
+        if not unico_por_dia:
+            # Dois salvamentos do mesmo titulo no mesmo segundo geravam o mesmo
+            # nome e o segundo apagava o primeiro em silencio. Descoberto pelo
+            # teste de idempotencia (21/out). Sufixo curto resolve sem mudar
+            # o formato do nome no caso normal.
+            n = 2
+            while caminho.exists():
+                caminho = dir_pasta / f"{ts}-{n}_{nome_seguro}.md"
+                n += 1
 
         frontmatter = (
             f"---\ntitulo: {titulo}\n"
