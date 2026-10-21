@@ -2,7 +2,7 @@
  {
   "empresa": "CEDDI Centro de Diagnóstico",
   "dominio": "ceddi.com.br",
-  "coletado_em": "2026-10-14T01:27:06.979552+00:00",
+  "coletado_em": "2026-10-21T17:59:23.710673+00:00",
   "responde": true,
   "base": "https://ceddi.com.br/",
   "http": {
@@ -135,7 +135,7 @@
  {
   "empresa": "Bruni Imóveis",
   "dominio": "bruniimoveis.com.br",
-  "coletado_em": "2026-10-14T01:27:25.243041+00:00",
+  "coletado_em": "2026-10-21T17:59:32.838784+00:00",
   "responde": true,
   "base": "https://bruniimoveis.com.br/",
   "http": {
@@ -223,7 +223,7 @@
  {
   "empresa": "Imobiliária Aislan Santos",
   "dominio": "aislansantosimoveis.com.br",
-  "coletado_em": "2026-10-14T01:27:35.333747+00:00",
+  "coletado_em": "2026-10-21T17:59:41.051574+00:00",
   "responde": true,
   "base": "https://aislansantosimoveis.com.br/",
   "http": {
@@ -256,7 +256,28 @@
   "redireciona_https": true,
   "robots": {
    "status": 200,
-   "disallows": []
+   "disallows": [
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/",
+    "/"
+   ]
   },
   "caminhos": [
    {
@@ -308,7 +329,7 @@
  {
   "empresa": "Oikos Assessoria",
   "dominio": "oikosassessoria.com.br",
-  "coletado_em": "2026-10-14T01:27:40.387044+00:00",
+  "coletado_em": "2026-10-21T17:59:46.278586+00:00",
   "responde": true,
   "base": "https://oikosassessoria.com.br/",
   "http": {
@@ -400,7 +421,7 @@
  {
   "empresa": "AD Imóveis",
   "dominio": "adimoveisro.com.br",
-  "coletado_em": "2026-10-14T01:28:09.314206+00:00",
+  "coletado_em": "2026-10-21T18:00:24.895470+00:00",
   "responde": true,
   "base": "https://adimoveisro.com.br/",
   "http": {
@@ -461,7 +482,7 @@
    },
    {
     "p": "/.DS_Store",
-    "status": null
+    "status": 404
    },
    {
     "p": "/admin/",
@@ -511,7 +532,7 @@
  {
   "empresa": "Marques Imóveis",
   "dominio": "marquesimoveisro.com.br",
-  "coletado_em": "2026-10-14T01:28:56.012241+00:00",
+  "coletado_em": "2026-10-21T18:01:24.068349+00:00",
   "responde": true,
   "base": "https://marquesimoveisro.com.br/",
   "http": {
@@ -544,7 +565,7 @@
    "emissor": "Let's Encrypt",
    "ate": "Jan  8 07:01:48 2027 GMT"
   },
-  "redireciona_https": false,
+  "redireciona_https": true,
   "robots": {
    "status": 200,
    "disallows": [
@@ -570,11 +591,7 @@
    },
    {
     "p": "/config",
-    "status": 200,
-    "EXPOSTO": true,
-    "amostra": [
-     "{\"error\":true,\"log\":\"Curl failed with error #22: The requested URL returned error: 401 Unauthorized\",\"message\""
-    ]
+    "status": 410
    },
    {
     "p": "/backup.sql",
@@ -609,7 +626,7 @@
  {
   "empresa": "Laboratório São José",
   "dominio": "saojoselaboratorio.com.br",
-  "coletado_em": "2026-10-14T01:29:14.528064+00:00",
+  "coletado_em": "2026-10-21T18:01:46.178599+00:00",
   "responde": false,
   "base": null
  }

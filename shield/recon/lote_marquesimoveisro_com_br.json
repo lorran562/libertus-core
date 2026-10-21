@@ -1,7 +1,7 @@
 {
  "empresa": "Marques Imóveis",
  "dominio": "marquesimoveisro.com.br",
- "coletado_em": "2026-10-14T01:28:56.012241+00:00",
+ "coletado_em": "2026-10-21T18:01:24.068349+00:00",
  "responde": true,
  "base": "https://marquesimoveisro.com.br/",
  "http": {
@@ -34,7 +34,7 @@
   "emissor": "Let's Encrypt",
   "ate": "Jan  8 07:01:48 2027 GMT"
  },
- "redireciona_https": false,
+ "redireciona_https": true,
  "robots": {
   "status": 200,
   "disallows": [
@@ -60,11 +60,7 @@
   },
   {
    "p": "/config",
-   "status": 200,
-   "EXPOSTO": true,
-   "amostra": [
-    "{\"error\":true,\"log\":\"Curl failed with error #22: The requested URL returned error: 401 Unauthorized\",\"message\""
-   ]
+   "status": 410
   },
   {
    "p": "/backup.sql",

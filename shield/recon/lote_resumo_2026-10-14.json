@@ -1,0 +1,616 @@
+[
+ {
+  "empresa": "CEDDI Centro de Diagnóstico",
+  "dominio": "ceddi.com.br",
+  "coletado_em": "2026-10-14T01:27:06.979552+00:00",
+  "responde": true,
+  "base": "https://ceddi.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://ceddi.com.br/",
+   "server": "Apache",
+   "powered_by": null,
+   "generator": null,
+   "title": "CEDDI &#8211; Centro de Diagnóstico"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Dec 17 08:26:53 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/wp-admin/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 406
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 404
+   },
+   {
+    "p": "/.git/config",
+    "status": 404
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 406
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 406
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "\t<html lang=\"pt-BR\">",
+     "\t<head>",
+     "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />",
+     "\t<title>Acessar &lsaquo; CEDDI &#8211; Centro de Diagnóstico &#8212; WordPress</title>",
+     "\t<meta name='robots' content='max-image-preview:large, noindex, noarchive' />",
+     "<link rel='stylesheet' id='dashicons-css' href='https://ceddi.com.br/wp-includes/css/dashicons.min.css?ver=7.1",
+     "<link rel='stylesheet' id='buttons-css' href='https://ceddi.com.br/wp-includes/css/buttons.min.css?ver=7.1.3' ",
+     "<link rel='stylesheet' id='forms-css' href='https://ceddi.com.br/wp-admin/css/forms.min.css?ver=7.1.3' media='",
+     "<link rel='stylesheet' id='l10n-css' href='https://ceddi.com.br/wp-admin/css/l10n.min.css?ver=7.1.3' media='al",
+     "<link rel='stylesheet' id='wp-base-styles-css' href='https://ceddi.com.br/wp-includes/css/dist/base-styles/adm",
+     "<link rel='stylesheet' id='wp-tooltip-css' href='https://ceddi.com.br/wp-admin/css/wp-tooltip.min.css?ver=7.1.",
+     "<link rel='stylesheet' id='login-css' href='https://ceddi.com.br/wp-admin/css/login.min.css?ver=7.1.3' media='",
+     "\t<meta name='referrer' content='strict-origin-when-cross-origin' />",
+     "\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+     "\t<link rel=\"icon\" href=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titulo-1-32x32.png\" sizes=",
+     "<link rel=\"icon\" href=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titulo-1-192x192.png\" sizes",
+     "<link rel=\"apple-touch-icon\" href=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titulo-1-180x18",
+     "<meta name=\"msapplication-TileImage\" content=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titu",
+     "\t</head>"
+    ]
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "\t<html lang=\"pt-BR\">",
+     "\t<head>",
+     "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />",
+     "\t<title>Acessar &lsaquo; CEDDI &#8211; Centro de Diagnóstico &#8212; WordPress</title>",
+     "\t<meta name='robots' content='max-image-preview:large, noindex, noarchive' />",
+     "<link rel='stylesheet' id='dashicons-css' href='https://ceddi.com.br/wp-includes/css/dashicons.min.css?ver=7.1",
+     "<link rel='stylesheet' id='buttons-css' href='https://ceddi.com.br/wp-includes/css/buttons.min.css?ver=7.1.3' ",
+     "<link rel='stylesheet' id='forms-css' href='https://ceddi.com.br/wp-admin/css/forms.min.css?ver=7.1.3' media='",
+     "<link rel='stylesheet' id='l10n-css' href='https://ceddi.com.br/wp-admin/css/l10n.min.css?ver=7.1.3' media='al",
+     "<link rel='stylesheet' id='wp-base-styles-css' href='https://ceddi.com.br/wp-includes/css/dist/base-styles/adm",
+     "<link rel='stylesheet' id='wp-tooltip-css' href='https://ceddi.com.br/wp-admin/css/wp-tooltip.min.css?ver=7.1.",
+     "<link rel='stylesheet' id='login-css' href='https://ceddi.com.br/wp-admin/css/login.min.css?ver=7.1.3' media='",
+     "\t<meta name='referrer' content='strict-origin-when-cross-origin' />",
+     "\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+     "\t<link rel=\"icon\" href=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titulo-1-32x32.png\" sizes=",
+     "<link rel=\"icon\" href=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titulo-1-192x192.png\" sizes",
+     "<link rel=\"apple-touch-icon\" href=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titulo-1-180x18",
+     "<meta name=\"msapplication-TileImage\" content=\"https://ceddi.com.br/wp-content/uploads/2023/05/cropped-Sem-titu",
+     "\t</head>"
+    ]
+   },
+   {
+    "p": "/server-status",
+    "status": 403
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ]
+ },
+ {
+  "empresa": "Bruni Imóveis",
+  "dominio": "bruniimoveis.com.br",
+  "coletado_em": "2026-10-14T01:27:25.243041+00:00",
+  "responde": true,
+  "base": "https://bruniimoveis.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://bruniimoveis.com.br/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": null,
+   "title": "Imobiliária em ariquemes - Imobiliária Bruni Imóveis"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Google Trust Services",
+   "ate": "Dec  3 14:42:37 2026 GMT"
+  },
+  "redireciona_https": false,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/wp-content/uploads/wpo/wpo-plugins-tables-list.json",
+    "Sitemap:"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 406
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 404
+   },
+   {
+    "p": "/.git/config",
+    "status": 404
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 406
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 404
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 404
+   },
+   {
+    "p": "/server-status",
+    "status": 403
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ]
+ },
+ {
+  "empresa": "Imobiliária Aislan Santos",
+  "dominio": "aislansantosimoveis.com.br",
+  "coletado_em": "2026-10-14T01:27:35.333747+00:00",
+  "responde": true,
+  "base": "https://aislansantosimoveis.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://aislansantosimoveis.com.br/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": null,
+   "title": "Aislan De Jesus Santos Vieira - www.aislansantosimoveis.com.br | Imobili&aacute;ria em Ari"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Google Trust Services",
+   "ate": "Dec 31 15:42:11 2026 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": []
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 403
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 403
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ]
+ },
+ {
+  "empresa": "Oikos Assessoria",
+  "dominio": "oikosassessoria.com.br",
+  "coletado_em": "2026-10-14T01:27:40.387044+00:00",
+  "responde": true,
+  "base": "https://oikosassessoria.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://www.oikosassessoria.com.br/",
+   "server": "cloudflare",
+   "powered_by": null,
+   "generator": "Wix.com Website Builder",
+   "title": null
+  },
+  "headers_faltando": [
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "ssr-caching"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Jan  2 02:24:50 2027 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "*?lightbox=",
+    "/_partials*",
+    "/pro-gallery-webapp/v1/galleries/*",
+    "/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 400
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 403
+   },
+   {
+    "p": "/admin/",
+    "status": 404
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 400
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 403
+   }
+  ]
+ },
+ {
+  "empresa": "AD Imóveis",
+  "dominio": "adimoveisro.com.br",
+  "coletado_em": "2026-10-14T01:28:09.314206+00:00",
+  "responde": true,
+  "base": "https://adimoveisro.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://adimoveisro.com.br/",
+   "server": "LiteSpeed",
+   "powered_by": null,
+   "generator": null,
+   "title": "AD Imóveis | Imobiliária em Ariquemes"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "tls": {
+   "protocolo": "TLSv1.3",
+   "emissor": "Let's Encrypt",
+   "ate": "Jan  9 01:40:04 2027 GMT"
+  },
+  "redireciona_https": true,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "Sitemap:"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 403
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 403
+   },
+   {
+    "p": "/.git/config",
+    "status": 403
+   },
+   {
+    "p": "/config",
+    "status": 404
+   },
+   {
+    "p": "/backup.sql",
+    "status": 404
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 403
+   },
+   {
+    "p": "/.DS_Store",
+    "status": null
+   },
+   {
+    "p": "/admin/",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "<!DOCTYPE html>",
+     "\t<html lang=\"pt-BR\">",
+     "\t<head>",
+     "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />",
+     "\t<title>Acessar &lsaquo; AD Imóveis &#8212; WordPress</title>",
+     "\t<meta name='robots' content='noindex, follow' />",
+     "<link rel='stylesheet' id='dashicons-css' href='https://adimoveisro.com.br/wp-includes/css/dashicons.css?ver=6",
+     "<link rel='stylesheet' id='buttons-css' href='https://adimoveisro.com.br/wp-includes/css/buttons.css?ver=6.8.8",
+     "<link rel='stylesheet' id='forms-css' href='https://adimoveisro.com.br/wp-admin/css/forms.css?ver=6.8.8' type=",
+     "<link rel='stylesheet' id='l10n-css' href='https://adimoveisro.com.br/wp-admin/css/l10n.css?ver=6.8.8' type='t",
+     "<link rel='stylesheet' id='login-css' href='https://adimoveisro.com.br/wp-admin/css/login.css?ver=6.8.8' type=",
+     "<style>/* mtr-login.css*/",
+     "",
+     "body,",
+     "body * {",
+     "    vertical-align: top;",
+     "    box-sizing: border-box;",
+     "    -webkit-box-sizing: border-box;",
+     "    -moz-box-sizing: border-box;",
+     "    -ms-box-sizing: border-box;"
+    ]
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "Falha ao validar token de segurança, <a = <REDIGIDO>"
+    ]
+   },
+   {
+    "p": "/server-status",
+    "status": 404
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 404
+   }
+  ]
+ },
+ {
+  "empresa": "Marques Imóveis",
+  "dominio": "marquesimoveisro.com.br",
+  "coletado_em": "2026-10-14T01:28:56.012241+00:00",
+  "responde": true,
+  "base": "https://marquesimoveisro.com.br/",
+  "http": {
+   "status": 200,
+   "final": "https://www.marquesimoveisro.com.br/",
+   "server": "Apache",
+   "powered_by": null,
+   "generator": null,
+   "title": "Imobiliária em Ariquemes | Encontre seu Imóvel na Marques Imóveis"
+  },
+  "headers_faltando": [
+   "Strict-Transport-Security",
+   "Content-Security-Policy",
+   "X-Frame-Options",
+   "X-Content-Type-Options",
+   "Referrer-Policy",
+   "Permissions-Policy"
+  ],
+  "csp": {
+   "presente": false,
+   "permite_unsafe_inline": false,
+   "permite_unsafe_eval": false,
+   "origens_internas_vazadas": []
+  },
+  "cookies_sem_flag": [
+   "PHPSESSID"
+  ],
+  "tls": {
+   "protocolo": "TLSv1.2",
+   "emissor": "Let's Encrypt",
+   "ate": "Jan  8 07:01:48 2027 GMT"
+  },
+  "redireciona_https": false,
+  "robots": {
+   "status": 200,
+   "disallows": [
+    "/imovel-nao-encontrado/",
+    "/obrigado-imovel-ideal/",
+    "/obrigado-contato/",
+    "/agendar-obrigado/",
+    "/fale-com-corretor-obrigado/"
+   ]
+  },
+  "caminhos": [
+   {
+    "p": "/.env",
+    "status": 410
+   },
+   {
+    "p": "/.git/HEAD",
+    "status": 410
+   },
+   {
+    "p": "/.git/config",
+    "status": 410
+   },
+   {
+    "p": "/config",
+    "status": 200,
+    "EXPOSTO": true,
+    "amostra": [
+     "{\"error\":true,\"log\":\"Curl failed with error #22: The requested URL returned error: 401 Unauthorized\",\"message\""
+    ]
+   },
+   {
+    "p": "/backup.sql",
+    "status": 403
+   },
+   {
+    "p": "/wp-config.php.bak",
+    "status": 410
+   },
+   {
+    "p": "/.DS_Store",
+    "status": 410
+   },
+   {
+    "p": "/admin/",
+    "status": 410
+   },
+   {
+    "p": "/wp-login.php",
+    "status": 410
+   },
+   {
+    "p": "/server-status",
+    "status": 403
+   },
+   {
+    "p": "/phpinfo.php",
+    "status": 410
+   }
+  ]
+ },
+ {
+  "empresa": "Laboratório São José",
+  "dominio": "saojoselaboratorio.com.br",
+  "coletado_em": "2026-10-14T01:29:14.528064+00:00",
+  "responde": false,
+  "base": null
+ }
+]

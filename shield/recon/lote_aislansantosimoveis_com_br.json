@@ -1,7 +1,7 @@
 {
  "empresa": "Imobiliária Aislan Santos",
  "dominio": "aislansantosimoveis.com.br",
- "coletado_em": "2026-10-14T01:27:35.333747+00:00",
+ "coletado_em": "2026-10-21T17:59:41.051574+00:00",
  "responde": true,
  "base": "https://aislansantosimoveis.com.br/",
  "http": {
@@ -34,7 +34,28 @@
  "redireciona_https": true,
  "robots": {
   "status": 200,
-  "disallows": []
+  "disallows": [
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/",
+   "/"
+  ]
  },
  "caminhos": [
   {
