@@ -13,6 +13,8 @@ evolucao/*
 !evolucao/reflexao_*_autoevolucao.md
 !evolucao/reflexao_autoevolucao_*.md
 !evolucao/semana_*.md
+# analises tecnicas (nao sao relatorio automatico — sao o trabalho da noite)
+!evolucao/analise_*.md
 memory/feedback/
 memory/heartbeat.json
 plans/

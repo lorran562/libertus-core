@@ -137,6 +137,38 @@ RUST_FONTCONFIG_DLOPEN=1 ~/.cargo/bin/cargo install binwalk --version 3.1.0 --lo
 fontconfig em runtime. Build levou ~1m15s. Se um dia o tarball binário oficial
 existir, prefira ele — o REA só confere o banner de versão (`3.1.x`).
 
+## SquashFS: detectar ≠ validar (medido 21/10/2026)
+
+O binwalk (v2 **e** v3) serve para **localizar** SquashFS, não para validar.
+O v2 decide com 4 bytes de magic + `s_major`/`s_minor` (1..10) + id de
+compressão (1..6): aceita um falso positivo de 10 bytes e esconde assinatura
+válida quando `bytes_used` estoura o arquivo (visível só com `-I`). Regras,
+matriz de 8 casos medidos e armadilhas (LZO rotulado como "gzip non-standard",
+`{jump}` do UBI escondendo o interior, magic de vendor) em
+`references/squashfs-deteccao-e-validacao.md`.
+
+Validador sem dependência do binwalk: `python3 ~/LIBERTUS/scripts/sqfs_probe.py <arquivo>`
+— checa superblock como o `read_super` do squashfs-tools, valida o primeiro
+bloco de metadados da inode/id table e imprime `dd` + `unsquashfs` prontos.
+
+## TRX/HDR0: o v3 valida CRC, o v2 não (medido 23/10/2026)
+
+Em TRX o v3 **é** validador estrutural: ele só aceita a assinatura se o dry-run
+de extração passar, e o dry-run exige o CRC. O v2 lista qualquer coisa com
+`HDR0` + versão 1/2, inclusive imagem com 1 byte corrompido ou `len` mentindo.
+
+O CRC é **CRC-32/JAMCRC** (init 0xFFFFFFFF, **sem** xorout final) sobre
+`[0x0C, len)` — não é o `zlib.crc32` e não começa em 0x1C. TRXv2 ainda exige a
+máscara de 8 bytes em `offsets[3]+22` (contadores do bin header → 0xFF) antes de
+calcular; o v3 **não** aplica essa máscara, então rejeita TRXv2 bem construído
+(falso negativo medido em sintético). Matriz de 12 casos, fontes do trx.c e do
+`trx.rs`, e o caso dos blobs `brcmfmac*.bin` (mesmo HDR0+JAMCRC, offsets de
+outro formato) em `references/trx-crc-e-validacao.md`.
+
+Ferramenta: `python3 ~/LIBERTUS/scripts/trx_probe.py firmware.trx` (veredito +
+candidatos de CRC) e `--fix` para recalcular `crc32`/`len` in-place (testado em
+firmware real de 9.5 MB com byte corrompido: v3 voltou a listar).
+
 ## Verificação end-to-end (rode isto depois de mexer)
 
 `scripts/verify-rea-mcp.py` (neste skill) sobe o servidor MCP **com o env exato
@@ -145,6 +177,45 @@ chamada real de `inspect_firmware_regions` no TRX do ASUS, `open_binary` +
 `binary_overview` via Ghidra num ELF, e `binary_session`. Precisa de PyYAML:
 rode com `~/LIBERTUS/venv/bin/python3`. Resultado esperado: `TODOS OS CHECKS
 PASSARAM` (exit 0).
+
+## Análise de site/app web com REA (recon passivo de verdade)
+
+O REA não aceita URL solta: ele observa um navegador via CDP. Receita verificada
+(13/10/2026, alvo: saofranciscorondonia.com.br):
+
+```bash
+# 1. navegador headless com CDP (background=True no terminal do Hermes)
+rm -rf /tmp/rea-chrome && mkdir -p /tmp/rea-chrome
+google-chrome --headless=new --remote-debugging-port=9222 --no-first-run \
+  --user-data-dir=/tmp/rea-chrome "https://ALVO/"
+
+# 2. alvos (endpoint é POSICIONAL, não existe --endpoint)
+rea list-browser-targets http://127.0.0.1:9222 --json
+
+# 3. bundle estático: o que realmente acha coisas
+rea analyze-web-bundle http://127.0.0.1:9222 <targetId> --fetch-source-maps --json
+
+# 4. observação da página: storage, console, formas de JSON
+rea inspect-web-page http://127.0.0.1:9222 <targetId> --observation-ms 3000 \
+  --include-console-text --include-json-body-shapes --include-storage-keys --json
+```
+
+Para encerrar sem se matar: `pkill -f "remote-debugging-por[t]=9222"` — o padrão
+SEM o truque do colchete casa com o próprio shell e mata o comando.
+
+**O que o `analyze-web-bundle` entrega que grep no HTML não entrega:** ele baixa
+todos os scripts, tira SHA-256 de cada um, percorre a AST (no teste: 77.359 nós em
+10 scripts) e devolve um registro de Evidence com `capture`, `observations`,
+`inferences`, `unknowns`, `completeness` e `limitations`. No alvo testado ele
+extraiu endpoints AJAX internos que estavam em texto claro dentro do JS publicado
+(`/_src/components/v1/inc/ajax/*.php`) — num diretório que o `robots.txt` do
+próprio site tentava esconder. Achado real, verificável e datado, impossível de
+provar com um scan de cabeçalhos.
+
+**Limite que não se cruza:** os endpoints descobertos NÃO são chamados. Apontar a
+existência é observação; acessar é teste, e teste exige autorização escrita. Isso
+não é frescura: é o que mantém o achado válido como peça de venda em vez de virar
+problema jurídico.
 
 ## Atualizar
 

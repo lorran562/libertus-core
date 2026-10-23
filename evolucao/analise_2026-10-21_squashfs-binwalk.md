@@ -245,6 +245,8 @@ O CRC32 do header TRX **não confere** nos dois firmwares do lab:
 
 Também não confere com CRC do arquivo inteiro, nem do arquivo com o campo zerado. Os dois arquivos passaram por repack no lab (OpenWrt TRX + extração de CHK), então a hipótese mais provável é que o campo não foi recalculado. **Não verificado** — fica como tarefa: pegar um `.trx` original do fabricante e testar as três convenções.
 
+> **Correção (23/10/2026):** o CRC **confere** nos dois arquivos. A convenção do TRX é CRC-32/**JAMCRC** (init `0xFFFFFFFF`, **sem** xorout final) sobre `[0x0C, len)` — e eu havia medido com `zlib.crc32` (que aplica xorout) a partir de `0x1C`. Medido: ASUS `0x5EFBB12F` e R7000 `0x16492303` batem byte a byte. Detalhes, matriz de 12 casos e o falso negativo do binwalk v3 em TRXv2 em `analise_2026-10-23_trx-crc.md`. O trecho abaixo sobre o v3 continua válido apenas em parte: o `trx.rs` do v3 valida a **tabela de offsets** *e* o **CRC** (o dry-run exige os dois).
+
 Sobre o v3 no TRX, o que foi medido: ele **reportou** os dois TRX reais (`TRX firmware image, version 1, partition count: 2`) e ficou calado nos meus TRX sintéticos — inclusive num com CRC correto. Como o meu sintético tinha tabela de partições implausível (`loader=0x1C`, `kernel=0x0`), a hipótese é que o parser do v3 valide a **tabela de offsets**, não o CRC; mas isso eu **não** confirmei lendo o `trx.rs`. Não afirmar sem ler.
 
 
