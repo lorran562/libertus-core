@@ -42,8 +42,24 @@ class Supabase:
         }
         self.b = SB_URL + "/rest/v1"
         try:
-            httpx.get(f"{self.b}/libertus_skills?limit=1",
-                      headers=self.h, timeout=8)
+            # Retry com backoff: um blip de TLS/DNS no boot matava o daemon
+            # inteiro (ConnectionError -> watchdog restart a cada 60s).
+            # Visto em 18/10: "certificate is not yet valid" transitório.
+            ultimo_erro = None
+            for tentativa in range(3):
+                try:
+                    r = httpx.get(f"{self.b}/libertus_skills?limit=1",
+                                  headers=self.h, timeout=8)
+                    if r.status_code < 500:
+                        ultimo_erro = None
+                        break
+                except Exception as e:
+                    ultimo_erro = e
+                    time.sleep(2 * (tentativa + 1))
+            if ultimo_erro is not None:
+                raise ConnectionError(f"Supabase falhou: {ultimo_erro}")
+        except ConnectionError:
+            raise
         except Exception as e:
             raise ConnectionError(f"Supabase falhou: {e}")
 
