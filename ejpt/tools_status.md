@@ -532,4 +532,60 @@ Núcleo **100% verificado em execução**. Nenhuma ferramenta do exame está for
 podem custar ponto — hydra com falso positivo e sqlmap desistindo cedo demais — estão documentadas
 acima com o contra-ataque testado.
 
+---
+
+# ATUALIZAÇÃO 23/OUT — REVALIDAÇÃO DA VÉSPERA (execução real, 17:55–18:10)
+
+Voucher é comprado **amanhã (24/out)**. Tudo abaixo rodou nesta máquina hoje — não é cópia de 21/out.
+
+## Tabela revalidada
+
+| Ferramenta | Versão hoje | Teste de execução de HOJE | Resultado |
+|---|---|---|---|
+| nmap | 7.992 (`/snap/bin`) | `http-enum` em :8080 · `smb-vuln*` em 172.28.77.11 · `ftp-anon` em :2121 | ✅ 6 diretórios + shares SMB |
+| msfconsole | 6.4.126-dev | `db_nmap` → `hosts`/`services` · `smb_ms17_010` em 172.28.77.11 | ✅ banco ativo; Samba = "does NOT appear vulnerable" (correto) |
+| hydra | 9.8dev | FTP `127.0.0.1:2121` com `-f` | ✅ **`msfadmin:msfadmin` em ~1 s** — FTP funciona! SSH segue sem LIBSSH |
+| gobuster | 3.8.2 | `dir` em :8080 com `/usr/share/wordlists/common.txt` | ✅ 13 entradas (config, docs, external, robots.txt, php.ini, server-status) |
+| sqlmap | 1.8.12#pip | **autenticado** no DVWA com cookie de sessão | ✅ 4 técnicas + `--dbs` → `dvwa`, `information_schema` |
+| netcat | OpenBSD 1.226 | listener 4444 + cliente | ✅ recebeu `PING` |
+| john | 1.9.0-jumbo | `--format=raw-md5` | ✅ `admin:password` |
+| ssh_brute.py | paramiko 5.1.0 | 127.0.0.1:2222 | ✅ `msfadmin:msfadmin` em 0,1 s |
+
+## 3 regressões que eu consertei hoje (iam quebrar no dia)
+
+1. **`requests` desapareceu do venv `~/venvs/pentest`** → `web_login.py` morria com `ModuleNotFoundError`.
+   Pior: o `pip3` do PATH é o **Python 3.14 do Hermes**, então `pip3 install requests` instala no lugar
+   errado e o venv continua quebrado (aconteceu aqui). Comando certo:
+```bash
+uv pip install --python ~/venvs/pentest/bin/python requests   # não existe ~/venvs/pentest/bin/pip
+~/venvs/pentest/bin/python -c "import requests, paramiko, impacket; print('ok')"
+```
+2. **Wordlists não ficam onde o Kali põe.** Nesta máquina **não existe** `/usr/share/seclists`.
+   Catálogo real, contado hoje:
+   `/usr/share/wordlists/common.txt` 4.750 · `/usr/share/wordlists/rockyou.txt` 14.344.391 ·
+   `~/wordlists/web/raft-small-words.txt` 43.007 · `~/wordlists/web/directory-list-2.3-medium.txt` 220.559 ·
+   `~/wordlists/pass/{top1000,top10k,500-worst,test_ssh}.txt` · `~/wordlists/user/top-usernames.txt` 17.
+3. **SSH do lab estava caído** (`libertus-ssh` parado) e **`smbclient` não existe no host** →
+   `docker start libertus-ssh`; SMB por `nmap --script smb-enum-shares` ou `impacket` no venv.
+
+## O que falta no host (não bloqueia o exame)
+
+`ncat`, `smbclient`, `smbmap`, `showmount`, `rpcclient`, `enum4linux-ng`, `wpscan`, `crackmapexec/nxc`.
+Instalar exige sudo com senha e não há humano na sessão de cron. No Kali da INE todos existem.
+Alternativa local medida hoje: SMB → `nmap --script smb-enum-shares,smb-os-discovery,smb-security-mode`
+(funcionou e listou os shares), ou `impacket` no venv.
+
+## Lab no ar agora (23/out 18:10)
+
+| Alvo | Endereço | Credencial / nota |
+|---|---|---|
+| DVWA | http://localhost:8080 | `admin:password` (security=low) |
+| Juice Shop | http://localhost:3000 | SPA — sqlmap desiste, UNION manual funciona |
+| SSH treino | `127.0.0.1:2222` | `msfadmin:msfadmin` |
+| SMB legacy | `172.28.77.11` (SRVLEGACY) | SMB1/NT1, guest RW em `publico` e `IPC$` |
+| SMB modern | `172.28.77.12` | SMB2/3 assinado |
+| FTP treino | `127.0.0.1:2121` | vsftpd 3.0.2, `msfadmin:msfadmin` |
+
+**Veredito 23/out:** núcleo 100% verificado em execução; 6 alvos de treino no ar; 3 regressões fechadas.
+
 

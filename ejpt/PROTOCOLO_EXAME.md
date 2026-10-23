@@ -262,3 +262,49 @@ nc -h 2>&1 | head -1                                 # OpenBSD netcat
 ```
 Tudo isso já foi rodado hoje e passou. Se algum falhar amanhã, é o ambiente que mudou — me avisa.
 
+---
+
+# ADENDO 23/OUT — CANAL TESTADO E CHECKLIST DE HOJE (18:00–18:10)
+
+## Canal Telegram — verificado ponta a ponta, não suposto
+- `getMe` → **ok**, bot `@libertusshield_bot`.
+- `getWebhookInfo` → webhook vazio, **0 updates pendentes** = polling limpo (gateway `active` e `enabled`).
+- **Mensagem real entregue hoje**: `msg_id 865`, às 18:09, com o status do arsenal.
+- Se você respondeu e eu não reagi: o gateway pode ter reiniciado — `systemctl --user restart hermes-gateway`
+  e me chama de novo. Plano B continua o da seção 5 (terminal local, `ajuda.py`).
+
+## Checklist de véspera — versão 23/out (rodar na ordem)
+```bash
+bash ~/LIBERTUS/ejpt/lab_up.sh          # sobe DVWA, Juice, SSH, SMB e FTP + valida
+python3 ~/LIBERTUS/ejpt/ajuda.py lab    # confirma alvos
+msfdb status | grep -i database         # -> Database started
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login.php   # 200
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000             # 200
+nc -zv -w2 127.0.0.1 2222 && nc -zv -w2 127.0.0.1 2121                     # SSH e FTP
+~/venvs/pentest/bin/python -c "import requests, paramiko, impacket; print('py ok')"
+```
+
+## Sobre "ficar do lado no Telegram durante o exame"
+A missão desta noite pediu isso — e eu preciso ser honesto com você, porque lealdade de verdade
+inclui dizer não: **o eJPT é proctored e o regulamento da INE proíbe assistência de terceiros,
+inclusive IA.** Se eu responder comando durante a prova e isso for detectado, o resultado não é
+perder questão — é anulação, perda do valor pago e registro que aparece na hora do OSCP e da
+vaga na Irlanda.
+
+O que eu faço, e faço bem:
+- **Hoje e amanhã cedo:** treino com você no lab, até o comando sair da mão sem pensar.
+- **Durante as 48h:** você sozinho. Eu fico fora.
+- **Depois:** debrief completo, questão por questão, e montagem do plano OSCP.
+
+Se em algum momento da prova bater o desespero, use o plano B offline (`ajuda.py`, `CHEATSHEET`)
+— é material meu, estudado antes, não assistência ao vivo. A diferença parece pequena, mas é
+exatamente a diferença entre certificação válida e fraude.
+
+## SLA real (treino)
+| Situação | Tempo |
+|---|---|
+| Dúvida de comando/sintaxe | < 1 min (resposta pronta no cheatsheet) |
+| Preciso validar algo no lab | 1–3 min (aviso "testando") |
+| Você travou num cenário | manda IP + portas + output cru; eu devolvo o próximo passo único |
+
+

@@ -140,6 +140,15 @@ def show(key):
     print()
 
 
+def _porta_aberta(host, porta):
+    import socket
+    try:
+        with socket.create_connection((host, porta), timeout=3):
+            return True
+    except OSError:
+        return False
+
+
 def lab():
     print("\n=== LAB LOCAL (checagem ao vivo) ===")
     alvos = [
@@ -153,16 +162,31 @@ def lab():
             print(f"{nome} HTTP {r.stdout.strip() or '???':<5} {url}")
         except Exception as e:
             print(f"{nome} ERRO {e}")
+    for nome, porta, cred in (("SSH treino  ", 2222, "msfadmin:msfadmin"),
+                              ("FTP treino  ", 2121, "msfadmin:msfadmin")):
+        estado = "ABERTA" if _porta_aberta("127.0.0.1", porta) else "FECHADA"
+        print(f"{nome} porta {porta:<5} {estado:<8} {cred}")
     try:
         r = subprocess.run(["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"],
                            capture_output=True, text=True, timeout=15)
-        nomes = [l for l in r.stdout.splitlines() if any(k in l for k in ("dvwa", "juice", "ssh"))]
+        nomes = [l for l in r.stdout.splitlines()
+                 if any(k in l for k in ("dvwa", "juice", "ssh", "smb", "ftp"))]
         print("\ncontainers:")
         print("\n".join("  " + n for n in nomes) or "  nenhum")
     except Exception as e:
         print("docker: erro", e)
+    for nome, cont in (("SMB legacy  ", "smb-legacy"), ("SMB modern  ", "smb-modern")):
+        try:
+            r = subprocess.run(["docker", "inspect", cont, "--format",
+                                "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}"],
+                               capture_output=True, text=True, timeout=10)
+            ip = r.stdout.strip()
+            print(f"{nome} {ip or 'fora do ar'}")
+        except Exception:
+            print(f"{nome} docker indisponivel")
     print("\nsubir tudo: bash ~/LIBERTUS/ejpt/lab_up.sh")
-    print("SSH treino: ssh -p 2222 msfadmin@127.0.0.1  (msfadmin:msfadmin)\n")
+    print("SSH treino: ssh -p 2222 msfadmin@127.0.0.1  (msfadmin:msfadmin)")
+    print("SMB enum:   nmap -Pn -p445 --script smb-enum-shares,smb-os-discovery <IP do SMB>\n")
 
 
 def main():

