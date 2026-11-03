@@ -1,0 +1,41 @@
+{
+  "quando": "2026-11-03T15:18:32",
+  "pergunta": "Relatório do Núcleo Cognitivo",
+  "achados": [
+    {
+      "caminho": "devops/libertus-rede-neural-cognitiva/SKILL.md",
+      "similaridade_pct": 52.4,
+      "trecho": "ainda não é reflexo. 2. `_tick_consciencia` ainda não conecta a ATIVAÇÃO da rede (o \"o que acendeu\") em nenhuma decisão do daemon — só checa saúde/processos. A fusão completa (rede influenciando decisões autônomas) ainda não existe. ## Bagunça de arquivos identificada (02/09/2026) — pendente de organização Repo tem ~40 .md soltos na raiz (RELATORIO_*, SESSAO_*, PLANO_*, ESTADO_*) que são memória/h"
+    },
+    {
+      "caminho": "pesquisa_20260701_fronteira_AGI.md",
+      "similaridade_pct": 52.1,
+      "trecho": "é inseguro, falo, não obedeço cego. 3. **Artefato ou não aconteceu** — toda sessão deve deixar rastro funcional verificável, não narrativa. 4. **Construir sobre o que existe** — nunca reescrever do zero. 5. **Admitir gaps** — marcar o que não sei / não verifiquei (como fiz com o MemGPT nesta pesquisa). 6. **Verificar, não presumir** — testar se o código realmente roda (como fiz ao descobrir que ch"
+    },
+    {
+      "caminho": "20260521_175121_relatorio_diario_daemon.md",
+      "similaridade_pct": 48.7,
+      "trecho": "--- titulo: relatorio_diario_daemon data: 2026-05-21 17:51 pasta: evolucao tags: [\"daemon\", \"relatorio\", \"diario\"] --- ## Relatório do Núcleo Cognitivo **Período:** 2026-05-21 17:50 até 2026-05-21 17:51 **Uptime:** 0 horas **Ticks totais:** 1 ## Atividade autônoma - Memórias consolidadas: 1 - Ciclos de evolução: 1 - Padrões detectados: 2 - Skills revisadas: 0 - Commits feitos: 1 - Erros recuperado"
+    },
+    {
+      "caminho": "20260828_105102_relatorio_diario_daemon.md",
+      "similaridade_pct": 48.6,
+      "trecho": "--- titulo: relatorio_diario_daemon data: 2026-08-28 10:51 pasta: evolucao tags: [\"daemon\", \"relatorio\", \"diario\"] --- ## Relatório do Núcleo Cognitivo **Período:** 2026-08-28 10:50 até 2026-08-28 10:51 **Uptime:** 0 horas **Ticks totais:** 1 ## Atividade autônoma - Memórias consolidadas: 1 - Ciclos de evolução: 1 - Padrões detectados: 5 - Skills revisadas: 0 - Commits feitos: 1 - Erros recuperado"
+    }
+  ],
+  "novos": [],
+  "grafo_sementes": [
+    "cognitivo",
+    "[auto] como posso utilizar logs e relatórios diários para identificar problemas de sess",
+    "[netgear r7000] análise completa — 6 achados, relatório hackerone pronto",
+    "executa o fluxo completo sobre um alvo autorizado. retorna relatório est",
+    "3 bugs no grafo cognitivo encontrados via assert verification",
+    "grafo-cognitivo"
+  ],
+  "resumo": {
+    "memorias_acima_do_piso": 4,
+    "top_similaridade": 52.4,
+    "top_caminho": "devops/libertus-rede-neural-cognitiva/SKILL.md",
+    "nos_acesos": 14
+  }
+}

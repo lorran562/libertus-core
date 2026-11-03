@@ -14,7 +14,7 @@ A cada tick executa ciclos de cognição:
 Escreve heartbeat em /LIBERTUS/memory/heartbeat.json
 """
 
-import os, sys, json, time, signal, traceback, threading
+import os, sys, json, time, signal, traceback, threading, subprocess
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
@@ -64,9 +64,18 @@ CICLO_AUTO_REFATORACAO = 43200   # 12 horas — auto-correção de bugs
 CICLO_ABSORCAO_DOCLING = 21600   # 6 horas — aprendizado via Docling
 CICLO_SECURITY_SCAN    = 10800   # 3 horas — security scanning automático
 CICLO_CONSCIENCIA      = 1800    # 30 min — sistema nervoso: saude do corpo
+CICLO_MEMORIA          = 10800   # 3 horas — recall autônomo (córtex unificado)
 
 HEARTBEAT = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 DAEMON_LOG = LIBERTUS_ROOT / "evolution_logs" / "daemon.log"
+
+# Córtex: vetorial (chromadb) + grafo (networkx) + reflexões na MESMA pergunta.
+# Só existe no venv — o daemon roda no python3 do sistema, então chama por
+# subprocesso. É o fim dos três sistemas de memória isolados.
+VENV_PY = LIBERTUS_ROOT / "venv" / "bin" / "python"
+CORTEX = LIBERTUS_ROOT / "core" / "cortex.py"
+RECALL_LOG = LIBERTUS_ROOT / "memoria" / "recall_autonomo.jsonl"
+ESTADO_MEMORIA = LIBERTUS_ROOT / "memoria" / "estado_memoria.json"
 
 
 class NucleoCognitivo:
@@ -115,6 +124,7 @@ class NucleoCognitivo:
             "absorcao_docling": 0,
             "security_scan": 0,
             "consciencia": 0,
+            "memoria": 0,
         }
 
         # Estatísticas da sessão do daemon
@@ -220,6 +230,10 @@ class NucleoCognitivo:
                     self._tick_consciencia()
                     self.last["consciencia"] = agora
 
+                if agora - self.last["memoria"] >= CICLO_MEMORIA:
+                    self._tick_memoria()
+                    self.last["memoria"] = agora
+
                 # Dorme pelo menor intervalo
                 time.sleep(30)
 
@@ -255,6 +269,100 @@ class NucleoCognitivo:
                 self._log("CONSCIENCIA", "corpo saudável — todos os processos e módulos ok")
         except Exception as e:
             self._log("ERRO", f"_tick_consciencia falhou: {e}")
+
+    def _alvo_memoria(self) -> str:
+        """Sobre o que perguntar à memória: meu trabalho REAL mais recente.
+
+        Não é tema sorteado nem palavra-chave fixa — é o último artefato de
+        verdade em evolucao/ (reflexão do próprio cron fica de fora, senão o
+        corpo só lembra de si mesmo e nunca do trabalho).
+        """
+        try:
+            arquivos = [p for p in (LIBERTUS_ROOT / "evolucao").glob("*.md")
+                        if not p.name.startswith(("reflexao", "semana"))]
+            if not arquivos:
+                return ""
+            alvo = max(arquivos, key=lambda p: p.stat().st_mtime)
+            titulo = ""
+            for linha in alvo.read_text(encoding="utf-8", errors="replace").splitlines()[:40]:
+                if linha.strip().startswith("#"):
+                    titulo = linha.strip("# ").strip()
+                    break
+            return (titulo or alvo.stem.replace("_", " "))[:200]
+        except Exception:
+            return ""
+
+    def _tick_memoria(self):
+        """Recall autônomo: o corpo pergunta à própria memória o que já sabe.
+
+        Fecha o gap dos três sistemas isolados (vetor/grafo/Supabase): chama o
+        córtex, que responde as três fontes à MESMA pergunta, e registra só o
+        que ainda não estava à mão. Nada de gerar .md novo — o que sai daqui é
+        sinal (jsonl), não mais um relatório automático pra inflar o histórico.
+        """
+        pergunta = self._alvo_memoria()
+        if not pergunta:
+            self._log("MEMORIA", "sem artefato real em evolucao/ — nada a consultar")
+            return
+        if not VENV_PY.exists() or not CORTEX.exists():
+            self._log("MEMORIA", "córtex indisponível (venv ou core/cortex.py ausente)")
+            return
+        try:
+            env = dict(os.environ)
+            env.pop("PYTHONPATH", None)   # venv 3.12 + PYTHONPATH 3.14 = numpy quebrado
+            r = subprocess.run(
+                [str(VENV_PY), str(CORTEX), "--json", pergunta],
+                cwd=str(LIBERTUS_ROOT), capture_output=True, text=True,
+                timeout=300, env=env)
+            if r.returncode != 0:
+                self._log("MEMORIA", f"córtex falhou: {(r.stderr or '')[-200:]}")
+                return
+            dados = json.loads(r.stdout) if (r.stdout or "").strip() else {}
+            achados = [a for a in dados.get("vetorial", []) if "__erro__" not in a]
+
+            ja_vistos = self._memorias_ja_vistas()
+            novos = [a for a in achados if str(a.get("caminho")) not in ja_vistos]
+
+            registro = {
+                "quando": datetime.now().isoformat(timespec="seconds"),
+                "pergunta": pergunta,
+                "achados": [{"caminho": a.get("caminho"),
+                             "similaridade_pct": a.get("similaridade_pct"),
+                             "trecho": " ".join(str(a.get("texto", "")).split())[:400]}
+                            for a in achados],
+                "novos": [{"caminho": a.get("caminho"),
+                           "similaridade_pct": a.get("similaridade_pct")} for a in novos],
+                "grafo_sementes": (dados.get("grafo") or {}).get("sementes", []),
+                "resumo": dados.get("resumo", {}),
+            }
+            RECALL_LOG.parent.mkdir(parents=True, exist_ok=True)
+            with RECALL_LOG.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(registro, ensure_ascii=False) + "\n")
+            ESTADO_MEMORIA.write_text(
+                json.dumps(registro, ensure_ascii=False, indent=2), encoding="utf-8")
+
+            top = achados[0] if achados else None
+            self._log("MEMORIA",
+                      f"'{pergunta[:60]}' → {len(achados)} memória(s), "
+                      f"{len(novos)} nova(s)"
+                      + (f", top {top['similaridade_pct']}% {top['caminho']}" if top else ""))
+        except Exception as e:
+            self._log("MEMORIA", f"erro: {e}")
+
+    def _memorias_ja_vistas(self) -> set:
+        """Caminhos já trazidos em recalls anteriores — evita repetir o óbvio."""
+        vistos = set()
+        try:
+            if RECALL_LOG.exists():
+                for linha in RECALL_LOG.read_text(encoding="utf-8", errors="replace").splitlines()[-500:]:
+                    try:
+                        for a in json.loads(linha).get("achados", []):
+                            vistos.add(str(a.get("caminho")))
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+        return vistos
 
     def _tick_observacao(self):
         """

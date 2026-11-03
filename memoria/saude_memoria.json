@@ -1,12 +1,12 @@
 {
-  "quando": "2026-10-20T11:18:09",
+  "quando": "2026-11-03T15:18:38",
   "ok": true,
   "falhas": [],
-  "duracao_s": 39.2,
+  "duracao_s": 94.1,
   "checagens": {
     "chroma": {
       "ok": true,
-      "total": 4985,
+      "total": 5245,
       "detalhe": ""
     },
     "recall_limpo": {
@@ -27,13 +27,13 @@
     },
     "despertar": {
       "ok": true,
-      "chars": 6914,
+      "chars": 8793,
       "detalhe": ""
     },
     "frescor": {
       "ok": true,
       "arquivo": "ultimo_index_supabase.json",
-      "horas": 0.1,
+      "horas": 0.0,
       "detalhe": ""
     }
   }
