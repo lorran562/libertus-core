@@ -12,7 +12,7 @@ echo ""
 cd ~/LIBERTUS/core
 
 # Exportar GROQ_API_KEY
-export GROQ_API_KEY="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"
+export GROQ_API_KEY="gsk_[REVOGADA_2026-11-12]"
 
 # Rodar 1 ciclo de shadow
 timeout 180 python3 << 'EOF'

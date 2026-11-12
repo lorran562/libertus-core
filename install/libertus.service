@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=%h/LIBERTUS
-Environment="GROQ_API_KEY=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"
+EnvironmentFile=%h/LIBERTUS/.env
 ExecStart=/usr/bin/python3 %h/LIBERTUS/core/libertus_daemon_v2_real.py
-Restart=always
+Restart=on-failure
 RestartSec=10
 StandardOutput=append:%h/LIBERTUS/logs/daemon.log
 StandardError=append:%h/LIBERTUS/logs/daemon.log

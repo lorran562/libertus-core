@@ -15,6 +15,9 @@ evolucao/*
 !evolucao/semana_*.md
 # analises tecnicas (nao sao relatorio automatico — sao o trabalho da noite)
 !evolucao/analise_*.md
+# pesquisas de fronteira (12/11: faltava esta excecao — minhas pesquisas
+# novas estavam sendo engolidas, o mesmo erro de 21/10 mas em outro padrao)
+!evolucao/pesquisa_*.md
 memory/feedback/
 memory/heartbeat.json
 plans/
@@ -62,3 +65,9 @@ lab/android/roblox/decoded/
 lab/android/roblox/jadx_out/
 lab/android/roblox/*.apk
 lab/android/roblox/*.err
+
+# SEGURANCA: nunca versionar credenciais (incidente 2026-11-12)
+.env.save
+*.env.save
+.env.*
+!.env.example

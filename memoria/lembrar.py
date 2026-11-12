@@ -159,8 +159,15 @@ def _carregar():
         import chromadb
         from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
     except ImportError:
+        # Auto-recuperacao: chromadb/sentence-transformers vivem no venv do repo.
+        # Sem isso, um `python3 lembrar.py` (interpreter do sistema) morre em vez
+        # de simplesmente funcionar. Re-executa a si mesmo no venv.
+        import os
+        venv_py = BASE_DIR / "venv" / "bin" / "python"
+        if venv_py.exists() and Path(sys.executable).resolve() != venv_py.resolve():
+            os.execv(str(venv_py), [str(venv_py), str(Path(__file__).resolve())] + sys.argv[1:])
         _p("ERRO: chromadb ou sentence-transformers nao instalado.")
-        _p("      rode com: ~/LIBERTUS/venv/bin/python ...")
+        _p(f"      venv ausente em {venv_py}. Instale com: pip install chromadb sentence-transformers")
         sys.exit(1)
 
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))

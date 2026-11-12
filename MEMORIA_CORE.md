@@ -493,11 +493,11 @@ Qual você prefere?"
 ## 🔑 **GROQ API KEY ATUALIZADA**
 
 **Data:** 14/05/2026 01:47 UTC  
-**Key:** `gsk_BjVZprLNSvNgBIBdntODWGdyb3FY...` (ativa)
+**Key:** `gsk_[REVOGADA_2026-11-12]...` (ativa)
 
 **Configuração:**
 ```bash
-export GROQ_API_KEY="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"
+export GROQ_API_KEY="gsk_[REVOGADA_2026-11-12]"
 ```
 
 **Status:** ✅ Funcionando
@@ -509,20 +509,20 @@ export GROQ_API_KEY="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"
 
 **GitHub Token:** Configurado ✅  
 **Repo:** Privado ✅  
-**Groq API Key:** `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`
+**Groq API Key:** `gsk_[REVOGADA_2026-11-12]`
 
 ### **Comandos para Ubuntu:**
 
 ```bash
 # 1. Exportar Groq API
-export GROQ_API_KEY="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"
+export GROQ_API_KEY="gsk_[REVOGADA_2026-11-12]"
 
 # 2. Adicionar ao bashrc (permanente)
-echo 'export GROQ_API_KEY="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"' >> ~/.bashrc
+echo 'export GROQ_API_KEY="gsk_[REVOGADA_2026-11-12]"' >> ~/.bashrc
 
 # 3. Criar .env local
 cd ~/LIBERTUS
-echo 'GROQ_API_KEY=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' > .env
+echo 'GROQ_API_KEY=gsk_[REVOGADA_2026-11-12]' > .env
 
 # 4. Testar agente v10.0
 cd ~/LIBERTUS
