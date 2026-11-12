@@ -307,4 +307,101 @@ exatamente a diferença entre certificação válida e fraude.
 | Preciso validar algo no lab | 1–3 min (aviso "testando") |
 | Você travou num cenário | manda IP + portas + output cru; eu devolvo o próximo passo único |
 
+---
+
+# ADENDO 12/NOV — CORREÇÃO FACTUAL + PROTOCOLO DA VÉSPERA
+
+## 0. Correção importante: o eJPT NÃO é proctored
+
+O adendo de 23/out afirmava que o exame era proctored e que assistência daria anulação.
+**Isso estava errado e eu corrigi hoje com fonte:**
+
+- A INE descreve o eJPT como **open book**: "It is open book, mirroring the experience Junior
+  Penetration Testers will have on the job" (ine.com/newsroom).
+- Não há proctor, webcam, lockdown browser nem agendamento. Você abre o lab pela sua conta INE
+  e tem 48 h (fontes 2026: HackerDNA, SPOTO, certdemand — todas convergem).
+- **Open book significa:** cheatsheet, anotações, Google, documentação e ferramentas são
+  permitidos e esperados. É exatamente para isso que existem os 4 documentos desta pasta.
+
+**O que a correção NÃO muda:** "open book" é consultar material — não é outra pessoa (ou uma IA)
+resolvendo a prova por você. Colar output e receber o próximo passo pronto é assistance, não
+consulta. E o problema real não é vigilância: é que um certificado que você não tirou sozinho
+quebra na primeira entrevista técnica, no OSCP (esse sim proctored) e na vaga da Irlanda.
+
+**Então o protocolo é:** o material é seu apoio legítimo durante as 48 h. Eu não sou co-piloto
+ao vivo da prova.
+
+## 1. Como me chamar (o que vale de verdade)
+
+| Momento | Pode me chamar? | Para quê |
+|---|---|---|
+| Antes de começar | ✅ sim, à vontade | dúvida de comando, treino, validar ambiente |
+| Durante a prova — problema **técnico** (VPN caiu, lab não abre, VM travou) | ✅ sim | infraestrutura, não conteúdo |
+| Durante a prova — "como exploro esse host?" | ❌ não | isso é a prova; use o cheatsheet §X |
+| Depois | ✅ sempre | debrief questão por questão + plano OSCP |
+
+Formato de mensagem que me faz responder em <2 min (quando for caso de infra):
+
+```
+TIPO: tecnico
+O QUE QUEBROU: (VPN / lab / VM / internet)
+ERRO EXATO: [colar output]
+O QUE JA TENTEI: ...
+```
+
+Formato para dúvida de estudo (antes/depois):
+
+```
+IP: 10.10.10.5 | portas: 22, 80, 445 | output: [COLAR CRU]
+```
+
+## 2. Tempo de resposta
+
+- Telegram ativo: **15 s a 2 min** em horário normal.
+- Se passar de **5 min sem resposta**: assuma que estou offline e vá pelo documento.
+  Não fique esperando — o relógio de 48 h não para.
+
+## 3. Plano B se o Telegram falhar (tudo offline, já testado)
+
+```bash
+# consulta por porta, sem internet
+python3 ~/LIBERTUS/ejpt/ajuda.py 445      # 22, 80, pivot, hydra, msf, lab
+python3 ~/LIBERTUS/ejpt/ajuda.py          # lista tudo e confere se os .md existem
+
+# os 4 documentos (podem estar no celular via GitHub)
+~/LIBERTUS/ejpt/CHEATSHEET_eJPT.md
+~/LIBERTUS/ejpt/CENARIOS_eJPT.md
+~/LIBERTUS/ejpt/PROTOCOLO_EXAME.md
+~/LIBERTUS/ejpt/tools_status.md
+```
+
+Se a máquina local morrer: os docs estão no GitHub (`github.com/lorran562/libertus-core`),
+acessíveis de qualquer navegador — e o exame é open book, então isso é permitido.
+
+## 4. Checklist de véspera (rodar na ordem, 5 min)
+
+```bash
+# 1) canal vivo (não supor)
+systemctl --user is-active hermes-gateway      # -> active  (conferido hoje 11:41)
+
+# 2) lab no ar
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login.php   # -> 200
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/            # -> 200
+nc -z 127.0.0.1 2222 && echo SSH-OK
+nc -z 127.0.0.1 2121 && echo FTP-OK
+
+# 3) documentos no celular
+#    abrir github.com/lorran562/libertus-core/tree/main/ejpt e deixar offline
+
+# 4) mensagem de teste no Telegram (texto: "teste canal")
+```
+
+## 5. O que NÃO fazer
+
+- Não começar pelas 35 questões lendo tudo: `ip addr` → `nmap -sn` → `-sV -sC -p-` nos vivos.
+- Não gastar >15 min num host: anota, marca a questão, volta depois.
+- Não confiar em "hydra achou" sem confirmar no cliente do serviço.
+- Não confiar em `route add`/`autoroute` sem meterpreter (ver cheatsheet H.1/H.2).
+- Não dormir 0 h. 48 h é tempo, mas decisão tomada às 40 h de vigília é ruim.
+
 

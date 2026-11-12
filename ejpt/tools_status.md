@@ -588,4 +588,48 @@ Alternativa local medida hoje: SMB → `nmap --script smb-enum-shares,smb-os-dis
 
 **Veredito 23/out:** núcleo 100% verificado em execução; 6 alvos de treino no ar; 3 regressões fechadas.
 
+---
+
+# REVALIDAÇÃO 12/NOV/2026 — véspera (medido, não suposto)
+
+Tudo abaixo foi executado nesta máquina hoje, entre 11:43 e 11:53. Nada copiado de doc antigo.
+
+## Núcleo do exame
+
+| Ferramenta | Versão hoje | Teste real executado | Resultado |
+|---|---|---|---|
+| nmap | **7.993** (snap) | `nmap -Pn -sT -p 8080,3000 127.0.0.1` | ✅ 2 portas abertas em 0,07 s · **619 scripts NSE** em `/snap/nmap/current/usr/share/nmap/scripts` |
+| msfconsole | **6.4.126-dev** (snap) | `version` + `search` + handler real | ✅ `msfdb status` = **Database started** · ms17_010_eternalblue, ssh_login, socks_proxy, autoroute todos presentes |
+| metasploit (sessão) | — | payload `linux/x64/meterpreter/reverse_tcp` contra DVWA | ✅ **Meterpreter session aberta** (172.30.0.1:4444 → 172.30.0.2) às 11:51 |
+| hydra | **9.8dev** | FTP contra vsftpd 3.0.2 em 127.0.0.1:2121 | ✅ **`msfadmin:msfadmin` em ~1 s** · ❌ ainda sem módulos ssh/rdp/mysql/smb2/SSL-services |
+| gobuster | **3.8.2** | `dir` no DVWA com `wordlists/common.txt` | ✅ achou `.gitignore`(200), `config/`(301), `docs/`, `external/`, `php.ini`(200), `robots.txt`(200) |
+| sqlmap | **1.8.12#pip** | `--version` | ✅ executa · aviso "outdated" é cosmético |
+| netcat | **OpenBSD 1.226** | banner/porta | ✅ variante BSD — **sem `-e`** |
+| john | **1.9.0-jumbo-1+bleeding** | build-info | ✅ OMP/AVX-512, via wrapper |
+| nikto | **2.6.1** | versão | ✅ SSL ok (fonte /opt/nikto) |
+| ffuf / nuclei / subfinder | 2.1.0 / 3.9.0 / 2.14.0 | binários em ~/go/bin | ✅ |
+| searchsploit / proxychains4 / sshpass / impacket | — | `command -v` + uso real | ✅ (`smbclient.py` no venv de pentest) |
+| **wpscan** | — | `command -v wpscan` | ❌ **AUSENTE** (não instalar agora: disco em 99%) — usar `nmap --script http-wordpress-*` + `gobuster` |
+
+## Lab — estado às 11:53
+
+| Alvo | Como estava | Como está agora |
+|---|---|---|
+| DVWA `localhost:8080` | UP | ✅ HTTP 200 (login admin/password com CSRF resolvido pelo `web_login.py`) |
+| Juice Shop `localhost:3000` | UP | ✅ HTTP 200 |
+| WebGoat `localhost:8888` | **OFF** | ❌ fora do ar — subir com `cd ~/LIBERTUS/lab && docker compose up -d webgoat` |
+| SSH treino `127.0.0.1:2222` | **Exited (2 semanas)** | ✅ **religado** · `ssh_brute.py` achou `msfadmin:msfadmin` em **0,1 s** |
+| FTP treino `127.0.0.1:2121` | **Exited (2 semanas)** | ✅ **religado** · banner `220 (vsFTPd 3.0.2)` |
+| SMB `172.28.77.11` / `.12` | **Exited** | ✅ **religados** · 445 aberto nos dois |
+| **Lab de pivô** (novo) | não existia | ✅ `bash ~/LIBERTUS/ejpt/pivot_up.sh` — edge SSH 2223 dual-homed + alvo interno 172.20.0.3 |
+
+## Gaps que continuam abertos (honesto)
+
+1. **hydra sem SSH/RDP** neste host (libssh não compilado). No Kali da INE é completo. Fallbacks locais: `ssh_brute.py`, `msf ssh_login`, `nmap ssh-brute`.
+2. **wpscan ausente.**
+3. **WebGoat fora do ar** (1 comando para subir).
+4. `portfwd` (meterpreter) **não foi testado hoje** — só `autoroute` + `socks_proxy`. A sintaxe está no cheatsheet e é padrão.
+
+**Veredito 12/nov:** núcleo 100% executando de verdade; 6 alvos de treino no ar + lab de pivô novo; 4 lacunas documentadas com fallback.
+
 
