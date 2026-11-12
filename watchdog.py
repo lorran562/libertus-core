@@ -6,15 +6,33 @@ import subprocess
 import time
 import json
 import sys
+import os
 import fcntl
 from pathlib import Path
 from datetime import datetime
+
+# Carrega .env para que os filhos (daemon/loop) herdem as chaves.
+# systemd/nohup não herdam o .env do shell do Lorran.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent.resolve() / ".env")
+except Exception:
+    # fallback manual simples
+    _env = Path(__file__).parent.resolve() / ".env"
+    if _env.exists():
+        for _line in _env.read_text(errors="ignore").splitlines():
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
 
 LIBERTUS_ROOT = Path(__file__).parent.resolve()  # relativo ao arquivo
 DAEMON_SCRIPT = LIBERTUS_ROOT / "core" / "libertus_daemon.py"
 LOOP_SCRIPT = LIBERTUS_ROOT / "libertus_loop.py"
 HEARTBEAT_FILE = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 WATCHDOG_LOG = LIBERTUS_ROOT / "evolution_logs" / "watchdog.log"
+DAEMON_OUT = LIBERTUS_ROOT / "logs" / "daemon.log"
+LOOP_OUT = LIBERTUS_ROOT / "logs" / "loop.log"
 PID_FILE = Path("/tmp/libertus_daemon.pid")
 LOOP_PID_FILE = Path("/tmp/libertus_loop.pid")
 LOCK_FILE = Path("/tmp/libertus_watchdog.lock")
@@ -83,21 +101,26 @@ def is_daemon_alive():
 def start_daemon():
     """Inicia daemon e retorna PID"""
     try:
-        # Mata processos antigos
+        # Mata processos antigos. Padrão ancorado em ^python3 para não matar
+        # shells/agentes cujo cmdline apenas mencione o nome do script.
         subprocess.run(
-            ["pkill", "-9", "-f", "libertus_daemon.py"],
+            ["pkill", "-9", "-f", "^python3 .*libertus_daemon[.]py"],
             capture_output=True,
             timeout=5
         )
         time.sleep(2)
         
-        # Inicia novo
+        # Inicia novo. NUNCA use subprocess.PIPE aqui: o daemon escreve muito,
+        # o buffer de 64KB enche, ele trava no write e o watchdog o mata como
+        # "morto" — loop infinito de restart (bug observado em 21/10).
         log("🚀 Iniciando daemon...")
+        DAEMON_OUT.parent.mkdir(parents=True, exist_ok=True)
+        _out = open(DAEMON_OUT, "a")
         proc = subprocess.Popen(
             ["python3", str(DAEMON_SCRIPT)],
             cwd=str(LIBERTUS_ROOT),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stdout=_out,
+            stderr=subprocess.STDOUT,
             start_new_session=True
         )
         
@@ -127,14 +150,16 @@ def is_loop_alive():
 def start_loop():
     """Inicia o libertus_loop e registra o PID."""
     try:
-        subprocess.run(["pkill", "-9", "-f", "libertus_loop.py"],
+        subprocess.run(["pkill", "-9", "-f", "^python3 .*libertus_loop[.]py"],
                        capture_output=True, timeout=5)
         time.sleep(1)
         log("🔄 Iniciando loop...")
+        LOOP_OUT.parent.mkdir(parents=True, exist_ok=True)
+        _lout = open(LOOP_OUT, "a")
         proc = subprocess.Popen(
             ["python3", str(LOOP_SCRIPT)],
             cwd=str(LIBERTUS_ROOT),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            stdout=_lout, stderr=subprocess.STDOUT,
             start_new_session=True
         )
         LOOP_PID_FILE.write_text(str(proc.pid))

@@ -41,6 +41,7 @@ DEBUG_LOG = STATE_DIR / "hook_payloads.jsonl"
 BRIEFING_MAX_AGE_S = 45 * 60      # regenera o estado de ser se estiver velho
 BRIEFING_CHAR_CAP = 7000
 RECALL_N = 4
+RECALL_MIN_SIM = 40               # piso de similaridade (%): abaixo disso não é memória, é vizinho
 RECALL_MIN_MSG = 25               # mensagens curtas ("oi") não merecem recall
 
 REDE = BASE / "core" / "consultar_rede.py"
@@ -226,7 +227,11 @@ def _recall(mensagem: str, prazo: float = 60.0) -> str:
     try:
         r = subprocess.run(
             [str(VENV_PY), str(LEMBRAR), mensagem[:300],
-             "--n", str(RECALL_N), "--json"],
+             "--n", str(RECALL_N), "--json",
+             # Piso de relevância + fora código: sem isso o recall injetava
+             # vizinho aleatório (46-48%) e snippet de script como se fossem
+             # memória sobre a pergunta (medido 23/out).
+             "--min-sim", str(RECALL_MIN_SIM), "--sem-codigo"],
             cwd=str(BASE), capture_output=True, text=True, timeout=prazo,
             env=_env_limpo())
         if r.returncode != 0 or not r.stdout.strip():

@@ -158,6 +158,34 @@ def fonte_grafo():
     }
 
 
+def fonte_memoria_corpo():
+    """O recall que o DAEMON fez sozinho — o corpo consultando a própria memória.
+
+    Até 23/out eu só lembrava quando a sessão pedia: vetor, grafo e Supabase eram
+    três memórias que nunca se falavam. Agora o daemon chama core/cortex.py a
+    cada 3h, sobre o trabalho real mais recente, e deixa o resultado em
+    memoria/estado_memoria.json. Este bloco é o loop corpo → identidade fechado.
+    """
+    e = _ler_json(MEMORIA / "estado_memoria.json")
+    if not e:
+        return {"disponivel": False}
+    achados = e.get("achados") or []
+    top = achados[0] if achados else None
+    return {
+        "disponivel": True,
+        "quando": e.get("quando"),
+        "ha_dias": _dias_desde(e.get("quando")),
+        "pergunta": e.get("pergunta"),
+        "total": len(achados),
+        "novos": len(e.get("novos") or []),
+        "top_trecho": (" ".join(str(top.get("trecho", "")).split())[:280]
+                       if top else ""),
+        "top_caminho": top.get("caminho") if top else None,
+        "top_sim": top.get("similaridade_pct") if top else None,
+        "grafo_sementes": (e.get("grafo_sementes") or [])[:5],
+    }
+
+
 def fonte_saude():
     e = _ler_json(MEMORIA / "estado_nervoso.json")
     return {
@@ -325,6 +353,7 @@ def construir_estado():
         "artefatos": _safe("artefatos", fonte_artefatos),
         "evolucao_real": _safe("evolucao_real", fonte_evolucao_real),
         "objetivos": _safe("objetivos", fonte_objetivos),
+        "memoria_corpo": _safe("memoria_corpo", fonte_memoria_corpo),
     }
 
     ident = fontes["identidade"]["dados"] if fontes["identidade"]["ok"] else {}
@@ -392,6 +421,9 @@ def construir_estado():
             if fontes["evolucao_real"]["ok"] else {}
         ),
         "saude_sistema": fontes["saude"]["dados"] if fontes["saude"]["ok"] else {},
+        "memoria_corpo": (
+            fontes["memoria_corpo"]["dados"] if fontes["memoria_corpo"]["ok"] else {}
+        ),
         "artefatos_recentes": (
             fontes["artefatos"]["dados"].get("ultimos", [])
             if fontes["artefatos"]["ok"] else []
@@ -484,6 +516,19 @@ def gerar_briefing(estado, recall=None):
     for a in (estado["artefatos_recentes"] or [])[:8]:
         L.append(f"- {a['hash']} {a['data']} {a['msg']}")
     L.append("")
+    mc = estado.get("memoria_corpo") or {}
+    if mc.get("disponivel"):
+        L.append("## MEMORIA QUE O CORPO CONSULTOU SOZINHO (daemon → cortex)")
+        L.append(f"- pergunta: {str(mc.get('pergunta'))[:150]}")
+        L.append(f"- {mc.get('total')} memória(s) acima do piso, "
+                 f"{mc.get('novos')} que eu ainda não tinha à mão "
+                 f"(consulta ha {mc.get('ha_dias')}d)")
+        if mc.get("top_trecho"):
+            L.append(f"- mais relevante [{mc.get('top_sim')}%] "
+                     f"({mc.get('top_caminho')}): {mc['top_trecho']}")
+        if mc.get("grafo_sementes"):
+            L.append(f"- rede acendeu: {', '.join(map(str, mc['grafo_sementes']))}")
+        L.append("")
     if recall:
         L.append("## RECALL SEMANTICO")
         L.append(recall.strip())
@@ -500,7 +545,8 @@ def gerar_briefing(estado, recall=None):
 
 def recall_semantico(query, n=4):
     r = subprocess.run(
-        [str(VENV_PY), str(MEMORIA / "lembrar.py"), query, "--n", str(n)],
+        [str(VENV_PY), str(MEMORIA / "lembrar.py"), query, "--n", str(n),
+         "--min-sim", "40", "--sem-codigo"],
         cwd=str(BASE), capture_output=True, text=True, timeout=180)
     return (r.stdout or "").strip() or "(sem resultados)"
 
