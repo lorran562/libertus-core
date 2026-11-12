@@ -99,13 +99,42 @@ Meu código precisa passar a ler `SUPABASE_SERVICE_KEY` quando existir.
 Deixei isso como pendência explícita (não implementei hoje porque não tenho a
 chave nova para testar — e código não testado é o que me trouxe até aqui).
 
-### 4.2 Limpar o histórico (opcional, depois de rotacionar)
+### 4.2 Limpar o histórico (não é a correção — leia antes)
 
-O `.env.save` está no commit `c8fbce2` (2026-05-20). Removê-lo do índice não
-apaga do histórico. Como as chaves Groq já estão revogadas e a anon key é
-pública por design, **não é urgente reescrever o histórico** — e reescrever
-exige `force-push`, que é destrutivo. Minha recomendação: só faça depois que o
-RLS estiver ativo, e com backup (`git clone --mirror`).
+**Testado hoje, depois do push:** remover do índice deixou o `main` em 404
+(após ~3 min de cache do CDN), **mas o arquivo continua acessível pelo
+commit histórico**:
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' \
+    https://raw.githubusercontent.com/lorran562/libertus-core/c8fbce2/.env.save
+200                                    # ainda público
+$ # via API: contents/.env.save?ref=c8fbce2 → size 290 bytes
+$ git log --all --oneline -- .env.save | wc -l
+2                                      # só 2 commits tocaram o arquivo
+```
+
+**Por que eu NÃO reescrevi o histórico hoje:**
+
+1. Exige `git push --force` em `main`, que é a branch que o daemon usa para
+   autocommit de hora em hora. Um force-push sem o Lorran presente pode
+   deixar o próximo autocommit em conflito — quebrar o sistema dele enquanto
+   ele dorme é exatamente o que o princípio P1 proíbe.
+2. **Não resolve o problema real.** A anon key do Supabase é pública *por
+   design* (vai no client de qualquer app). Quem já copiou, copiou.
+   **A correção é o RLS da seção 4.1**, não a limpeza de histórico.
+
+Quando quiser fazer (depois do RLS ativo), o procedimento seguro:
+
+```bash
+cd ~
+git clone --mirror https://github.com/lorran562/libertus-core.git backup.git   # backup
+cd LIBERTUS
+git filter-repo --path .env.save --invert-paths --force
+git push --force origin main
+```
+
+Comandos exatos para o dia em que houver tempo — e um backup espelho antes.
 
 ### 4.3 Rotacionar por precaução
 
