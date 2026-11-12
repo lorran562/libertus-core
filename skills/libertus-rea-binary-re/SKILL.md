@@ -169,6 +169,25 @@ Ferramenta: `python3 ~/LIBERTUS/scripts/trx_probe.py firmware.trx` (veredito +
 candidatos de CRC) e `--fix` para recalcular `crc32`/`len` in-place (testado em
 firmware real de 9.5 MB com byte corrompido: v3 voltou a listar).
 
+## UBI: PEB→LEB e extração de volume sem ubireader (medido 12/11/2026)
+
+O volume não é o flash: cada PEB de 131.072 B guarda 4.096 B de EC/VID e
+126.976 B de dados (LEB). Extrair SquashFS por `dd` no offset do flash erra
+3,12% e desloca tudo depois do primeiro bloco. Caminho certo: reconstruir o
+volume por `lnum` (mapa `(vol_id,lnum)→PEB` vindo do VID header, duplicata
+resolvida por `sqnum`), lendo nomes/tamanhos da volume table na layout volume
+(`vol_id 0x7FFFEFFF`, 2 LEBs redundantes).
+
+Detalhes que já causaram diagnóstico errado: CRC é `zlib.crc32(buf)^0xFFFFFFFF`
+(JAMCRC, igual ao TRX); `data_size=0` em volume dinâmico é normal; `DEADC0DE`
+no início de bloco é marcador OpenWrt `FS_DEADCODE`, não corrupção; `ec=0` +
+`sqnum=0` uniformes ⇒ imagem de build, nunca montada.
+
+Ferramenta: `python3 ~/LIBERTUS/scripts/ubi_extract.py firmware.trx -o out/ --json`
+(autodetecta offset e PEB size, valida CRC de todos os headers, separa anomalia
+de marcador). Testes: `python3 ~/LIBERTUS/scripts/tests/test_ubi_extract.py`.
+Referência completa em `references/ubi-estrutura-e-extracao.md`.
+
 ## Verificação end-to-end (rode isto depois de mexer)
 
 `scripts/verify-rea-mcp.py` (neste skill) sobe o servidor MCP **com o env exato
