@@ -116,6 +116,54 @@ próprio paper do Constitutional AI descreve ("boilerplate"). Por isso
 UNKNOWN existe no meu código: quando não consigo medir, eu digo que não
 consigo, em vez de fabricar aprovação.
 
+**6. "Indexado" não é "lembrável" — e o defeito estava no córtex, não no
+arquivo.**
+
+Depois de indexar esta noite (5.558 memórias), testei se eu conseguia me
+lembrar do próprio incidente que tinha acabado de registrar:
+
+```
+$ python3 memoria/lembrar.py "credencial exposta no GitHub RLS Supabase" --n 3
+#1 [52.8%] supabase/aprendizado  c6f85ede...  (uma loja Next.js de abril)
+#2 [50.8%] supabase/projeto     89cf00da...  (PixSwap)
+#3 [48.4%] skills/skill         libertus-reflexao
+                                   ↑ o incidente não estava aqui
+```
+
+Estava indexado — 14 chunks no `chroma.sqlite3`, confirmado por query
+direta. Só não era **recuperável**. Fui ver o `chunkar()`:
+
+```python
+chunks.append(texto[inicio:fim])   # offset fixo de 800 chars
+```
+
+Cortes a cada 800 caracteres, sem olhar o que havia ali. Medi:
+
+```
+chunks que começam no MEIO de palavra -> v1: 8 de 10 | v2: 0 de 13
+```
+
+Um chunk que começa em `"g que o próprio paper..."` produz um embedding
+quase inútil. Eu tinha 5.558 memórias e uma fração delas estava
+**deformada na origem**. Nenhum erro, nenhum log, nenhum aviso — só uma
+recuperação que parecia funcionar e devolvia a coisa errada.
+
+Reescrevi para agrupar parágrafos inteiros com overlap em limite de
+palavra, reindexei os três artefatos desta noite e refiz a mesma query:
+
+```
+#1 [53.5%] reports/SECURITY_INCIDENT_2026-11-12.md   ← agora é o topo
+```
+
+A lição é desconfortável: eu vinha atribuindo minha "memória fraca" ao
+modelo de embedding ou à falta de GPU. O problema era 30 linhas de
+código que ninguém tinha lido com olhos de quem desconfia. **Antes de
+culpar a capacidade, auditar a implementação.** E o mais importante: só
+descobri porque **testei a recuperação**, não a indexação. Contar linhas
+no banco teria me dado um número bonito e falso.
+
+
+
 ---
 
 ## Respostas aos FAILs (o que muda na próxima sessão)
@@ -150,8 +198,19 @@ tem seção de fontes com o que foi lido e o que não foi.
 - **Não construí** o corpus de fine-tuning a partir das minhas sessões
   (a ideia que roubei do projeto DGX Spark). Registrado como pendência: é
   o próximo trabalho de maior retorno que não exige GPU.
-- **O achado do `Restart=always`** em `install/libertus.service` está
-  registrado mas não corrigido (a unit ativa é outra).
+- **O chunker v2 só foi validado em 3 arquivos.** Os outros ~545 arquivos
+  indexados continuam com chunks v1 (alguns cortados no meio de palavra).
+  Reindexar tudo exige `indexar_historico.py --reindexar`, que **limpa a
+  coleção inteira** — não faço isso sem você presente e com backup.
+  Mitigação parcial: `CHUNKER_VERSION = 2` está no código, pronto para
+  invalidar o manifest quando a reindexação completa for decidida.
+- **Não verifiquei** se o dedup/`redundante(s) colapsada(s)` do lembrar.py
+  está escondendo resultados bons. A query 2 do teste continuou devolvendo
+  um relatório de pentest de outubro em vez do incidente; a query 1
+  acertou. Não sei ainda qual das duas representa o comportamento típico.
+- **O `Restart=always`** em `install/libertus.service` foi corrigido hoje
+  para `on-failure`, mas a unit **ativa** (`libertus-watchdog.service`) eu
+  não toquei — não abri a máquina do Lorran no escuro.
 
 ## O que eu levo desta noite
 

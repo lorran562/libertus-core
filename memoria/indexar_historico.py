@@ -39,19 +39,85 @@ CHUNK_SIZE = 800       # chars por chunk
 CHUNK_OVERLAP = 100    # overlap entre chunks
 MIN_CHARS = 50         # ignora arquivos menores que isso
 LOTE = 64              # documentos por add() — um por um é lento demais
+CHUNKER_VERSION = 2    # 2 = chunking por paragrafo (ver chunkar). Sobe isso
+                       # quando mudar a estrategia: invalida o manifest e
+                       # forca reindexacao dos arquivos afetados.
+
+
+def _cortar_em_limite(texto: str, limite: int) -> int:
+    """Maior posicao <= limite que nao corta palavra no meio.
+
+    Prefere fim de frase, depois espaco, depois qualquer posicao.
+    """
+    if limite >= len(texto):
+        return len(texto)
+    janela = texto[:limite]
+    for sep in (". ", "! ", "? ", "\n", "; ", ", ", " "):
+        pos = janela.rfind(sep)
+        if pos > limite * 0.6:          # nao aceitar cortes absurdos
+            return pos + len(sep)
+    return limite
 
 
 def chunkar(texto: str, tamanho: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP):
-    """Divide texto em chunks com overlap."""
-    chunks = []
-    inicio = 0
-    while inicio < len(texto):
-        fim = min(inicio + tamanho, len(texto))
-        chunks.append(texto[inicio:fim])
-        if fim == len(texto):
-            break
-        inicio = fim - overlap
-    return chunks
+    """Divide texto em chunks respeitando paragrafos e palavras.
+
+    v1 (historico) cortava por offset fixo: `texto[i:i+800]`. O resultado
+    e que chunks comecavam no meio de palavra ("m GPU.", "g que o proprio
+    paper...") — o embedding de um fragmento que comeca em "g que o" e
+    quase inutil, e a recuperacao semantica degrada silenciosamente.
+    Sintoma observado em 12/11/2026: o relatorio de incidente estava
+    indexado (14 chunks) mas nao era recuperavel por nenhuma query natural.
+
+    v2: agrupa paragrafos inteiros ate `tamanho`; se um paragrafo sozinho
+    for maior, corta em limite de frase/espaco. O overlap repete o ultimo
+    paragrafo do chunk anterior (contexto), nao uma janela arbitraria.
+    """
+    texto = (texto or "").strip()
+    if not texto:
+        return []
+
+    paragrafos = [p for p in texto.split("\n\n") if p.strip()]
+    chunks: list[str] = []
+    atual = ""
+
+    def fechar(proximo_contexto: bool = True):
+        nonlocal atual
+        if atual.strip():
+            chunks.append(atual.strip())
+        atual = ""
+
+    for par in paragrafos:
+        par = par.strip()
+        # paragrafo maior que o chunk inteiro: fatia em limites naturais
+        if len(par) > tamanho:
+            if atual.strip():
+                fechar()
+            resto = par
+            while len(resto) > tamanho:
+                corte = _cortar_em_limite(resto, tamanho)
+                chunks.append(resto[:corte].strip())
+                resto = resto[corte:].lstrip()
+            atual = resto
+            continue
+
+        if len(atual) + len(par) + 2 > tamanho:
+            ultimo = atual
+            fechar()
+            # overlap: 1 paragrafo de contexto (limitado a `overlap` chars)
+            if overlap and ultimo:
+                contexto = ultimo[-overlap:].strip()
+                # nunca comecar no meio de palavra: avanca ate o 1o espaco
+                esp = contexto.find(" ")
+                if 0 <= esp < 40:
+                    contexto = contexto[esp + 1:].lstrip()
+                if contexto:
+                    atual = contexto + "\n\n"
+        atual = (atual + ("\n\n" if atual else "") + par)
+
+    fechar()
+    return [c for c in chunks if c.strip()]
+
 
 
 def hash_doc(texto: str) -> str:
