@@ -274,7 +274,8 @@ def indexar(baixar: bool = False, dry_run: bool = False):
 
     print(f"\n[supabase] OK — {novos} embeddings novos "
           f"({len(docs)} documentos, {total_chunks} chunks)")
-    print(f"[supabase] Total na colecao: {collection.count()}")
+    print(f"[supabase] Total na colecao: {collection.count()}"
+          f" (chunks vetoriais — nao e contagem de memorias)")
     return 0
 
 

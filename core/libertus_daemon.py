@@ -66,6 +66,47 @@ CICLO_SECURITY_SCAN    = 10800   # 3 horas — security scanning automático
 CICLO_CONSCIENCIA      = 1800    # 30 min — sistema nervoso: saude do corpo
 CICLO_MEMORIA          = 10800   # 3 horas — recall autônomo (córtex unificado)
 
+
+# ── Classificação de achados de scan ─────────────────────────────────────
+# 15/11: o daemon chamava "vulnerabilidade medium" qualquer header de
+# segurança ausente. Faltar CSP/XFO num site estático NÃO é vulnerabilidade —
+# é higiene de cabeçalhos. Reportar isso como "4 vulnerabilidades, risco
+# medium" pra um cliente do SHIELD destrói credibilidade na primeira página.
+# Achado de higiene continua sendo registrado, mas em campo próprio e sem
+# inflar a contagem de vulnerabilidades.
+HIGIENE_CABECALHOS = (
+    "HSTS ausente",
+    "CSP ausente",
+    "X-Frame-Options ausente",
+    "X-Content-Type-Options ausente",
+    "Referrer-Policy ausente",
+)
+
+
+def classificar_risco(cves, riscos_web):
+    """Separa vulnerabilidade real de higiene de cabeçalhos.
+
+    Retorna (total_vulns, risk_level, higiene) — total_vulns conta só o que é
+    achado de verdade; higiene vai em lista separada.
+    """
+    cves = cves or []
+    riscos_web = riscos_web or []
+    higiene = [r for r in riscos_web
+               if any(h in r for h in HIGIENE_CABECALHOS)]
+    reais = [r for r in riscos_web if r not in higiene]
+
+    total_vulns = len(cves) + len(reais)
+    if cves:
+        nivel = "high"
+    elif reais:
+        nivel = "medium"
+    elif higiene:
+        nivel = "low"
+    else:
+        nivel = "info"
+    return total_vulns, nivel, higiene
+
+
 HEARTBEAT = LIBERTUS_ROOT / "memory" / "heartbeat.json"
 DAEMON_LOG = LIBERTUS_ROOT / "evolution_logs" / "daemon.log"
 
@@ -277,9 +318,14 @@ class NucleoCognitivo:
         verdade em evolucao/ (reflexão do próprio cron fica de fora, senão o
         corpo só lembra de si mesmo e nunca do trabalho).
         """
+        # 03/11: a primeira execução autônoma perguntou sobre o relatório que o
+        # próprio daemon acabara de escrever ("Relatório do Núcleo Cognitivo").
+        # Córtex bom, pergunta ruim. O filtro de nome não pegava os relatórios
+        # gerados por mim porque eles começam com a data, não com a palavra.
+        RUINS = ("reflexao", "semana", "relatorio", "padroes", "diario")
         try:
             arquivos = [p for p in (LIBERTUS_ROOT / "evolucao").glob("*.md")
-                        if not p.name.startswith(("reflexao", "semana"))]
+                        if not any(t in p.name.lower() for t in RUINS)]
             if not arquivos:
                 return ""
             alvo = max(arquivos, key=lambda p: p.stat().st_mtime)
@@ -768,6 +814,10 @@ class NucleoCognitivo:
         uptime = datetime.now() - self.inicio
         skills = self.sb.get_skills()
         mems = self.sb.get("libertus_memoria", "select=id&limit=500")
+        # Total real (count=exact). Se o endpoint não responder, cai para o
+        # tamanho da amostra e diz que é amostra — nunca finge ser total.
+        contagem_real = self.sb.count("libertus_memoria")
+        total_mems = contagem_real or len(mems)
 
         return f"""## Relatório do Núcleo Cognitivo
 
@@ -785,7 +835,8 @@ class NucleoCognitivo:
 
 ## Estado atual do sistema
 - Skills ativas: {len(skills)}
-- Memórias totais: {len(mems)}
+- Memórias (linhas em libertus_memoria): {total_mems}{"" if contagem_real else " (amostra — count=exact falhou)"}
+  _Chroma conta chunks vetoriais, não memórias: ~4,6 chunks por memória com o chunker v2. Não comparar os dois números._
 - Objetivos ativos: {len(self.obj.listar())}
 
 ## Próximos ciclos agendados
@@ -908,13 +959,7 @@ class NucleoCognitivo:
                     web = scanner.scan_web(target_url)
                 riscos_web = web.get("riscos", []) if isinstance(web, dict) else []
 
-                total_vulns = len(cves) + len(riscos_web)
-                if total_vulns == 0:
-                    risk_level = "info"
-                elif len(cves) > 0:
-                    risk_level = "high"
-                else:
-                    risk_level = "medium"
+                total_vulns, risk_level, higiene = classificar_risco(cves, riscos_web)
 
                 report = {
                     "target": target_url,
@@ -926,6 +971,7 @@ class NucleoCognitivo:
                         "cves": cves,
                         "vetores": vetores,
                         "risk_level": risk_level,
+                        "higiene_de_cabecalhos": higiene,
                     },
                 }
 
@@ -953,8 +999,9 @@ class NucleoCognitivo:
                     self._log("ERRO", f"Falha ao atualizar Supabase: {e}")
 
                 self._log("SECURITY_SCAN",
-                          f"Scan completo: {total_vulns} achados "
-                          f"({len(cves)} CVEs, {len(riscos_web)} riscos web), nível {risk_level}")
+                          f"Scan completo: {total_vulns} achado(s) real(is) "
+                          f"({len(cves)} CVEs, {len(riscos_web) - len(higiene)} riscos web), "
+                          f"nível {risk_level}; {len(higiene)} item(ns) de higiene de cabeçalhos")
 
         except Exception as e:
             self._log("ERRO_SECURITY_SCAN", f"{e}")

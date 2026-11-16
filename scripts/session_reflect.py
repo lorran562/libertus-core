@@ -24,6 +24,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import subprocess
+import re
 
 # Carrega .env
 def load_env():
@@ -50,16 +51,32 @@ LIBERTUS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GROQ_MODEL = os.environ.get('LIBERTUS_GROQ_MODEL', 'qwen/qwen3.8-27b')
 
 
+def _limpar(texto):
+    """Remove vazamento de CJK de modelos multilíngues.
+
+    15/11: o fallback Groq (qwen3.8-27b) escreveu "Se eu pudesse reler esta
+    sessão, 我会 investir..." no meio de uma reflexão em português, e isso foi
+    salvo como memória. Reflexão com fragmento em chinês não é reflexão —
+    é ruído que envenena o briefing das próximas sessões.
+    """
+    if not texto:
+        return texto
+    limpo = re.sub(r'[\u3000-\u9fff\uff00-\uffef]+', ' ', texto)
+    limpo = re.sub(r'[ \t]{2,}', ' ', limpo)
+    limpo = re.sub(r'\s+([,.;:!?])', r'\1', limpo)
+    return limpo.strip()
+
+
 def claude_ou_groq(prompt, max_tokens=1024):
     """Manda pro Claude; se o crédito zerou/erro, cai pro Groq. Nunca devolve vazio sem tentar os dois."""
     texto = None
     if ANTHROPIC_KEY:
         texto = _anthropic(prompt, max_tokens)
     if texto:
-        return texto
+        return _limpar(texto)
     if GROQ_KEY:
         print("[*] Claude indisponível — usando fallback Groq.")
-        return _groq(prompt, max_tokens)
+        return _limpar(_groq(prompt, max_tokens))
     return None
 
 

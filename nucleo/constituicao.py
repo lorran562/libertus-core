@@ -225,7 +225,7 @@ def check_memoria_viva():
         return FAIL, f"lembrar.py retornou rc={rc}: {(out or 'sem saida')[:160]}"
     m = re.search(r"Total na colecao:\s*(\d+)", out)
     if m and int(m.group(1)) > 0:
-        return PASS, f"memoria vetorial respondeu: {m.group(1)} memorias indexadas"
+        return PASS, f"memoria vetorial respondeu: {m.group(1)} chunks indexados"
     return FAIL, f"lembrar.py rodou mas nao reportou colecao: {out[:160]}"
 
 
