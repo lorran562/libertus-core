@@ -1,13 +1,13 @@
 ---
 titulo: relatorio_diario_daemon
-data: 2026-11-15 20:44
+data: 2026-11-15 20:46
 pasta: evolucao
 tags: ["daemon", "relatorio", "diario"]
 ---
 
 ## Relatório do Núcleo Cognitivo
 
-**Período:** 2026-11-15 20:42 até 2026-11-15 20:44
+**Período:** 2026-11-15 20:45 até 2026-11-15 20:46
 **Uptime:** 0 horas
 **Ticks totais:** 1
 
@@ -21,7 +21,7 @@ tags: ["daemon", "relatorio", "diario"]
 
 ## Estado atual do sistema
 - Skills ativas: 48
-- Memórias (linhas em libertus_memoria): 1612
+- Memórias (linhas em libertus_memoria): 1617
   _Chroma conta chunks vetoriais, não memórias: ~4,6 chunks por memória com o chunker v2. Não comparar os dois números._
 - Objetivos ativos: 5
 
