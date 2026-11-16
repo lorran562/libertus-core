@@ -632,4 +632,105 @@ Tudo abaixo foi executado nesta máquina hoje, entre 11:43 e 11:53. Nada copiado
 
 **Veredito 12/nov:** núcleo 100% executando de verdade; 6 alvos de treino no ar + lab de pivô novo; 4 lacunas documentadas com fallback.
 
+---
+
+# ATUALIZAÇÃO 16/NOV/2026 11:09–11:15 — VÉSPERA (verificação executada, não lida)
+
+Método: para cada ferramenta, (a) caminho, (b) `--version`, (c) **execução real** contra alvo local.
+
+## Tabela medida hoje
+
+| Ferramenta | Caminho | Versão | Executou? | Prova |
+|---|---|---|---|---|
+| nmap | /snap/bin/nmap | **7.993** (era 7.992) | ✅ | `nmap -sT -p 8080,3000,22 -Pn 127.0.0.1` → 3000/8080 open, 22 closed |
+| msfconsole | /snap/bin/msfconsole | 6.4.126-dev | ✅ | `ssh_login` abriu **SSH session 1** contra 2222 (`Success: 'msfadmin:msfadmin'`) |
+| hydra | /usr/local/bin/hydra | 9.8dev | ⚠️ parcial | FTP achou `msfadmin:msfadmin` no 2121. Módulos medidos um a um (abaixo) |
+| gobuster | ~/go/bin/gobuster | 3.8.2 | ✅ | `dir` no DVWA:8080 → /config, /docs, /external (dirb list) |
+| sqlmap | /snap/bin/sqlmap | 1.8.12#pip | ✅ | varredura completa no Juice Shop (concluiu "not injectable" — comportamento correto) |
+| netcat | /usr/bin/nc | OpenBSD 1.226 | ✅ | listener 45999 + conexão: recebeu `HELLO_LIBERTUS` |
+| john | ~/bin/john (wrapper) | 1.9.0-jumbo-1 bleeding, AVX-512 | ✅ | quebrou hash sha512crypt de teste → `user:senha123` |
+| openvpn | /usr/sbin/openvpn | 2.6.19 | ✅ instalado | é o que conecta na VPN do lab INE |
+
+Extra presentes: `searchsploit` (~/bin), `sshpass` (~/.local/bin), `tcpdump`, `nuclei 3.9.0`, `ffuf 2.1.0`, `subfinder 2.14.0`.
+**Ausentes hoje:** `burp`, `wireshark`, `ncrack`, `medusa`, `wpscan`. (No Kali da INE existem.)
+
+## hydra — matriz real (testada módulo por módulo, 16/nov)
+
+| Módulo | Status | Erro quando falta |
+|---|---|---|
+| ftp | ✅ OK | — |
+| http-get | ✅ OK | — |
+| http-post-form | ✅ OK | (falso positivo em CSRF — cheatsheet §F.1) |
+| mysql | ✅ OK | — |
+| telnet | ✅ OK | — |
+| **ssh** | ❌ | `Compiled without LIBSSH v0.4.x support` |
+| **smb** | ❌ | `Compiled without OPENSSL support` |
+| **rdp** | ❌ | `Compiled without FREERDP support` |
+
+Não dá para consertar sem root: `sudo` exige senha e `libssh-dev` não está instalado. **Decisão:**
+não rebuildar na véspera; usar `msf ssh_login` / `nmap ssh-brute`.
+
+## 🔁 Correção de um pitfall antigo: `nmap --script ssh-brute` FUNCIONA agora
+
+Registro de 18/out dizia "ssh-brute quebra (`nse_restore: WAITING_TO_RUNNING`)". Com nmap 7.993 e
+listas pequenas, roda limpo duas vezes hoje:
+
+```
+|     msfadmin:msfadmin - Valid credentials
+|_  Statistics: Performed 2 guesses in 1 seconds, average tps: 2.0
+```
+
+Requisito descoberto/reconfirmado: `userdb`/`passdb` **têm que estar em `$HOME`** — em `/tmp` o snap
+retorna `Invalid usernames iterator: ... No such file or directory`. Com `rockyou.txt` inteiro ainda
+pode estourar o bug de fila: fatiar (`head -5000`) ou usar `~/wordlists/pass/top10k.txt`.
+
+## Wordlists — inventário medido (o que existe de verdade)
+
+```
+NÃO EXISTE (procurar é perder tempo):
+  /usr/share/wordlists/dirb/     -> VAZIO
+  /usr/share/seclists/           -> só diretórios vazios
+  /usr/share/wordlists/dirbuster/ -> não existe
+```
+
+| Caminho | Linhas | Uso |
+|---|---|---|
+| /usr/share/wordlists/common.txt | 4.750 | gobuster rápido |
+| /usr/share/wordlists/rockyou.txt | 14.344.391 | senhas |
+| ~/wordlists/web/directory-list-2.3-medium.txt | 220.559 | gobuster pesado |
+| ~/wordlists/web/directory-list-2.3-small.txt | — | gobuster médio |
+| ~/wordlists/web/raft-small-words.txt | — | 1ª passada |
+| ~/wordlists/web/subdomains-5000.txt | — | vhost |
+| ~/wordlists/pass/top1000.txt | 1.000 | hydra / msf PASS_FILE |
+| ~/wordlists/pass/top10k.txt | 10.000 | hydra / msf |
+| ~/wordlists/pass/500-worst.txt | 500 | teste imediato |
+| ~/wordlists/user/top-usernames.txt | — | hydra -L |
+
+## Lab local — estado medido 11:15 (via `bash ~/LIBERTUS/ejpt/lab_up.sh`)
+
+| Alvo | Status | Acesso |
+|---|---|---|
+| DVWA | ✅ 302 → login.php | http://localhost:8080 · admin:password |
+| Juice Shop | ✅ 200 | http://localhost:3000 |
+| SSH lab | ✅ ABERTO | 127.0.0.1:2222 · msfadmin:msfadmin (sessão msf abriu) |
+| FTP lab | ✅ ABERTO | 127.0.0.1:2121 · msfadmin:msfadmin (hydra achou) |
+| SMB legacy | ✅ UP | 172.28.77.11 · SMB1 (Samba 4.19.9) |
+| SMB modern | ✅ UP | 172.28.77.12 · SMB2/3 |
+| Pivot | ⏸ parado | `bash ~/LIBERTUS/ejpt/pivot_up.sh` |
+
+Nota SMB: `smb-vuln-ms17-010` **não dá veredito contra Samba** (só Windows responde VULNERABLE/NOT).
+Silêncio ≠ seguro — seguir com `smb-vuln-ms08-067` + `smb-enum-shares`.
+
+## Recurso do host
+
+`df -h /` → **99% usado, 1,2 GB livres**. Não instalar nada grande, não baixar seclists completo,
+não puxar imagem Docker nova. O exame roda no Kali da INE; este host é apoio.
+
+## Veredito 16/nov
+
+Núcleo **executando de verdade** (não só `--version`): nmap, msf, gobuster, sqlmap, nc, john,
+openvpn. hydra limitado a ftp/http/mysql/telnet — e agora com **três** rotas validadas para SSH
+(msf, ssh-brute, sshpass). Lab completo no ar com credenciais confirmadas. Duas lacunas honestas:
+hydra sem SSH/RDP (sem root para rebuild) e wpscan/burp ausentes (irrelevante: existem no Kali do exame).
+
 

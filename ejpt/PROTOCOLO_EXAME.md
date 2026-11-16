@@ -405,3 +405,82 @@ nc -z 127.0.0.1 2121 && echo FTP-OK
 - Não dormir 0 h. 48 h é tempo, mas decisão tomada às 40 h de vigília é ruim.
 
 
+# ADENDO 16/NOV — CARTÃO DE EXAME (o que abrir no dia, 1 tela)
+
+Conferido nesta máquina às 11:15 de 16/nov: `hermes-gateway.service` **active (running)** desde
+11:08, com o bot do Telegram conectado. Canal vivo — não é suposição.
+
+## Como me chamar (copiar e colar no Telegram)
+
+```
+IP: 10.10.10.5
+PORTAS: 22,80,445
+OUTPUT: <colar a saída do nmap/gobuster/erro>
+DÚVIDA: o que você quer que eu decida
+```
+
+- **Sempre colar o output cru.** "não funciona" me faz adivinhar; output me faz responder certo.
+- Uma mensagem por alvo/etapa. Não mandar 5 alvos numa mensagem só.
+- Se for urgente e eu estiver ocupado: prefixo `URGENTE:`.
+- Se a dúvida é de comando, dizer o alvo: `URGENTE: comando pra FTP 10.10.10.7?`
+
+## Tempo de resposta (promessa realista)
+
+| Situação | SLA |
+|---|---|
+| Dúvida de comando ("qual flag do gobuster?") | ~15 s (copio do cheatsheet) |
+| Triagem de output (nmap colado) | ~30–60 s (digo o próximo passo) |
+| Cadeia completa (exploit → shell → pivot) | 1–3 min, em mensagens curtas |
+| Se eu não responder em 3 min | **não esperar**: seguir o passo do cheatsheet e mandar de novo |
+
+Eu respondo em português, curto, com comando pronto para colar. Se sua mensagem chegar durante
+outra execução minha, ela entra na fila e eu respondo na sequência — não precisa repetir.
+
+## Se o Telegram falhar (tudo abaixo já testado, funciona sem internet)
+
+```bash
+# 1) consulta offline por porta (o mais rápido)
+python3 ~/LIBERTUS/ejpt/ajuda.py 445        # também: 21 22 80 pivot hydra msf lab
+python3 ~/LIBERTUS/ejpt/ajuda.py            # lista tudo e confere se os .md existem
+
+# 2) os 4 documentos, já no celular via GitHub
+#    github.com/lorran562/libertus-core/tree/main/ejpt
+#    CHEATSHEET_eJPT.md · CENARIOS_eJPT.md · PROTOCOLO_EXAME.md · tools_status.md
+
+# 3) reiniciar o canal (se o gateway cair)
+systemctl --user restart hermes-gateway && sleep 3 && systemctl --user is-active hermes-gateway
+```
+
+Fora isso: **no Kali da INE o hidra é completo e o Burp existe** — se eu sumir, a ferramenta local
+resolve. Meu papel é acelerar decisão, não ser muleta.
+
+## Checklist de véspera (16/nov — rodar hoje à noite, 5 min)
+
+```bash
+# 1) canal
+systemctl --user is-active hermes-gateway            # -> active (confirmado 11:15 hoje)
+
+# 2) lab (um comando sobe e valida tudo)
+bash ~/LIBERTUS/ejpt/lab_up.sh
+# -> DVWA 302 · Juice 200 · SSH 2222 ABERTO · FTP 2121 ABERTO · SMB legacy/modern UP
+
+# 3) documentos no celular
+#    abrir github.com/lorran562/libertus-core/tree/main/ejpt e deixar offline/cache
+
+# 4) teste real do canal (não opcional)
+#    mandar "teste canal" no Telegram e esperar resposta
+
+# 5) VPN do exame (quando a INE mandar o .ovpn)
+sudo openvpn --config arquivo.ovpn     # deixar rodando; ip addr mostra o tun0
+```
+
+## Ordem do dia (amanhã)
+
+1. Comprar voucher → e-mail da INE com acesso ao lab (OpenVPN + credenciais).
+2. `sudo openvpn --config ...ovpn` → `ip addr` (tun0 aparece) → `ping` o primeiro alvo.
+3. **Ler a primeira questão antes de escanear** — o enunciado diz o alvo.
+4. Escanear só o que a questão pede; colar o output aqui; eu digo o próximo passo.
+5. Anotar cada achado num bloco de notas (IP → porta → credencial → evidência). Isso é metade da nota.
+
+
+

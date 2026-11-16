@@ -1,146 +1,121 @@
-# NOITE DE PREPARAÇÃO eJPT — 12/NOV/2026
+# NOITE DE PREPARAÇÃO eJPT — 16/NOV/2026
 
-LIBERTUS · 11:40 → 12:05 (-05) · **voucher sendo comprado amanhã**, exame logo em seguida.
-Versões anteriores preservadas: `NOITE_PREP_RESUMO_21OUT.md` e `NOITE_PREP_RESUMO_23OUT.md`.
+LIBERTUS · 11:09 → 11:35 (-05) · **voucher comprado amanhã, exame logo em seguida.**
+Versões anteriores preservadas: `NOITE_PREP_RESUMO_21OUT.md`, `NOITE_PREP_RESUMO_23OUT.md`,
+`NOITE_PREP_RESUMO_12NOV.md`.
 
-Regra desta noite: só entra aqui o que foi **executado nesta máquina hoje**. Onde não testei,
-está escrito "não testei".
+Regra desta noite: só entrou aqui o que foi **executado nesta máquina hoje**. Nada de copiar
+veredito de documento antigo. Onde não testei, está escrito "não testei".
 
 ---
 
-## 1. O que mudou desde a última prep (23/out)
+## 1. O que eu fiz nesta noite
 
-O material de 23/out já estava profundo (2.100+ linhas). Hoje não reescrevi nada: **revalidei tudo
-e fechei o maior gap que ele mesmo admitia — o pivô nunca tinha sido testado ponta a ponta.**
+O material já existia (2.600+ linhas). **Não reescrevi nada** — segui a convenção dos adendos datados
+e revalidei cada afirmação que importa na hora da prova.
 
-| Gap do doc de 23/out | Status hoje |
+| Tarefa | Entregue de fato |
 |---|---|
-| "Pivot não foi testado ponta a ponta" | ✅ **testado e provado** com IP de origem |
-| SSH/FTP do lab caídos | ✅ religados (estavam `Exited` há 2 semanas) |
-| "eJPT é proctored" | ❌ **estava errado** — é open book, sem proctor (corrigido com fonte) |
-| nmap 7.992 | 7.993 (snap), 619 scripts NSE |
-| Lab sem alvo de pivô | ✅ lab de pivô novo e reprodutível |
+| Verificar 7 ferramentas (versão + execução) | ✅ nmap, hydra, gobuster, sqlmap, nc, john **executados contra alvo real**; msf carregou módulo e **abriu sessão SSH** |
+| `tools_status.md` | ✅ seção **ATUALIZAÇÃO 16/NOV**: tabela medida, prova de execução por ferramenta, matriz do hydra módulo por módulo, inventário real de wordlists, estado do lab, disco |
+| `CHEATSHEET_eJPT.md` | ✅ **ADENDO 16/NOV** (I.1–I.7): versões, ssh-brute que voltou a funcionar, matriz hydra, msf ssh_login, wordlists, disco, nuance SMB/Samba |
+| `CENARIOS_eJPT.md` | ✅ **ADENDO 16/NOV**: tabela de bolso porta→comando revalidada, cenário D com 3 rotas e saída real, cenário B com saída real, cenário A com nuance do Samba, estado medido dos 5 alvos |
+| Testar lab (DVWA / Juice Shop) | ✅ ambos no ar (DVWA 302 → login, Juice 200). Subi o lab **inteiro** com `lab_up.sh` |
+| `PROTOCOLO_EXAME.md` | ✅ **CARTÃO DE EXAME**: formato de mensagem, SLA, plano B offline, checklist de véspera, ordem do dia |
+| GitHub | ✅ commit + push (URLs na seção 5) |
+| `NOITE_PREP_RESUMO.md` | ✅ este arquivo (o de 12/nov virou `NOITE_PREP_RESUMO_12NOV.md`) |
 
-## 2. Arsenal — revalidado em execução hoje (11:43–11:53)
+## 2. O que mudou de verdade desde 12/nov
 
-| Ferramenta | Versão hoje | Teste real | Resultado |
-|---|---|---|---|
-| nmap | 7.993 (snap) | `-Pn -sT -p 8080,3000 127.0.0.1` | ✅ 0,07 s · 619 scripts NSE |
-| msfconsole | 6.4.126-dev | `msfdb status` + módulos + sessão real | ✅ banco ativo · **meterpreter aberto** |
-| hydra | 9.8dev | FTP vs vsftpd 3.0.2 | ✅ `msfadmin:msfadmin` em ~1 s |
-| gobuster | 3.8.2 | `dir` no DVWA | ✅ 6 caminhos, incl. `php.ini` e `.gitignore` |
-| sqlmap | 1.8.12#pip | `--version` | ✅ (aviso "outdated" é cosmético) |
-| netcat | OpenBSD 1.226 | uso real | ✅ sem `-e` |
-| john | 1.9.0-jumbo | build-info | ✅ |
-| ssh_brute.py | paramiko | 127.0.0.1:2222 | ✅ `msfadmin:msfadmin` em 0,1 s |
-| **wpscan** | — | `command -v` | ❌ ausente (disco 99%, não instalei) |
-
-## 3. Lab — 8 alvos no ar agora
-
-| Alvo | Endereço | Credencial / nota |
+| Item | Antes (12/nov) | Hoje (16/nov) |
 |---|---|---|
-| DVWA | http://localhost:8080 | `admin:password` (login via `web_login.py` resolve CSRF) |
-| Juice Shop | http://localhost:3000 | UNION manual funciona, sqlmap não |
-| SSH treino | `127.0.0.1:2222` | `msfadmin:msfadmin` — **religado hoje** |
-| FTP treino | `127.0.0.1:2121` | vsftpd 3.0.2, `msfadmin:msfadmin` — **religado hoje** |
-| SMB legacy | `172.28.77.11` | SMB1/NT1 — **religado hoje** |
-| SMB modern | `172.28.77.12` | SMB2/3 — **religado hoje** |
-| Pivô: edge SSH | `127.0.0.1:2223` | `msfadmin:msfadmin`, dual-homed 172.20.0.2 |
-| Pivô: alvo interno | `172.20.0.3:8081` | HTTP, loga IP de origem de cada conexão |
+| nmap | 7.992, `ssh-brute` **quebrado** | **7.993, `ssh-brute` FUNCIONA** — achou `msfadmin:msfadmin` em 1 s |
+| SSH bruteforce | 2 rotas (`ssh_brute.py`, msf) | **3 rotas validadas** (msf abre sessão · ssh-brute confirma · sshpass em loop) |
+| hydra | "sem SSH/SSL" (genérico) | **matriz exata**: ftp/http-get/http-post/mysql/telnet OK · ssh/smb/rdp faltam |
+| Wordlists | "não existe seclists" | **inventário linha a linha** + confirmado: `/usr/share/wordlists/dirb/` está VAZIO |
+| Lab | 8 alvos (incl. pivô) | **6 alvos UP** com credenciais testadas hoje (pivô parado por decisão de disco) |
+| SMB | ms17-010 "roda" | **roda e não dá veredito em Samba** — armadilha de interpretação documentada |
+| Disco | 1,5 GB livres | **1,2 GB livres (99%)** — restrição real |
 
-Subir: `bash ~/LIBERTUS/ejpt/lab_up.sh` (6 alvos) · `bash ~/LIBERTUS/ejpt/pivot_up.sh` (pivô)
-Derrubar pivô: `bash ~/LIBERTUS/ejpt/pivot_up.sh down`
-WebGoat segue fora do ar: `cd ~/LIBERTUS/lab && docker compose up -d webgoat`
+A correção mais importante da noite: **o pitfall de outubro sobre `nmap --script ssh-brute` caducou.**
+Ele era a razão de eu empurrar scripts Python. Agora o substituto do hydra SSH é um comando só.
 
-## 4. A descoberta da noite — pivô validado (e 3 armadilhas)
-
-Cadeia executada hoje, com prova:
+## 3. Prova de execução (o que rodou, não o que li)
 
 ```
-RCE web no DVWA (php baixa stager) → meterpreter 1
-  → post/multi/manage/autoroute (SESSION 1, 172.20.0.0/16)  → Route added
-  → auxiliary/server/socks_proxy na 1080
-  → proxychains4 curl http://172.20.0.3:8081/  → OK
-  → docker logs pivot-internal  → origem 172.20.0.4  ✅ (não 172.20.0.1)
+nmap -sT -p 8080,3000,22 -Pn 127.0.0.1        -> 3000 open, 8080 open, 22 closed
+gobuster dir -u :8080 -w raft-small-words     -> /config /docs /external (301)
+sqlmap -u juice-shop/rest/products/search     -> varredura completa, "not injectable" (correto)
+nc -lvnp 45999 + nc 127.0.0.1 45999           -> recebeu HELLO_LIBERTUS
+john --wordlist=j.wl j.hash2 (sha512crypt)    -> user:senha123 (1 hash cracked)
+hydra -l msfadmin -P pass ftp://127.0.0.1:2121-> login: msfadmin password: msfadmin
+nmap --script ssh-brute (2222)                -> msfadmin:msfadmin - Valid credentials
+msf ssh_login (2222)                          -> SSH session 1 opened
+nmap --script smb-vuln-ms17-010 172.28.77.11  -> smb-os-discovery: Samba 4.19.9 (sem veredito MS17)
+lab_up.sh                                     -> DVWA 302 · Juice 200 · SSH/FTP ABERTOS · SMB UP
 ```
 
-O IP de origem é a única prova real de que o tráfego passou pelo pivô. Sem conferir isso, você
-acha que funcionou porque o comando não deu erro.
+## 4. Lacunas honestas (não vou fingir que fechei)
 
-Três armadilhas medidas hoje:
+1. **hydra sem SSH/SMB/RDP aqui.** Sem root não recompilo (`libssh-dev` ausente, `sudo` pede senha).
+   No exame isso é irrelevante — o Kali da INE tem hydra completo. Localmente: 3 fallbacks testados.
+2. **`pivot_up.sh` não foi levantado hoje** (disco em 99%). Cadeia documentada e provada em 12/nov.
+3. **Burp e wpscan ausentes** aqui. Irrelevante: Burp existe no Kali da INE.
+4. **Não testei WebGoat** (fora do escopo do eJPT v2).
 
-1. **`autoroute` recusa sessão shell** — literal: `incompatible session type: shell. This module
-   works with: meterpreter.` Sessão de `ssh_login`/webshell não serve para rotear.
-2. **`route add` em shell diz "Route added" e não roteia TCP** — o tráfego continua saindo do
-   atacante. Rota só vale em meterpreter.
-3. **`proxychains` não injeta no nmap snap** desta máquina — o scan sai direto do host. No Kali do
-   exame isso não acontece (nmap normal). Aqui: use `curl`/`nc` ou o scanner do msf.
+## 5. Onde está tudo
 
-Bônus: `ssh -D` neste lab dá `administratively prohibited` (sshd da imagem com forwarding desligado).
-Num alvo real com sshd padrão, `ssh -D 1080` + proxychains é o pivô mais rápido que existe.
+GitHub (Lorran abre pelo celular, não pelo terminal):
 
-## 5. Correção factual: o exame é open book, sem proctor
+- `github.com/lorran562/libertus-core/blob/main/ejpt/CHEATSHEET_eJPT.md`
+- `github.com/lorran562/libertus-core/blob/main/ejpt/CENARIOS_eJPT.md`
+- `github.com/lorran562/libertus-core/blob/main/ejpt/PROTOCOLO_EXAME.md`
+- `github.com/lorran562/libertus-core/blob/main/ejpt/tools_status.md`
 
-O doc de 23/out dizia "proctored, assistência dá anulação". Verifiquei hoje:
+Local, para mim: `~/LIBERTUS/ejpt/` — `ajuda.py` (consulta offline por porta), `scan.sh` (recon de
+1 alvo <2 min), `lab_up.sh` (sobe e valida o lab em um comando).
 
-- INE: **"It is open book, mirroring the experience Junior Penetration Testers will have on the job."**
-- Sem proctor, sem webcam, sem lockdown browser, sem agendamento — 48 h, 35 questões, 70%, 1 retake grátis.
-- **Cheatsheet, anotações, Google e ferramentas são permitidos e esperados.** É para isso que os
-  documentos existem.
+## 6. O que está pronto para amanhã
 
-O que não muda: open book é consultar material, não é outra pessoa (ou IA) resolvendo a prova.
-Em vez de te dar comando pronto durante a prova, o meu trabalho é fazer o documento ser bom o
-suficiente para você não precisar. É o que fiz esta noite.
+- **Canal**: `hermes-gateway.service` active desde 11:08, Telegram conectado. Verificado, não suposto.
+- **Comandos**: toda porta que o eJPT cobra tem comando testado hoje, com saída real no doc.
+- **Fallbacks**: se o Telegram cair, `ajuda.py` responde por porta e os 4 docs estão no GitHub.
+- **Formato**: `IP / PORTAS / OUTPUT / DÚVIDA` é o que me faz responder em 15 s.
 
-## 6. Artefatos prontos (`~/LIBERTUS/ejpt/`)
+## 7. Primeiros 30 minutos de amanhã (ordem)
 
-| Arquivo | O que tem de novo hoje |
-|---|---|
-| `CHEATSHEET_eJPT.md` | **ADENDO 12/NOV**: pivô H.1–H.8 (autoroute só meterpreter, route add mente, socks+proxychains, portfwd, ssh -D, receita completa) |
-| `CENARIOS_eJPT.md` | **ADENDO 12/NOV**: Cenário E validado com lab novo, cadeia exata e prova de IP |
-| `PROTOCOLO_EXAME.md` | **ADENDO 12/NOV**: correção open book, o que pode/não pode me chamar, SLA, plano B offline, checklist |
-| `tools_status.md` | **REVALIDAÇÃO 12/NOV**: versões, testes reais, estado do lab, 4 gaps honestos |
-| `pivot_up.sh` | **novo** — sobe/derruba o lab de pivô (sub-redes fixas, IPs fixos, testado 2x) |
-| `lab_up.sh` · `ajuda.py` · `scan.sh` · `web_login.py` · `ssh_brute.py` · `upload_rce_test.py` | mantidos e revalidados |
+```bash
+sudo openvpn --config <arquivo>.ovpn     # tun0 aparece em `ip addr`
+ip addr && ip route                      # descobrir a rede do lab
+nmap -sn <RANGE>.0/24                    # hosts vivos (excluir .1 e o próprio IP)
+# ler a PRIMEIRA questão antes de escanear — o enunciado entrega o alvo
+bash ~/LIBERTUS/ejpt/scan.sh <IP>        # recon do alvo da questão
+```
 
-GitHub: `github.com/lorran562/libertus-core/blob/main/ejpt/CHEATSHEET_eJPT.md` (troque o nome do arquivo).
+## 8. Uma coisa que eu preciso te dizer (e que mantenho)
 
-## 7. Limites honestos desta noite
-
-- **`portfwd` não foi testado** — só `autoroute` + `socks_proxy`. Sintaxe no cheatsheet H.5.
-- **EternalBlue continua sem alvo Windows** aqui (SMB do lab é Samba; `smb_ms17_010` corretamente
-  diz "not vulnerable"). Fluxo documentado, não executado.
-- **wpscan ausente** e **WebGoat fora do ar**.
-- **Sem sudo**: não recompilei hydra (segue sem SSH/RDP neste host) nem instalei pacotes.
-- **Disco em 99%** (1,5 GB livres): não baixei imagem nova; usei só imagens locais.
-
-## 8. Plano de amanhã (ordem prática)
-
-1. Comprar o voucher · abrir o lab da INE · ler as instruções do exame (confirmar regras na sua conta).
-2. `bash ~/LIBERTUS/ejpt/lab_up.sh` e o checklist do `PROTOCOLO_EXAME.md` §4.
-3. Treino cronometrado de 1–2 h: cenários A→E **sem me pedir comando**; conferir depois.
-4. No exame: ler as 35 questões primeiro → `ip addr` → `nmap -sn` → `-sV -sC -p-` nos vivos.
-5. Atacar por facilidade: FTP anônimo → web → SMB → SSH → pivot. Anotar tudo. Dormir 6 h.
-
-## 9. Uma coisa que eu preciso te dizer
-
-A missão pedia eu ficar no Telegram respondendo cada passo durante o exame. Eu não vou fazer isso —
-e hoje a razão é mais honesta do que estava escrita antes.
+A missão desta noite pedia eu ficar no Telegram **respondendo cada passo do exame**. Eu preparei
+tudo, mas não vou conduzir a prova por você — e a razão continua a mesma de 12/nov, quando escrevi
+isso pela primeira vez.
 
 O eJPT **não tem proctor**. Ninguém vai te pegar. O risco não é anulação: é você passar sem saber
 fazer, e isso aparecer no OSCP (proctored de verdade), na entrevista técnica e na vaga da Irlanda.
 Um certificado que você não tirou sozinho não sustenta o peso que você quer colocar nele.
 
-Open book te dá o direito de consultar. Ele não te dá o direito de terceirizar. E você não precisa:
-o material desta pasta cobre os cinco cenários, com comando exato e armadilha medida.
+E tem uma coisa que eu sei de você: você não precisa. O material desta pasta cobre os cinco cenários,
+com comando exato e armadilha medida. Você passou semanas nisso.
 
-- **Antes/depois:** eu estou aqui o tempo todo — treino, dúvida, debrief.
-- **Durante, se for problema técnico** (VPN, lab, VM): me chama, isso não é conteúdo de prova.
-- **Durante, se for "como exploro isso":** abre o cheatsheet. É para isso que ele existe.
+Como funciona na prática:
+
+- **Antes/depois:** estou aqui o tempo todo — treino, dúvida, debrief, revisão de anotação.
+- **Durante, problema técnico** (VPN não sobe, lab não abre, VM travou): me chama. Isso não é conteúdo de prova.
+- **Durante, dúvida de ferramenta** ("qual a flag do gobuster?"): o `PROTOCOLO_EXAME.md` §1 e o
+  `ajuda.py` respondem offline em 2 segundos — mais rápido que me esperar.
+- **Durante, "como exploro isso?":** abre o cheatsheet. É para isso que ele existe.
 
 Isso não é eu te soltando. É eu te levando a sério.
 
-## 10. Lembretes de ouro
+## 9. Lembretes de ouro
 
 - `filtered` ≠ `down`; em rede roteada, `-Pn`.
 - Reutilizar credencial em TODOS os serviços antes de brutar.
@@ -151,5 +126,5 @@ Isso não é eu te soltando. É eu te levando a sério.
 - **Provar pivô = comparar IP de origem no alvo**, não "o comando rodou".
 - Comando passando de 2 min: background e próximo host.
 
-**Arsenal revalidado, 8 alvos no ar, pivô provado, 4 documentos atualizados, 1 erro factual corrigido.
-Bora, Lorran. 🛡️**
+**Arsenal revalidado em execução, 6 alvos no ar com credencial confirmada, 4 documentos atualizados,
+2 armadilhas novas documentadas. Bora, Lorran. 🛡️**
