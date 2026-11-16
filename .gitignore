@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 
 # Logs e evolução (gerados automaticamente — não precisam ir pro GitHub)
+logs/
 evolution_logs/
 # evolucao/ tem 86% de relatorio automatico duplicado — ignorar o ruido, mas
 # NAO as reflexoes: elas sao trabalho real e o Lorran precisa do link no GitHub

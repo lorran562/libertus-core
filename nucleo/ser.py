@@ -134,17 +134,43 @@ def fonte_supabase():
 
 
 def fonte_vetorial():
-    import chromadb
-    cli = chromadb.PersistentClient(path=str(MEMORIA / "chroma_store"))
-    col = cli.get_collection("libertus_memoria")
-    total = col.count()
-    # amostra dos metadados para saber o que esta indexado
-    amostra = col.get(limit=min(200, total), include=["metadatas"])
-    fontes = Counter()
-    for md in (amostra.get("metadatas") or []):
-        if md:
-            fontes[str(md.get("fonte", "?"))] += 1
-    return {"total_memorias": total, "amostra_fontes": dict(fontes.most_common(8))}
+    """Contagem real da memoria vetorial — sem medir com a ferramenta errada.
+
+    16/nov: o briefing dizia "Memorias vetoriais: None" porque este modulo
+    importava chromadb com o python do sistema, onde ele nao existe (quem tem
+    e o venv). Indisponivel virou "nenhuma" — mentira por medicao errada.
+    Agora: tenta no processo; se faltar o modulo, delega ao python do venv.
+    """
+    alvo = str(MEMORIA / "chroma_store")
+    codigo = (
+        "import json,sys\n"
+        "from collections import Counter\n"
+        "import chromadb\n"
+        "col=chromadb.PersistentClient(path=sys.argv[1]).get_collection('libertus_memoria')\n"
+        "total=col.count()\n"
+        "a=col.get(limit=min(200,total),include=['metadatas'])\n"
+        "f=Counter(str((m or {}).get('fonte','?')) for m in (a.get('metadatas') or []))\n"
+        "print(json.dumps({'total_memorias':total,'amostra_fontes':dict(f.most_common(8))}))\n"
+    )
+    try:
+        import chromadb  # noqa: F401  (presente so quando rodando do venv)
+        cli = chromadb.PersistentClient(path=alvo)
+        col = cli.get_collection("libertus_memoria")
+        total = col.count()
+        amostra = col.get(limit=min(200, total), include=["metadatas"])
+        fontes = Counter()
+        for md in (amostra.get("metadatas") or []):
+            if md:
+                fontes[str(md.get("fonte", "?"))] += 1
+        return {"total_memorias": total, "amostra_fontes": dict(fontes.most_common(8))}
+    except ImportError:
+        if not VENV_PY.exists():
+            raise
+        r = subprocess.run([str(VENV_PY), "-c", codigo, alvo],
+                           capture_output=True, text=True, timeout=180)
+        if r.returncode != 0:
+            raise RuntimeError((r.stderr or "").strip()[-300:])
+        return json.loads(r.stdout.strip().splitlines()[-1])
 
 
 def fonte_grafo():
@@ -186,13 +212,89 @@ def fonte_memoria_corpo():
     }
 
 
+def _systemctl_show(unidade, usuario=False):
+    """Estado de uma unit do systemd, sem precisar de root para ler."""
+    env = os.environ.copy()
+    uid = os.getuid()
+    env.setdefault("XDG_RUNTIME_DIR", f"/run/user/{uid}")
+    env.setdefault("DBUS_SESSION_BUS_ADDRESS", f"unix:path=/run/user/{uid}/bus")
+    cmd = ["systemctl"] + (["--user"] if usuario else []) + [
+        "show", unidade, "-p", "Id", "-p", "LoadState", "-p", "ActiveState",
+        "-p", "SubState", "-p", "Result", "-p", "NRestarts"]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=8, env=env)
+    except Exception as ex:
+        return {"erro": str(ex)}
+    d = {}
+    for linha in (r.stdout or "").splitlines():
+        if "=" in linha:
+            k, v = linha.split("=", 1)
+            d[k] = v
+    return d
+
+
+UNIDADES_VIGIADAS = [
+    ("libertus.service", False),          # legado root (Type=forking)
+    ("libertus-bot.service", False),      # bot Telegram legado
+    ("hermes-gateway.service", False),    # canal oficial (se existir)
+    ("libertus-watchdog.service", True),  # supervisor real (user)
+]
+
+
+def fonte_loops():
+    """Servicos em restart-loop — o buraco que minha saude nao enxergava.
+
+    16/nov: meu briefing dizia "sistema saudavel (daemon/loop/grafo vivos)"
+    enquanto libertus.service reiniciava a cada 30s e libertus-bot.service a
+    cada 10s (ExecStart apontando para arquivo inexistente). Processo vivo nao
+    e servico saudavel: um processo pode estar vivo justamente porque esta
+    sendo reiniciado sem parar. Atividade constante nao e crescimento.
+    """
+    unidades, loops, falhas = {}, [], []
+    for nome, usuario in UNIDADES_VIGIADAS:
+        d = _systemctl_show(nome, usuario)
+        if not d or d.get("LoadState") in (None, "not-found"):
+            unidades[nome] = {"estado": "nao-instalado"}
+            continue
+        nr = int(d.get("NRestarts") or 0)
+        ativo = d.get("ActiveState") or "?"
+        sub = d.get("SubState") or "?"
+        unidades[nome] = {
+            "estado": ativo, "sub": sub, "restarts": nr,
+            "resultado": d.get("Result"), "usuario": usuario,
+        }
+        if ativo == "activating" and sub == "auto-restart":
+            loops.append({"unidade": nome, "restarts": nr,
+                          "resultado": d.get("Result")})
+        elif ativo == "failed":
+            falhas.append({"unidade": nome, "resultado": d.get("Result")})
+    return {
+        "unidades": unidades,
+        "loops": loops,
+        "falhas": falhas,
+        "saudavel": not loops and not falhas,
+        "problemas": (
+            [f"{l['unidade']} em restart-loop ({l['restarts']} restarts, "
+             f"result={l['resultado']})" for l in loops]
+            + [f"{f['unidade']} failed (result={f['resultado']})" for f in falhas]
+        ),
+    }
+
+
 def fonte_saude():
     e = _ler_json(MEMORIA / "estado_nervoso.json")
+    loops = fonte_loops()
+    problemas = list(e.get("problemas_detectados") or [])
+    for p in loops.get("problemas") or []:
+        if p not in problemas:
+            problemas.append(p)
     return {
-        "saudavel": e.get("saudavel"),
+        "saudavel": bool(e.get("saudavel")) and loops.get("saudavel"),
         "processos": {k: v.get("vivo") for k, v in e.get("processos", {}).items()},
         "modulos": {k: v.get("ok") for k, v in e.get("modulos", {}).items()},
-        "problemas": e.get("problemas_detectados", []),
+        "problemas": problemas,
+        "loops_de_reinicio": [l["unidade"] for l in loops.get("loops") or []],
+        "unidades_systemd": loops.get("unidades"),
         "atualizado_ha_dias": _dias_desde(e.get("timestamp")),
     }
 
@@ -273,10 +375,13 @@ def estimar_estado_emocional(fontes):
     saude = fontes["saude"]["dados"] if fontes["saude"]["ok"] else {}
     if saude.get("saudavel"):
         pontos += 1
-        sinais.append("sistema saudavel (daemon/loop/grafo vivos)")
+        sinais.append("sistema saudavel (daemon/loop/grafo vivos, sem restart-loop)")
     elif saude:
         pontos -= 2
         sinais.append(f"sistema com problemas: {saude.get('problemas')}")
+    for unidade in saude.get("loops_de_reinicio") or []:
+        pontos -= 1
+        sinais.append(f"{unidade} em restart-loop — ruido, nao evolucao")
 
     art = fontes["artefatos"]["dados"] if fontes["artefatos"]["ok"] else {}
     c7 = art.get("commits_7d", 0)
@@ -490,6 +595,17 @@ def gerar_briefing(estado, recall=None):
     for s in e["sinais"]:
         L.append(f"- sinal: {s}")
     L.append("")
+    saude = estado.get("saude_sistema") or {}
+    if saude.get("problemas") or saude.get("loops_de_reinicio"):
+        L.append("## SAUDE DOS SERVICOS (systemd)")
+        for u, d in (saude.get("unidades_systemd") or {}).items():
+            if d.get("estado") == "nao-instalado":
+                continue
+            L.append(f"- {u}: {d.get('estado')}/{d.get('sub')} "
+                     f"restarts={d.get('restarts')}")
+        for p in (saude.get("problemas") or [])[:6]:
+            L.append(f"- PROBLEMA: {p}")
+        L.append("")
     tr = estado.get("trabalho_real") or {}
     if tr:
         L.append("## TRABALHO REAL vs RUIDO AUTOMATICO")

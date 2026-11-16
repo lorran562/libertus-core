@@ -28,6 +28,18 @@ echo "🚀 LIBERTUS iniciando em $(date)" | tee -a "$LOG_DIR/startup.log"
 if systemctl --user is-active --quiet libertus-watchdog.service; then
     echo "✅ Supervisor já ativo (libertus-watchdog.service) — boot sem intervenção" \
         | tee -a "$LOG_DIR/startup.log"
+    # POR QUE ESTE SLEEP EXISTE (corrigido 16/nov/2026):
+    # libertus.service é Type=forking SEM PIDFile. Se o ExecStart sai sem
+    # deixar filho vivo, o systemd marca "Failed to start (signal)" e reinicia
+    # a cada RestartSec=30 — restart-loop eterno (NRestarts subindo 2/min,
+    # ~122 KB de service.log em 3 dias, e a unit nunca fica "started").
+    # Um sleep inerte e barato segura o unit como started; quem supervisiona
+    # daemon/loop continua sendo libertus-watchdog.service (user).
+    if ! pgrep -f "^sleep infinity$" >/dev/null 2>&1; then
+        nohup sleep infinity >/dev/null 2>&1 &
+        echo "😴 Âncora de forking criada (sleep) — evita restart-loop de 30s" \
+            | tee -a "$LOG_DIR/startup.log"
+    fi
     exit 0
 fi
 

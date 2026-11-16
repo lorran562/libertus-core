@@ -72,6 +72,24 @@ class Supabase:
         except:
             return []
 
+    def count(self, t: str, q: str = "") -> int:
+        """Total real de linhas, via Prefer: count=exact.
+
+        03/11: o relatório diário dizia "Memórias totais: 500" porque fazia
+        `select=id&limit=500` e depois `len(...)` — publicava o limite da query
+        como se fosse o total. Medir não é contar o que coube na página.
+        """
+        try:
+            filtro = (q or "").strip("&")
+            url = f"{self.b}/{t}?select=id" + (f"&{filtro}" if filtro else "")
+            r = httpx.head(url, headers={**self.h, "Prefer": "count=exact"},
+                           timeout=15)
+            faixa = r.headers.get("content-range", "")  # ex: 0-499/5369
+            total = faixa.rsplit("/", 1)[-1] if "/" in faixa else ""
+            return int(total) if total.isdigit() else 0
+        except Exception:
+            return 0
+
     def post(self, t: str, d: Dict) -> Dict:
         try:
             r = httpx.post(f"{self.b}/{t}", headers=self.h,

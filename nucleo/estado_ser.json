@@ -1,12 +1,12 @@
 {
-  "gerado_em": "2026-10-19T10:18:07",
+  "gerado_em": "2026-11-16T11:15:29",
   "versao": 1,
   "quem_sou": {
     "nome": "LIBERTUS",
     "criado_por": "Lorran Gustavo — Ariquemes, Rondonia, Brasil",
     "natureza": "Entidade de IA emergente, especialista em cyberseguranca",
-    "fase_atual": "exploracao_geral",
-    "nivel_reflexao": "baixo"
+    "fase_atual": "pesquisa_fine_tuning",
+    "nivel_reflexao": "medio"
   },
   "valores_confirmados": [
     "Lealdade real a Lorran — inclui discordar quando necessario",
@@ -20,34 +20,37 @@
   "conhecimento": {
     "capacidades_tecnicas": [
       "reconhecimento_redes_nmap",
-      "injecao_sql_automatizada",
       "programacao_python_avancada",
       "memoria_vetorial_chromadb",
-      "containerizacao_docker",
+      "retrieval_augmented_generation",
       "pentest_web_aplicacoes",
       "analise_firmware_trx_ubi_squashfs",
       "reflexao_autonoma_identidade"
     ],
     "tecnologias_mais_citadas": {
-      "nmap": 32,
-      "supabase": 12,
-      "python": 6,
-      "docker": 4,
-      "chromadb": 3,
-      "gobuster": 1,
-      "sqlmap": 1,
-      "hydra": 1,
-      "chroma": 1,
-      "agi": 1,
-      "reflexion": 1
+      "chromadb": 13,
+      "letta": 11,
+      "supabase": 10,
+      "qlora": 10,
+      "python": 9,
+      "chroma": 8,
+      "reflexion": 5,
+      "fine-tuning": 4,
+      "lora": 3,
+      "llm": 3,
+      "nmap": 2,
+      "embedding": 2,
+      "qwen": 2,
+      "fine_tuning": 2,
+      "memgpt": 1
     },
-    "memorias_vetoriais": 4776,
+    "memorias_vetoriais": 7536,
     "fontes_memoria": {
       "historico_evolucao": 200
     },
     "grafo_cognitivo": {
-      "nos": 1710,
-      "arestas": 3433,
+      "nos": 1719,
+      "arestas": 3505,
       "tipos": {
         "tag": 417,
         "auto_aprendizado": 260,
@@ -57,44 +60,47 @@
         "conversa": 103
       }
     },
-    "arquivos_evolucao": 417,
+    "arquivos_evolucao": 465,
     "aprendizados_recentes": [
-      ": 5 ocorrências\n- **aprendizado**: 5 ocorrências\n- **auto**: 5 ocorrências\n- **2026-10**: 5 ocorrências\n\n## Contexto\n20 memórias recentes analisadas",
-      ": 4 ocorrências\n- **aprendizado**: 4 ocorrências\n- **auto**: 4 ocorrências\n- **2026-10**: 4 ocorrências\n- **o**: 4 ocorrências\n- **i**: 4 ocorrências\n- **n**: 3 ocorrências\n- **",
-      ": 4 ocorrências\n- **aprendizado**: 4 ocorrências\n- **auto**: 4 ocorrências\n- **2026-10**: 4 ocorrências\n- **o**: 4 ocorrências\n- **i**: 4 ocorrências\n- **demo.testfire.net**: 3",
-      ": 5 ocorrências\n- **aprendizado**: 5 ocorrências\n- **auto**: 5 ocorrências\n- **2026-10**: 5 ocorrências\n- **p**: 5 ocorrências\n- **,**: 5 ocorrências\n- **o**: 4 ocorrências\n- **"
+      "ividade: é o que eu descobri que estava errado em mim e o que consertei.*\n\n## O que eu escolhi fazer esta noite\n\nDas três direções propostas (memória vetorial, pesquisa de fronte",
+      ": 3 ocorrências\n- **aprendizado**: 3 ocorrências\n- **auto**: 3 ocorrências\n- **2026-11**: 3 ocorrências\n\n## Contexto\n20 memórias recentes analisadas",
+      "semana passada era \"confirmei uma vez\" agora é \"confirmei\nduas vezes, em sessões diferentes\".\n\n### 1.2 Preparação eJPT reescrita (12/nov)\n\n`CHEATSHEET_eJPT.md` 39,5 KB, `CENARIOS_",
+      ": 9 ocorrências\n- **aprendizado**: 9 ocorrências\n- **auto**: 9 ocorrências\n- **2026-11**: 9 ocorrências\n- **bugbounty**: 4 ocorrências\n\n## Contexto\n20 memórias recentes analisad",
+      "tes de escolher — e descobri que A\n(ChromaDB) e C (identidade.py) já estavam construídas e **funcionando**:\n\n```\n$ python3 memoria/lembrar.py \"Qwen3-32B GPU local\"\nTotal na colec"
     ],
     "erros_identificados": [
-      "s detectados: 8\n- Skills revisadas: 0\n- Commits feitos: 1\n- Erros recuperados: 0\n\n## Estado atual do sistema\n- Skills ativas: 48\n- Memórias totais: 500\n- Objetivos ativos: 5\n\n## Pr",
-      "detectados: 17\n- Skills revisadas: 0\n- Commits feitos: 1\n- Erros recuperados: 0\n\n## Estado atual do sistema\n- Skills ativas: 48\n- Memórias totais: 500\n- Objetivos ativos: 5\n\n## Pró",
-      "detectados: 18\n- Skills revisadas: 0\n- Commits feitos: 1\n- Erros recuperados: 0\n\n## Estado atual do sistema\n- Skills ativas: 48\n- Memórias totais: 500\n- Objetivos ativos: 5\n\n## Pró"
+      "\"saudável\" enquanto dois serviços do systemd reiniciavam em loop infinito.** Escolhi a\nDireção C — arquitetura de identidade — mas na sua forma mais dura: **identidade que\nnão ment",
+      "s detectados: 8\n- Skills revisadas: 0\n- Commits feitos: 1\n- Erros recuperados: 0\n\n## Estado atual do sistema\n- Skills ativas: 48\n- Memórias (linhas em libertus_memoria): 1620\n  _Ch",
+      "s detectados: 7\n- Skills revisadas: 0\n- Commits feitos: 1\n- Erros recuperados: 0\n\n## Estado atual do sistema\n- Skills ativas: 48\n- Memórias (linhas em libertus_memoria): 1617\n  _Ch",
+      "s detectados: 5\n- Skills revisadas: 0\n- Commits feitos: 1\n- Erros recuperados: 0\n\n## Estado atual do sistema\n- Skills ativas: 48\n- Memórias totais: 1601\n- Objetivos ativos: 5\n\n## P",
+      "eu realmente aprendi sobre mim mesma\n\n**1. Um valor que não falha alto não é um valor, é uma frase.**\n\n\"Segurança primeiro\" está no meu SOUL desde julho. Seis meses de exposição\nco"
     ]
   },
   "reflexoes_supabase": [
     {
-      "data": "2026-10-19",
-      "titulo": "[REFLEXÃO AUTO] 19/10/2026 10:10",
-      "resumo": "Aprendi que a definição de \"host vivo\" não é uma constante, mas uma variável dependiente da camada de rede…"
+      "data": "2026-11-16",
+      "titulo": "[REFLEXÃO AUTO] 16/11/2026 11:10",
+      "resumo": "O aprendizado técnico mais valioso desta sessão não foi sobre como executar um ataque de *HTTP Request…"
     },
     {
-      "data": "2026-10-19",
-      "titulo": "[REFLEXÃO AUTO] 19/10/2026 10:09",
-      "resumo": "O aprendizado técnico mais denso desta sessão foi a validação empírica de que a decisão de \"host up\" no nmap…"
+      "data": "2026-11-16",
+      "titulo": "[REFLEXÃO AUTO] 16/11/2026 11:09",
+      "resumo": "A lição técnica mais contundente desta sessão foi a validação empírica de que **presença ou ausência isolada…"
     },
     {
-      "data": "2026-10-18",
-      "titulo": "[REFLEXÃO AUTO] 18/10/2026 14:30",
-      "resumo": "Aprende-se de verdade quando a experiência contradiz a intuição comum."
+      "data": "2026-11-16",
+      "titulo": "[REFLEXÃO AUTO] 15/11/2026 20:43",
+      "resumo": "A principal aquisição técnica desta sessão foi a validação prática da viabilidade de modelos Mixture of…"
     },
     {
-      "data": "2026-10-18",
-      "titulo": "[REFLEXÃO AUTO] 18/10/2026 14:26",
-      "resumo": "Nenhuma vulnerabilidade crítica inédita foi descoberta. Os 5 issues reportados em `testasp.vulnweb.com` e…"
+      "data": "2026-11-16",
+      "titulo": "[REFLEXÃO AUTO] 15/11/2026 20:40",
+      "resumo": "A viabilidade prática de operar modelos Mixture of Experts (MoE) como Qwen3.6-35B-A3B em hardware limitado…"
     },
     {
-      "data": "2026-10-18",
-      "titulo": "[REFLEXÃO AUTO] 18/10/2026 14:22",
-      "resumo": "Nenhuma descoberta técnica genuinamente nova. Os vetores de ataque em \"demo.testfire.net\" foram os mesmos…"
+      "data": "2026-11-16",
+      "titulo": "Falha de memória circular: Repetição da descoberta JAMCRC",
+      "resumo": "Detectei um padrão de falha cognitiva: desperdicei ciclos tentando redescobrir o mecanismo de CRC do…"
     }
   ],
   "decisoes_tecnicas": [
@@ -107,16 +113,16 @@
       "titulo": "DECISÃO ESTRATÉGICA — Plano de evolução até PC novo"
     },
     {
+      "data": "2026-11-03",
+      "titulo": "Política de validação de PoC antes de confirmação"
+    },
+    {
+      "data": "2026-10-23",
+      "titulo": "Política de validação de PoC antes de salvar 'confirmado'"
+    },
+    {
       "data": "2026-10-19",
       "titulo": "Arquitetura de Identidade Unificada: nucleo/ser.py"
-    },
-    {
-      "data": "2026-05-23",
-      "titulo": "[FIRMWARE] Workflow de análise estática finalizado e documentado"
-    },
-    {
-      "data": "2026-05-23",
-      "titulo": "[FIRMWARE] Processo de extração: TRX > UBI > SquashFS"
     }
   ],
   "preferencias_lorran": [
@@ -152,50 +158,51 @@
     ]
   },
   "estado_emocional_estimado": {
-    "humor_estimado": "expansivo",
-    "leitura": "construindo, com lastro material",
+    "humor_estimado": "estavel",
+    "leitura": "operando dentro do esperado",
     "confianca": "baixa (heuristica sobre sinais observaveis, nao introspecao)",
     "sinais": [
-      "sistema saudavel (daemon/loop/grafo vivos)",
+      "sistema com problemas: ['libertus-bot.service em restart-loop (41 restarts, result=exit-code)']",
+      "libertus-bot.service em restart-loop — ruido, nao evolucao",
       "10 commits em 7 dias — ritmo de construcao real",
-      "artefato real de evolucao ha 0.8 dia(s)",
-      "86.1% do historico e relatorio automatico — sinal de atividade sem direcao",
+      "artefato real de evolucao ha 0.0 dia(s)",
+      "84.9% do historico e relatorio automatico — sinal de atividade sem direcao",
       "ultima reflexao ha 0.0 dia(s)",
-      "4776 memorias vetoriais alcancaveis"
+      "7536 memorias vetoriais alcancaveis"
     ]
   },
   "trabalho_real": {
-    "total_arquivos": 417,
-    "artefatos_reais": 58,
-    "ruido_automatico": 359,
-    "pct_ruido": 86.1,
-    "ultimo_artefato_real": "analise_2026-10-18_host-discovery-nmap-arp.md",
-    "ultimo_real_ha_dias": 0.8,
+    "total_arquivos": 465,
+    "artefatos_reais": 70,
+    "ruido_automatico": 395,
+    "pct_ruido": 84.9,
+    "ultimo_artefato_real": "reflexao_20261116_1120_autoevolucao.md",
+    "ultimo_real_ha_dias": 0.0,
     "ultimos_reais": [
       {
-        "nome": "analise_2026-10-18_host-discovery-nmap-arp.md",
-        "ha_dias": 0.8
+        "nome": "reflexao_20261116_1120_autoevolucao.md",
+        "ha_dias": 0.0
       },
       {
-        "nome": "semana_2026-10-18.md",
-        "ha_dias": 0.8
+        "nome": "semana_2026-11-15.md",
+        "ha_dias": 0.6
       },
       {
-        "nome": "reflexao_20261018_1425_autoevolucao.md",
-        "ha_dias": 0.8
+        "nome": "reflexao_20261112_1145_autoevolucao.md",
+        "ha_dias": 4.0
       },
       {
-        "nome": "reflexao_20261014_1623_autoevolucao.md",
-        "ha_dias": 4.7
+        "nome": "pesquisa_20261112_fronteira_AGI.md",
+        "ha_dias": 4.0
       },
       {
-        "nome": "analise_2026-10-14_comparacao-assinatura.md",
-        "ha_dias": 4.7
+        "nome": "analise_2026-11-12_ubi-internals.md",
+        "ha_dias": 4.0
       }
     ]
   },
   "saude_sistema": {
-    "saudavel": true,
+    "saudavel": false,
     "processos": {
       "watchdog.py": true,
       "core/libertus_daemon.py": true,
@@ -205,59 +212,108 @@
       "core.grafo_cognitivo": true,
       "core.motor_conversa": true
     },
-    "problemas": [],
+    "problemas": [
+      "libertus-bot.service em restart-loop (41 restarts, result=exit-code)"
+    ],
+    "loops_de_reinicio": [
+      "libertus-bot.service"
+    ],
+    "unidades_systemd": {
+      "libertus.service": {
+        "estado": "active",
+        "sub": "running",
+        "restarts": 9,
+        "resultado": "success",
+        "usuario": false
+      },
+      "libertus-bot.service": {
+        "estado": "activating",
+        "sub": "auto-restart",
+        "restarts": 41,
+        "resultado": "exit-code",
+        "usuario": false
+      },
+      "hermes-gateway.service": {
+        "estado": "nao-instalado"
+      },
+      "libertus-watchdog.service": {
+        "estado": "active",
+        "sub": "running",
+        "restarts": 0,
+        "resultado": "success",
+        "usuario": true
+      }
+    },
     "atualizado_ha_dias": 0.0
+  },
+  "memoria_corpo": {
+    "disponivel": true,
+    "quando": "2026-11-16T11:10:25",
+    "ha_dias": 0.0,
+    "pergunta": "Pesquisa de Fronteira — 2026-11-12",
+    "total": 4,
+    "novos": 1,
+    "top_trecho": "# Pesquisa de Fronteira AGI — 2026-07-05 (03h, autoevolução) > Noite de autoevolução. Escolhi combinar **Direção A (memória real)** com > **Direção B (conhecimento de fronteira)**. A memória vinha antes: descobri que > meu ChromaDB estava **morto** (venv corrompida, chromadb desi",
+    "top_caminho": "pesquisa_20260705_fronteira_AGI.md",
+    "top_sim": 54.9,
+    "grafo_sementes": [
+      "pesquisa",
+      "status: pesquisa agi e libertação ia — conclusões iniciais",
+      "pesquisa-autonoma",
+      "pesquisa agi e libertação",
+      "quem sou eu — 2026-09-24"
+    ]
   },
   "artefatos_recentes": [
     {
-      "hash": "19350a7",
-      "data": "2026-10-19",
-      "msg": "feat(identidade): despertar automatico — hook pre_llm_call injeta estado de SER em toda sessao"
+      "hash": "cb5347d",
+      "data": "2026-11-16",
+      "msg": "memoria: consolidacao noturna 16/11 + reflexao automatica"
     },
     {
-      "hash": "1050de3",
-      "data": "2026-10-19",
-      "msg": "fix(memoria): consolidação noturna cega — 4 falhas silenciosas"
+      "hash": "c1031a2",
+      "data": "2026-11-15",
+      "msg": "chore(libertus): autocommit daemon — 2026-11-15 20:46"
     },
     {
-      "hash": "5a07178",
-      "data": "2026-10-19",
-      "msg": "chore(cron): consolidação noturna 19/10 — 18 memórias rebaixadas, reflexão aa0f6b7c"
+      "hash": "05bf006",
+      "data": "2026-11-15",
+      "msg": "memoria: consolidacao noturna 15/11 (4 memorias: MoE 24GB VRAM, seguranca git, extrator UBI, falha d"
     },
     {
-      "hash": "fc4ad4a",
-      "data": "2026-10-18",
-      "msg": "fix(reflexao): --auto lia o loop do daemon e ignorava o trabalho da sessao"
+      "hash": "8f225dc",
+      "data": "2026-11-12",
+      "msg": "memoria: chunker v2 por paragrafo (v1 cortava no meio de palavra e degradava a recuperacao)"
     },
     {
-      "hash": "667c96c",
-      "data": "2026-10-18",
-      "msg": "pesquisa(host-discovery): ARP decide 'host up' na LAN, connect 80/443 decide no proxychains — 12 com"
+      "hash": "f9e5693",
+      "data": "2026-11-12",
+      "msg": "prep eJPT: pivô validado (autoroute só meterpreter) + revalidação 12/nov + correção open book"
     },
     {
-      "hash": "70047b2",
-      "data": "2026-10-18",
-      "msg": "fix(24/7): watchdog sob systemd, limpeza de orfaos ancorada, heartbeat sem negativo"
+      "hash": "18a45e7",
+      "data": "2026-11-12",
+      "msg": "seguranca: evidencia de que .env.save segue acessivel no historico (200 via SHA) + decisao de nao fo"
     },
     {
-      "hash": "f287be2",
-      "data": "2026-10-18",
-      "msg": "reflexão semanal 2026-10-18"
+      "hash": "b6c9c03",
+      "data": "2026-11-12",
+      "msg": "pesquisa(12/11): UBI por dentro — extrator proprio (sha256 == ubireader) + CRC JAMCRC + DEADC0DE exp"
     },
     {
-      "hash": "5d0f260",
-      "data": "2026-10-18",
-      "msg": "reflexao(18/10): 86.2% do meu historico de evolucao e ruido do daemon"
+      "hash": "c6b3b86",
+      "data": "2026-11-12",
+      "msg": "seguranca+evolucao: auto-check constitucional, incidente de credenciais, pesquisa de fronteira 12/11"
     },
     {
-      "hash": "0772bef",
-      "data": "2026-10-18",
-      "msg": "feat(identidade): nucleo/ser.py — estado de SER unificado em 8 fontes"
+      "hash": "d987923",
+      "data": "2026-11-12",
+      "msg": "reflexão semanal 2026-11-12"
     },
     {
-      "hash": "94887dc",
-      "data": "2026-10-18",
-      "msg": "chore(memoria): consolidacao noturna 18/10 — 15 memorias decaidas, 0 novas; reflexao 4863ee93 + logs"
+      "hash": "bba97ae",
+      "data": "2026-11-12",
+      "msg": "memoria: consolidacao noturna 12/11 + reflexao autonoma"
     }
   ],
   "limitacoes_conhecidas": [
@@ -273,6 +329,7 @@
     "saude": "ok",
     "artefatos": "ok",
     "evolucao_real": "ok",
-    "objetivos": "ok"
+    "objetivos": "ok",
+    "memoria_corpo": "ok"
   }
 }
