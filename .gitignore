@@ -6,6 +6,9 @@ __pycache__/
 # Logs e evolução (gerados automaticamente — não precisam ir pro GitHub)
 logs/
 evolution_logs/
+# Saida de scan automatizado (841 arquivos, ~4 MB desde 19/out): maquina, nao
+# entregavel. Os relatorios .md de auditoria continuam rastreaveis.
+reports/scan_*.json
 # evolucao/ tem 86% de relatorio automatico duplicado — ignorar o ruido, mas
 # NAO as reflexoes: elas sao trabalho real e o Lorran precisa do link no GitHub
 # (ele nao consegue navegar o terminal). Descoberto 21/10: a regra antiga
