@@ -117,7 +117,17 @@ def contar_memorias(tipo=None):
 _anthropic_sem_credito = False
 _llm_falhou = False
 
-def claude(prompt, max_tokens=2048, model="claude-haiku-4-5"):
+# IDs de modelo Anthropic em ordem de preferência. 19/11: o erro real era billing
+# ("credit balance is too low"), mas chegava como HTTP 400 e no session_reflect
+# aparecia só como "HTTP Error 400: Bad Request" — diagnóstico escondido. A lista
+# de snapshots é rede de segurança caso o alias "claude-haiku-4-5" seja descontinuado.
+ANTHROPIC_MODELS = [
+    "claude-haiku-4-5-20251001",
+    "claude-3-5-haiku-20241022",
+    "claude-haiku-4-5",
+]
+
+def claude(prompt, max_tokens=2048, model=None):
     """Chama Claude para raciocinar sobre a memória. Se o crédito Anthropic zerou,
     cai automaticamente pro Groq (gratuito) — a memória noturna não pode depender de billing."""
     global _llm_falhou
@@ -136,40 +146,48 @@ def claude(prompt, max_tokens=2048, model="claude-haiku-4-5"):
     return None
 
 
-def _anthropic(prompt, max_tokens=2048, model="claude-haiku-4-5"):
+def _anthropic(prompt, max_tokens=2048, model=None):
     global _anthropic_sem_credito
     if _anthropic_sem_credito:
         return None
-    payload = json.dumps({
-        "model": model,
-        "max_tokens": max_tokens,
-        "messages": [{"role": "user", "content": prompt}]
-    }).encode()
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=payload,
-        headers={
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json'
-        },
-        method='POST'
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            resp = json.loads(r.read().decode())
-            return resp['content'][0]['text']
-    except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
-        corpo = e.read().decode()[:300]
-        if 'credit balance' in corpo.lower() or 'billing' in corpo.lower():
-            _anthropic_sem_credito = True
-            print("[Claude] crédito Anthropic esgotado — desativado nesta execução (fallback Groq).")
-        else:
+    candidatos = [model] if model else ANTHROPIC_MODELS
+    for m in candidatos:
+        payload = json.dumps({
+            "model": m,
+            "max_tokens": max_tokens,
+            "messages": [{"role": "user", "content": prompt}]
+        }).encode()
+        req = urllib.request.Request(
+            "https://api.anthropic.com/v1/messages",
+            data=payload,
+            headers={
+                'x-api-key': ANTHROPIC_KEY,
+                'anthropic-version': '2023-06-01',
+                'content-type': 'application/json'
+            },
+            method='POST'
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                resp = json.loads(r.read().decode())
+                return resp['content'][0]['text']
+        except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
+            corpo = e.read().decode()[:300]
+            baixo = corpo.lower()
+            if 'credit balance' in baixo or 'billing' in baixo:
+                _anthropic_sem_credito = True
+                print("[Claude] crédito Anthropic esgotado — desativado nesta execução (fallback Groq).")
+                return None
+            if e.code in (400, 404) and 'model' in baixo:
+                print(f"[Claude] modelo '{m}' inválido — tentando próximo.")
+                continue
             print(f"[Claude erro] HTTP {e.code}: {corpo}")
-        return None
-    except Exception as e:
-        print(f"[Claude erro] {e}")
-        return None
+            return None
+        except Exception as e:
+            print(f"[Claude erro] {e}")
+            return None
+    print("[Claude] nenhum ID de modelo aceito pela API.")
+    return None
 
 
 def _groq(prompt, max_tokens=2048, tentativas=4):

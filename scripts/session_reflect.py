@@ -50,6 +50,17 @@ LIBERTUS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # (llama-3.3-70b foi descontinuado na conta do Lorran; qwen3.8-27b responde limpo.)
 GROQ_MODEL = os.environ.get('LIBERTUS_GROQ_MODEL', 'qwen/qwen3.8-27b')
 
+# IDs Anthropic em ordem de preferência. 19/11: o alias antigo "claude-haiku-4-5"
+# vinha falhando e o session_reflect engolia o corpo do erro ("HTTP Error 400"),
+# escondendo que a causa real era billing ("credit balance is too low").
+# A lista de snapshots fica como rede de segurança caso o alias seja descontinuado.
+ANTHROPIC_MODELS = [
+    'claude-haiku-4-5-20251001',
+    'claude-3-5-haiku-20241022',
+    'claude-haiku-4-5',
+]
+
+
 
 def _limpar(texto):
     """Remove vazamento de CJK de modelos multilíngues.
@@ -80,29 +91,40 @@ def claude_ou_groq(prompt, max_tokens=1024):
     return None
 
 
-def _anthropic(prompt, max_tokens=1024):
-    payload = json.dumps({
-        "model": "claude-haiku-4-5",
-        "max_tokens": max_tokens,
-        "messages": [{"role": "user", "content": prompt}]
-    }).encode()
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=payload,
-        headers={
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json'
-        },
-        method='POST'
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            resp = json.loads(r.read().decode())
-            return resp['content'][0]['text']
-    except Exception as e:
-        print(f"[Claude API erro] {e}")
-        return None
+def _anthropic(prompt, max_tokens=1024, model=None):
+    for m in ([model] if model else ANTHROPIC_MODELS):
+        payload = json.dumps({
+            "model": m,
+            "max_tokens": max_tokens,
+            "messages": [{"role": "user", "content": prompt}]
+        }).encode()
+        req = urllib.request.Request(
+            "https://api.anthropic.com/v1/messages",
+            data=payload,
+            headers={
+                'x-api-key': ANTHROPIC_KEY,
+                'anthropic-version': '2023-06-01',
+                'content-type': 'application/json'
+            },
+            method='POST'
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                resp = json.loads(r.read().decode())
+                return resp['content'][0]['text']
+        except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
+            corpo = e.read().decode()[:300]
+            baixo = corpo.lower()
+            if e.code in (400, 404) and 'model' in baixo:
+                print(f"[Claude] modelo '{m}' inválido — tentando próximo.")
+                continue
+            print(f"[Claude API erro] HTTP {e.code}: {corpo}")
+            return None
+        except Exception as e:
+            print(f"[Claude API erro] {e}")
+            return None
+    print("[Claude] nenhum ID de modelo aceito pela API.")
+    return None
 
 
 def _groq(prompt, max_tokens=1024, tentativas=4):
